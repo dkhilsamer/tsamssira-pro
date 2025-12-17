@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tsamssira-pro-v1';
+const CACHE_NAME = 'tsamssira-pro-v2'; // Updated to force cache refresh for AdSense
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
