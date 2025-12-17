@@ -1,6 +1,11 @@
-// API Configuration
-const API_BASE = 'http://localhost:3000/api';
-const SERVER_URL = 'http://localhost:3000';
+// API Configuration - Auto-detect environment
+const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const BACKEND_URL = isProduction
+    ? 'https://tsamssira-pro.onrender.com'  // ⚠️ REMPLACEZ PAR VOTRE VRAIE URL RENDER
+    : 'http://localhost:3000';
+
+const API_BASE = `${BACKEND_URL}/api`;
+const SERVER_URL = BACKEND_URL;
 
 // API Helper Functions
 const api = {
