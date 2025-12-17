@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tsamssira Pro - Immobilier de Luxe</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Tsamssira Pro</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#properties">Propriétés</a></li>
+                <div id="authLinks" style="display: flex; gap: 2rem;">
+                    <!-- Auth links will be injected here by app.js -->
+                </div>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Trouvez la propriété de vos rêves</h1>
+            <p>Découvrez notre sélection exclusive de biens immobiliers en Tunisie</p>
+
+            <div class="card"
+                style="margin-top: 2rem; max-width: 800px; margin-left: auto; margin-right: auto; padding: 2rem;">
+                <form id="searchForm"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; align-items: end;">
+                    <div>
+                        <label for="city"
+                            style="display: block; margin-bottom: 0.5rem; text-align: left; color: #333;">Ville</label>
+                        <input type="text" id="city" name="city" placeholder="Ex: Tunis" class="form-control"
+                            style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label for="type"
+                            style="display: block; margin-bottom: 0.5rem; text-align: left; color: #333;">Type
+                            d'offre</label>
+                        <select id="type" name="type" class="form-control" style="width: 100%; box-sizing: border-box;">
+                            <option value="">Tous</option>
+                            <option value="Vente">Vente</option>
+                            <option value="Location">Location</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="property_type"
+                            style="display: block; margin-bottom: 0.5rem; text-align: left; color: #333;">Type de
+                            bien</label>
+                        <select id="property_type" name="property_type" class="form-control"
+                            style="width: 100%; box-sizing: border-box;">
+                            <option value="">Tous</option>
+                            <option value="Appartement">Appartement</option>
+                            <option value="Maison">Maison</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Studio">Studio</option>
+                            <option value="Terrain">Terrain</option>
+                            <option value="Bureau">Bureau</option>
+                            <option value="Commercial">Local Commercial</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="minPrice"
+                            style="display: block; margin-bottom: 0.5rem; text-align: left; color: #333;">Prix
+                            Min</label>
+                        <input type="number" id="minPrice" name="minPrice" placeholder="DT" class="form-control"
+                            style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <label for="maxPrice"
+                            style="display: block; margin-bottom: 0.5rem; text-align: left; color: #333;">Prix
+                            Max</label>
+                        <input type="number" id="maxPrice" name="maxPrice" placeholder="DT" class="form-control"
+                            style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Rechercher</button>
+                    </div>
+                </form>
+            </div>
+
+            <a href="#properties" class="btn btn-secondary mt-2">Voir toutes les propriétés</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="properties">
+            <h2 class="text-center mb-3">Nos Propriétés en Vedette</h2>
+            <div id="propertyGrid" class="card-grid">
+                <!-- Properties will be loaded here -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Chargement des propriétés...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer style="background: var(--primary); color: white; padding: 4rem 0; margin-top: 4rem;">
+        <div class="container">
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: left;">
+                <div>
+                    <h3 style="color: var(--secondary); margin-bottom: 1rem;">Tsamssira Pro</h3>
+                    <p>Votre partenaire de confiance pour l'immobilier de luxe en Tunisie.</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--secondary); margin-bottom: 1rem;">Liens Rapides</h4>
+                    <ul style="list-style: none;">
+                        <li><a href="index.html" style="color: white; text-decoration: none;">Accueil</a></li>
+                        <li><a href="#properties" style="color: white; text-decoration: none;">Propriétés</a></li>
+                        <li><a href="login.html" style="color: white; text-decoration: none;">Connexion</a></li>
+                        <li><a href="register.html" style="color: white; text-decoration: none;">Inscription</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: var(--secondary); margin-bottom: 1rem;">Contact</h4>
+                    <p>📍 Tunis, Tunisie</p>
+                    <p>📧 contact@tsamssira-pro.com</p>
+                    <p>📞 +216 71 123 456</p>
+                </div>
+            </div>
+            <div class="text-center"
+                style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <p>&copy; 2025 Tsamssira Pro. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        // Load properties on page load
+        async function loadProperties(filters = {}) {
+            const grid = document.getElementById('propertyGrid');
+            grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Chargement...</p></div>';
+
+            try {
+                const properties = await api.getProperties(filters);
+
+                if (properties.length === 0) {
+                    grid.innerHTML = '<p class="text-center" style="grid-column: 1/-1;">Aucune propriété trouvée.</p>';
+                    return;
+                }
+
+                grid.innerHTML = properties.map(prop => {
+                    const isBoosted = prop.is_boosted == 1 && prop.boost_end_date && new Date(prop.boost_end_date) > new Date();
+                    return `
+                    <div class="property-card ${isBoosted ? 'boosted' : ''}">
+                        ${isBoosted ? '<div class="badge-boost-card">⭐ Populaire</div>' : ''}
+                        <img src="${utils.getImageUrl(prop.main_image)}" alt="${prop.title}" class="property-image" loading="lazy">
+                        <div class="property-content">
+                            <div class="mb-1">
+                                <span class="badge badge-primary">${prop.type}</span>
+                                <span class="badge badge-info" style="background: var(--secondary); color: white;">${prop.property_type || 'Bien'}</span>
+                                <span class="badge badge-success">${prop.property_category || ''}</span>
+                            </div>
+                            <h3 class="property-title">${prop.title}</h3>
+                            <p class="property-location">📍 ${prop.location}</p>
+                            <div class="property-details">
+                                <span>🛏️ ${prop.bedrooms} ch.</span>
+                                <span>🚿 ${prop.bathrooms} sdb.</span>
+                                <span>📏 ${prop.area} m²</span>
+                            </div>
+                            <div class="property-price">${utils.formatPrice(prop.price)}</div>
+                            <a href="property-detail.html?id=${prop.id}" class="btn btn-primary" style="width: 100%">Voir détails</a>
+                        </div>
+                    </div>
+                `}).join('');
+            } catch (error) {
+                grid.innerHTML = `
+                    <div class="alert alert-error" style="grid-column: 1/-1;">
+                        Erreur lors du chargement des propriétés: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Load properties on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProperties();
+
+            // Handle Search
+            const searchForm = document.getElementById('searchForm');
+            if (searchForm) {
+                searchForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(searchForm);
+                    const filters = Object.fromEntries(formData.entries());
+                    loadProperties(filters);
+                    // Smooth scroll to results
+                    document.getElementById('properties').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

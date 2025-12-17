@@ -1,0 +1,29 @@
+# Fichiers sensibles
+.env
+config.php
+
+# Dossiers de dépendances
+node_modules/
+vendor/
+
+# Dossiers d'uploads (images uploadées par les utilisateurs)
+uploads/
+backend/uploads/
+
+# Fichiers de log
+*.log
+logs/
+
+# Fichiers temporaires
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.sublime-*
+
+# Fichiers système
+.git/

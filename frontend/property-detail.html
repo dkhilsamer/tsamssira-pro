@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails Propriété - Tsamssira Pro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Tsamssira Pro</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <div id="authLinks"></div>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div id="propertyContent" style="display: none;">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <!-- Left Column: Details -->
+                <div>
+                    <div class="card">
+                        <img id="propImage" src="" alt="Property"
+                            style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h1 id="propTitle" style="font-size: 2rem;"></h1>
+                            <span id="propPrice"
+                                style="font-size: 1.5rem; color: var(--primary); font-weight: bold;"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <span id="propType" class="badge badge-primary"></span>
+                            <span id="propCategory" class="badge badge-success"></span>
+                            <span id="propLocation" style="color: #666; margin-left: 1rem;"></span>
+                        </div>
+
+                        <div
+                            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: center;">
+                            <div>
+                                <strong>Chambres</strong><br>
+                                <span id="propBedrooms"></span>
+                            </div>
+                            <div>
+                                <strong>Salles de bain</strong><br>
+                                <span id="propBathrooms"></span>
+                            </div>
+                            <div>
+                                <strong>Surface</strong><br>
+                                <span id="propArea"></span> m²
+                            </div>
+                        </div>
+
+                        <h3>Description</h3>
+                        <p id="propDescription" style="line-height: 1.8; color: #444; margin-bottom: 2rem;"></p>
+
+                        <!-- Gallery Section -->
+                        <div id="gallerySection" style="display: none;">
+                            <h3 class="mb-2">Galerie Photos</h3>
+                            <div id="propGallery"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
+                                <!-- Images inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Contact Form -->
+                <div>
+                    <div class="card" style="position: sticky; top: 100px;">
+                        <h3 class="mb-2">Contacter le propriétaire</h3>
+
+
+
+                        <form id="contactForm">
+                            <input type="hidden" name="property_id" id="propId">
+                            <input type="hidden" name="request_type" id="reqType">
+
+                            <div class="form-group">
+                                <label>Votre Nom</label>
+                                <input type="text" name="visitor_name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" name="visitor_email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Téléphone</label>
+                                <input type="tel" name="visitor_phone" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nombre de personnes</label>
+                                <input type="number" name="num_persons" class="form-control" value="1" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea name="message" class="form-control" rows="4"
+                                    required>Je suis intéressé par cette propriété.</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%">Envoyer la
+                                demande</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="loading" class="loading">Chargement...</div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+
+            if (!id) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const prop = await api.getProperty(id);
+
+                // Update SEO Meta Tags
+                document.title = `${prop.title} - ${prop.location} | Tsamssira Pro`;
+                let metaDesc = document.querySelector('meta[name="description"]');
+                if (!metaDesc) {
+                    metaDesc = document.createElement('meta');
+                    metaDesc.name = 'description';
+                    document.head.appendChild(metaDesc);
+                }
+                metaDesc.content = `Découvrez ${prop.title} à ${prop.location}. ${prop.description.substring(0, 150)}...`;
+
+                // Populate fields
+                document.getElementById('propImage').src = utils.getImageUrl(prop.main_image);
+                document.getElementById('propImage').loading = "lazy"; // Lazy load
+                document.getElementById('propTitle').textContent = prop.title;
+                document.getElementById('propPrice').textContent = utils.formatPrice(prop.price);
+                document.getElementById('propType').textContent = prop.type;
+                document.getElementById('propCategory').textContent = prop.property_category;
+                document.getElementById('propLocation').textContent = '📍 ' + prop.location;
+                document.getElementById('propBedrooms').textContent = prop.bedrooms;
+                document.getElementById('propBathrooms').textContent = prop.bathrooms;
+                document.getElementById('propArea').textContent = prop.area;
+                document.getElementById('propDescription').textContent = prop.description;
+
+                // Handle Gallery
+                if (prop.images && prop.images.length > 0) {
+                    const galleryDiv = document.getElementById('propGallery');
+                    const gallerySection = document.getElementById('gallerySection');
+
+                    galleryDiv.innerHTML = prop.images.map(url => `
+                        <a href="${utils.getImageUrl(url)}" target="_blank">
+                            <img src="${utils.getImageUrl(url)}" loading="lazy" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.2s;" 
+                                 onmouseover="this.style.transform='scale(1.05)'" 
+                                 onmouseout="this.style.transform='scale(1)'"
+                                 alt="Property Image">
+                        </a>
+                    `).join('');
+
+                    gallerySection.style.display = 'block';
+                }
+
+                // Form hidden fields
+                document.getElementById('propId').value = prop.id;
+                // Map property type to request type (Vente -> achat, Location -> location)
+                const typeMap = {
+                    'Vente': 'achat',
+                    'Location': 'location'
+                };
+                document.getElementById('reqType').value = typeMap[prop.type] || 'location';
+
+                // Show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('propertyContent').style.display = 'block';
+
+            } catch (error) {
+                document.getElementById('loading').innerHTML = `<div class="alert alert-error">Erreur: ${error.message}</div>`;
+            }
+        });
+
+
+
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            const btn = e.target.querySelector('button');
+
+            try {
+                btn.disabled = true;
+                btn.textContent = 'Envoi...';
+
+                await api.submitRequest(data);
+
+                utils.showAlert('Votre demande a été envoyée avec succès !', 'success');
+                e.target.reset();
+            } catch (error) {
+                utils.showAlert(error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Envoyer la demande';
+            }
+        });
+    </script>
+</body>
+
+</html>
