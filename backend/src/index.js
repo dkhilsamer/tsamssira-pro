@@ -32,15 +32,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Session configuration
+// Session configuration
 const sessionConfig = {
     secret: process.env.SESSION_SECRET || 'change_this_secret',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        secure: false, // Temporarily disable secure cookies to fix login loop
         httpOnly: true,
         maxAge: 3600000, // 1h
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Allow cross-site in production
+        sameSite: 'lax' // More compatible setting
     }
 };
 
