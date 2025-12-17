@@ -1,8 +1,6 @@
-// API Configuration - Auto-detect environment
-const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-const BACKEND_URL = isProduction
-    ? 'https://tsamssira-pro.onrender.com'  // ⚠️ REMPLACEZ PAR VOTRE VRAIE URL RENDER
-    : 'http://localhost:3000';
+// API Configuration - Forced to Render for testing
+// TODO: Re-enable auto-detection later for local development
+const BACKEND_URL = 'https://tsamssira-pro.onrender.com';
 
 const API_BASE = `${BACKEND_URL}/api`;
 const SERVER_URL = BACKEND_URL;
