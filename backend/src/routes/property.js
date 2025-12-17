@@ -85,13 +85,25 @@ router.post('/', upload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'im
 
         // Handle Main Image
         if (req.files && req.files['main_image'] && req.files['main_image'][0]) {
-            // Store relative path to uploads
-            data.main_image = '/uploads/' + req.files['main_image'][0].filename;
+            const file = req.files['main_image'][0];
+            // If Cloudinary, file.path is the URL. If local, we build it.
+            // CloudinaryStorage puts the url in file.path
+            if (file.path && file.path.startsWith('http')) {
+                data.main_image = file.path;
+            } else {
+                data.main_image = '/uploads/' + file.filename;
+            }
         }
 
         // Handle Extra Images
         if (req.files && req.files['images']) {
-            data.images = req.files['images'].map(file => '/uploads/' + file.filename);
+            data.images = req.files['images'].map(file => {
+                if (file.path && file.path.startsWith('http')) {
+                    return file.path;
+                } else {
+                    return '/uploads/' + file.filename;
+                }
+            });
         } else if (!data.images) {
             data.images = [];
         }
