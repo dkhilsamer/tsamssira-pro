@@ -82,6 +82,12 @@ app.use(express.static(path.join(__dirname, '../../frontend')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 
+// Serve robots.txt explicitly to ensure visibility for Google AdSense
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.send("User-agent: *\nAllow: /\nSitemap: https://tsamssira-pro.onrender.com/sitemap.xml");
+});
+
 // Fallback for SPA routing (optional, but good for future)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../frontend/index.html'));
