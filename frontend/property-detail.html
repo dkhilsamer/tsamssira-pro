@@ -21,93 +21,122 @@
 
     <main class="container">
         <div id="propertyContent" style="display: none;">
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-                <!-- Left Column: Details -->
-                <div>
-                    <div class="card">
-                        <img id="propImage" src="" alt="Property"
-                            style="width: 100%; height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem;">
+            <!-- Property Details Section -->
+            <div class="card mb-3">
+                <img id="propImage" src="" alt="Property"
+                    style="width: 100%; height: 500px; object-fit: cover; border-radius: 8px; margin-bottom: 2rem;">
 
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h1 id="propTitle" style="font-size: 2rem;"></h1>
-                            <span id="propPrice"
-                                style="font-size: 1.5rem; color: var(--primary); font-weight: bold;"></span>
-                        </div>
-
-                        <div class="mb-2">
-                            <span id="propType" class="badge badge-primary"></span>
-                            <span id="propCategory" class="badge badge-success"></span>
-                            <span id="propLocation" style="color: #666; margin-left: 1rem;"></span>
-                        </div>
-
-                        <div
-                            style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; text-align: center;">
-                            <div>
-                                <strong>Chambres</strong><br>
-                                <span id="propBedrooms"></span>
-                            </div>
-                            <div>
-                                <strong>Salles de bain</strong><br>
-                                <span id="propBathrooms"></span>
-                            </div>
-                            <div>
-                                <strong>Surface</strong><br>
-                                <span id="propArea"></span> m²
-                            </div>
-                        </div>
-
-                        <h3>Description</h3>
-                        <p id="propDescription" style="line-height: 1.8; color: #444; margin-bottom: 2rem;"></p>
-
-                        <!-- Gallery Section -->
-                        <div id="gallerySection" style="display: none;">
-                            <h3 class="mb-2">Galerie Photos</h3>
-                            <div id="propGallery"
-                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem;">
-                                <!-- Images inserted here -->
-                            </div>
-                        </div>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <h1 id="propTitle"
+                            style="font-size: 2.5rem; margin-bottom: 0.5rem; font-family: var(--font-heading);"></h1>
+                        <p id="propLocation" style="color: #64748b; font-size: 1.1rem;"></p>
+                    </div>
+                    <div>
+                        <span id="propPrice"
+                            style="font-size: 2rem; color: var(--secondary); font-weight: bold; font-family: var(--font-heading);"></span>
                     </div>
                 </div>
 
-                <!-- Right Column: Contact Form -->
-                <div>
-                    <div class="card" style="position: sticky; top: 100px;">
-                        <h3 class="mb-2">Contacter le propriétaire</h3>
+                <div class="mb-3">
+                    <span id="propType" class="badge badge-primary" style="padding: 8px 16px; font-size: 1rem;"></span>
+                    <span id="propCategory" class="badge badge-success"
+                        style="padding: 8px 16px; font-size: 1rem;"></span>
+                </div>
 
-
-
-                        <form id="contactForm">
-                            <input type="hidden" name="property_id" id="propId">
-                            <input type="hidden" name="request_type" id="reqType">
-
-                            <div class="form-group">
-                                <label>Votre Nom</label>
-                                <input type="text" name="visitor_name" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="visitor_email" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Téléphone</label>
-                                <input type="tel" name="visitor_phone" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Nombre de personnes</label>
-                                <input type="number" name="num_persons" class="form-control" value="1" min="1" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Message</label>
-                                <textarea name="message" class="form-control" rows="4"
-                                    required>Je suis intéressé par cette propriété.</textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary" style="width: 100%">Envoyer la
-                                demande</button>
-                        </form>
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1.5rem; background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2.5rem; text-align: center; border: 1px solid #e2e8f0;">
+                    <div>
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🛏️</div>
+                        <strong
+                            style="display: block; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Chambres</strong>
+                        <span id="propBedrooms"
+                            style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);"></span>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🚿</div>
+                        <strong
+                            style="display: block; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Salles
+                            de bain</strong>
+                        <span id="propBathrooms"
+                            style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);"></span>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📐</div>
+                        <strong
+                            style="display: block; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Surface</strong>
+                        <span id="propArea"
+                            style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);"></span> m²
                     </div>
                 </div>
+
+                <h3 class="mb-2"
+                    style="font-family: var(--font-heading); font-size: 1.8rem; border-bottom: 2px solid var(--secondary); padding-bottom: 0.5rem; display: inline-block;">
+                    Description</h3>
+                <p id="propDescription"
+                    style="line-height: 1.8; color: #444; font-size: 1.1rem; margin-bottom: 3rem; white-space: pre-line;">
+                </p>
+
+                <!-- Gallery Section -->
+                <div id="gallerySection" style="display: none; margin-bottom: 2rem;">
+                    <h3 class="mb-3" style="font-family: var(--font-heading); font-size: 1.5rem;">Galerie Photos</h3>
+                    <div id="propGallery"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                        <!-- Images inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form Section (Bottom) -->
+            <div class="card"
+                style="max-width: 800px; margin: 3rem auto; padding: 2.5rem; background: #fff; border: 1px solid var(--border); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+                <div class="text-center mb-3">
+                    <h3
+                        style="font-family: var(--font-heading); font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;">
+                        Intéressé par ce bien ?</h3>
+                    <p style="color: var(--text-muted);">Envoyez une demande directement au propriétaire.</p>
+                </div>
+
+                <form id="contactForm">
+                    <input type="hidden" name="property_id" id="propId">
+                    <input type="hidden" name="request_type" id="reqType">
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Votre Nom</label>
+                            <input type="text" name="visitor_name" class="form-control" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Email</label>
+                            <input type="email" name="visitor_email" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Téléphone</label>
+                            <input type="tel" name="visitor_phone" class="form-control" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Nombre de personnes</label>
+                            <input type="number" name="num_persons" class="form-control" value="1" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea name="message" class="form-control" rows="5" required
+                            style="resize: vertical;">Je suis intéressé par cette propriété.</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"
+                        style="width: 100%; font-size: 1.1rem; padding: 1rem;">
+                        ✉️ Envoyer la demande
+                    </button>
+                </form>
             </div>
         </div>
         <div id="loading" class="loading">Chargement...</div>
