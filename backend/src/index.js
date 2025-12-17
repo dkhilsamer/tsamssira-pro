@@ -79,8 +79,27 @@ app.get('/', (req, res) => {
 });
 
 // Simple health check
+// Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
+});
+
+// API 404 Handler - Force JSON for /api/* routes that are not found
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ error: `API route not found: ${req.originalUrl}` });
+});
+
+// Global Error Handler - Force JSON for server errors
+app.use((err, req, res, next) => {
+    console.error('SERVER ERROR:', err);
+    // If headers already sent, delegate to default handler
+    if (res.headersSent) {
+        return next(err);
+    }
+    res.status(500).json({
+        error: 'Internal Server Error',
+        details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
 });
 
 app.listen(PORT, () => {
