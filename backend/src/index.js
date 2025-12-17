@@ -2,6 +2,15 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
+const fs = require('fs'); // Import fs
+
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('Created uploads directory');
+}
+
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const db = require('./db'); // ensure db connection works
