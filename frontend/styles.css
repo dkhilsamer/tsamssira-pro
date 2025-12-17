@@ -375,18 +375,104 @@ footer {
 }
 
 /* Responsive */
+/* Responsive Design Improvements */
 @media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2.5rem;
+    /* Container Adjustments */
+    .container {
+        padding: 15px;
+        width: 100%;
+        overflow-x: hidden;
     }
 
-    .card-grid {
-        grid-template-columns: 1fr;
-    }
-
+    /* Navigation */
     .nav-container {
         flex-direction: column;
         gap: 1rem;
+        padding: 10px 20px;
+    }
+
+    .nav-links {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        font-size: 0.9rem;
+    }
+
+    /* Hero Section */
+    .hero {
+        height: 60vh; /* Reduced height on mobile */
+        padding: 0 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem; /* Smaller heading */
+        line-height: 1.2;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    /* Grid System */
+    .card-grid {
+        grid-template-columns: 1fr; /* Single column on mobile */
+        gap: 1.5rem;
+        padding: 0 5px;
+    }
+    
+    /* Better card sizing for small screens */
+    .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    /* Tables (Dashboard) */
+    .table-responsive, 
+    .card > div[style*="overflow-x: auto"] {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Adjust buttons on mobile */
+    .btn {
+        padding: 0.8rem 1.5rem;
+        width: 100%; /* Full width buttons usually better on mobile */
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Form Inputs */
+    .form-control {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 12px;
+    }
+
+    /* Modals */
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+}
+
+/* Small phones (below 480px) */
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    .card-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .payment-form .card-row {
+        grid-template-columns: 1fr; /* Stack inputs */
     }
 }
 
