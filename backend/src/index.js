@@ -82,6 +82,12 @@ app.use(express.static(path.join(__dirname, '../../frontend')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 
+// Serve ads.txt explicitly for Google AdSense verification
+app.get('/ads.txt', (req, res) => {
+    res.type('text/plain');
+    res.send("google.com, pub-5736875872236634, DIRECT, f08c47fec0942fa0");
+});
+
 // Serve robots.txt explicitly to ensure visibility for Google AdSense
 app.get('/robots.txt', (req, res) => {
     res.type('text/plain');
