@@ -10,6 +10,7 @@ const authRoutes = require('./routes/auth');
 // Additional route imports can be added here (e.g., property, rental_requests)
 
 const app = express();
+app.set('trust proxy', 1); // Required for Render/Heroku to handle secure cookies
 const PORT = process.env.PORT || 3000;
 
 // Middleware
