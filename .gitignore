@@ -7,8 +7,9 @@ node_modules/
 vendor/
 
 # Dossiers d'uploads (images uploadées par les utilisateurs)
-uploads/
-backend/uploads/
+# Ignore les images mais garde le dossier
+backend/uploads/*
+!backend/uploads/.gitkeep
 
 # Fichiers de log
 *.log
