@@ -1,25 +1,45 @@
 const mysql = require('mysql2/promise');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+const { Pool } = require('pg');
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
+let pool;
 
-module.exports = {
-    query: async (sql, params) => {
-        const [rows] = await pool.execute(sql, params);
+// Détection automatique du type de base de données
+if (process.env.DATABASE_URL) {
+    // PostgreSQL (Render, Heroku, etc.)
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    });
+    console.log('🐘 Using PostgreSQL');
+} else {
+    // MySQL (local)
+    pool = mysql.createPool({
+        host: process.env.DB_HOST || 'localhost',
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'tsamssira_db',
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
+    console.log('🐬 Using MySQL');
+}
+
+// Wrapper compatible MySQL et PostgreSQL
+const query = async (sql, params = []) => {
+    if (process.env.DATABASE_URL) {
+        // PostgreSQL
+        const convertedSql = sql.replace(/\?/g, (match, offset) => {
+            const index = sql.substring(0, offset).split('?').length;
+            return `$${index}`;
+        });
+        const result = await pool.query(convertedSql, params);
+        return result.rows;
+    } else {
+        // MySQL
+        const [rows] = await pool.query(sql, params);
         return rows;
-    },
-    getPool: () => pool,
+    }
 };
+
+module.exports = { query, pool };
