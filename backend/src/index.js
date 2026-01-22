@@ -101,13 +101,12 @@ app.get('/robots.txt', (req, res) => {
     res.send("User-agent: *\nAllow: /\nSitemap: https://tsamssira-pro.onrender.com/sitemap.xml");
 });
 
-// Fallback for SPA routing
-app.get('*', (req, res) => {
-    // Check if the request is not for /api/
-    if (!req.url.startsWith('/api/')) {
-        res.sendFile(path.join(__dirname, '../../frontend-react/dist/index.html'));
-    }
-});
+// Fallback for SPA routing - DISABLED (frontend deployed separately on Cloudflare)
+// app.get('*', (req, res) => {
+//     if (!req.url.startsWith('/api/')) {
+//         res.sendFile(path.join(__dirname, '../../frontend-react/dist/index.html'));
+//     }
+// });
 
 // Simple health check
 // Health check

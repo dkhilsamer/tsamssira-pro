@@ -13,7 +13,7 @@ pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     ssl: process.env.DB_HOST?.includes('aivencloud') ? {
-        rejectUnauthorized: true
+        rejectUnauthorized: false
     } : false
 });
 
