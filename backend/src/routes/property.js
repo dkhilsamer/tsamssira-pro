@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const Property = require('../models/property');
+const Property = require('../models/Property');
 
 // Get all properties
 // Get all properties
