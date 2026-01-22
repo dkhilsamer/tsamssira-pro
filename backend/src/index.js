@@ -26,14 +26,20 @@ const PORT = process.env.PORT || 3000;
 // CORS configuration for production
 const corsOptions = {
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or Postman)
-        if (!origin) return callback(null, true);
-        // Allow all origins in production
-        callback(null, true);
+        const allowedOrigins = [
+            'http://localhost:5173',
+            'http://localhost:3000',
+            'https://tsamssira-pro.onrender.com'
+        ];
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 };
 
 app.use(cors(corsOptions));
@@ -72,11 +78,12 @@ app.use('/api/properties', require('./routes/property'));
 app.use('/api/requests', require('./routes/rental_requests'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/payment', require('./routes/payment'));
+app.use('/api/messages', require('./routes/messages'));
 
 app.use('/', require('./routes/sitemap'));
 
 // Serve frontend static files
-app.use(express.static(path.join(__dirname, '../../frontend')));
+app.use(express.static(path.join(__dirname, '../../frontend-react/dist')));
 
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -94,9 +101,12 @@ app.get('/robots.txt', (req, res) => {
     res.send("User-agent: *\nAllow: /\nSitemap: https://tsamssira-pro.onrender.com/sitemap.xml");
 });
 
-// Fallback for SPA routing (optional, but good for future)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../frontend/index.html'));
+// Fallback for SPA routing
+app.get('*', (req, res) => {
+    // Check if the request is not for /api/
+    if (!req.url.startsWith('/api/')) {
+        res.sendFile(path.join(__dirname, '../../frontend-react/dist/index.html'));
+    }
 });
 
 // Simple health check

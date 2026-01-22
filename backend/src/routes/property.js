@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const Property = require('../models/Property');
+const Property = require('../models/property');
 
 // Get all properties
 // Get all properties
@@ -16,6 +16,7 @@ router.get('/', async (req, res) => {
             property_type: req.query.property_type,
             category: req.query.category,
             bedrooms: req.query.bedrooms,
+            is_student: req.query.is_student === 'true' || req.query.is_student === '1',
             publicOnly: true // Default for public route
         };
 
@@ -29,7 +30,7 @@ router.get('/', async (req, res) => {
         res.json(properties);
     } catch (err) {
         console.error('Get properties error:', err);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error: ' + err.message });
     }
 });
 
@@ -61,7 +62,7 @@ router.get('/:id', async (req, res) => {
         res.json(property);
     } catch (err) {
         console.error('Get property error:', err);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error: ' + err.message });
     }
 });
 

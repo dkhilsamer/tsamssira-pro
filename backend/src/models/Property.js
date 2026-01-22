@@ -34,6 +34,9 @@ class Property {
             conditions.push('bedrooms >= ?');
             params.push(filters.bedrooms);
         }
+        if (filters.is_student) {
+            conditions.push('is_student = 1');
+        }
 
         // Always show only visible properties publicly if not admin (handled in controller or generic filter)
         // For now, let's assume 'getAll' is mostly for public listing, so respect is_visible=1
@@ -50,8 +53,24 @@ class Property {
             sql += ' WHERE ' + conditions.join(' AND ');
         }
 
-        // Sort boosted properties first, then by creation date
-        sql += ' ORDER BY is_boosted DESC, created_at DESC';
+        // Sorting logic
+        let orderBy = 'is_boosted DESC, created_at DESC'; // Default
+        if (filters.sortBy) {
+            switch (filters.sortBy) {
+                case 'price_asc': orderBy = 'price ASC'; break;
+                case 'price_desc': orderBy = 'price DESC'; break;
+                case 'newest': orderBy = 'created_at DESC'; break;
+                case 'oldest': orderBy = 'created_at ASC'; break;
+                case 'area': orderBy = 'area DESC'; break;
+            }
+            // Always keep boosted first? User might want to override.
+            // Let's keep boosted first unless they specify a strict sort.
+            if (!['price_asc', 'price_desc'].includes(filters.sortBy)) {
+                orderBy = 'is_boosted DESC, ' + orderBy;
+            }
+        }
+
+        sql += ' ORDER BY ' + orderBy;
 
         return await db.query(sql, params);
     }
@@ -78,13 +97,14 @@ class Property {
             max_occupants = 0,
             is_furnished = 0,
             price_per_person = 0,
+            is_student = 0,
             main_image, images
         } = data;
 
         const result = await db.query(
-            `INSERT INTO properties (user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, max_occupants, is_furnished, price_per_person, main_image) 
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-            [user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, max_occupants, is_furnished, price_per_person, main_image || null]
+            `INSERT INTO properties (user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, max_occupants, is_furnished, price_per_person, is_student, main_image) 
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            [user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, max_occupants, is_furnished, price_per_person, is_student, main_image || null]
         );
 
         const propertyId = result.insertId;

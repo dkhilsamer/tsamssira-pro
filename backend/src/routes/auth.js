@@ -58,6 +58,11 @@ router.post('/register', async (req, res) => {
             return res.status(409).json({ error: 'Email already used' });
         }
         const userId = await User.create({ username, email, password, role: 'proprietaire', phone, address });
+
+        // Send welcome email
+        const { sendWelcomeEmail } = require('../services/emailService');
+        sendWelcomeEmail(email, username).catch(err => console.error('Welcome email error:', err));
+
         return res.status(201).json({ message: 'User created', userId });
     } catch (err) {
         console.error('Register error:', err);
@@ -96,25 +101,15 @@ router.post('/forgot-password', async (req, res) => {
 
         resetTokens.set(token, { userId: user.id, expires });
 
-        // In a real app, send email. Here, we log it.
-        console.log(`[RESET PASSWORD] Token for ${email}: ${token}`);
-        const resetLink = `http://localhost:3000/reset-password.html?token=${token}`;
-        console.log(`[RESET LINK] ${resetLink}`);
-
-        if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-            await transporter.sendMail({
-                from: process.env.SMTP_USER,
-                to: email,
-                subject: 'Réinitialisation de mot de passe - Tsamssira Pro',
-                html: `<p>Bonjour,</p>
-                       <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
-                       <p>Cliquez sur le lien ci-dessous pour procéder :</p>
-                       <p><a href="${resetLink}">${resetLink}</a></p>
-                       <p>Ce lien expire dans 1 heure.</p>`
-            });
+        // Send reset email using emailService
+        const { sendPasswordResetEmail } = require('../services/emailService');
+        try {
+            await sendPasswordResetEmail(email, token);
             res.json({ message: 'Lien de réinitialisation envoyé par email !' });
-        } else {
-            res.json({ message: 'Lien généré (voir console serveur car SMTP non configuré).' });
+        } catch (emailError) {
+            console.error('[EMAIL ERROR]', emailError);
+            // Still return success to avoid revealing if email exists
+            res.json({ message: 'Si cet email est enregistré, vous recevrez un lien de réinitialisation.' });
         }
     } catch (err) {
         console.error('Forgot password error:', err);
