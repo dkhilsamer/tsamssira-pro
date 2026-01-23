@@ -101,17 +101,16 @@ router.post('/forgot-password', async (req, res) => {
 
         resetTokens.set(token, { userId: user.id, expires });
 
-        // Send reset email using emailService (asynchronous, don't await)
+        // Send reset email using emailService (synchronous await for debugging)
         const { sendPasswordResetEmail } = require('../services/emailService');
-        sendPasswordResetEmail(email, token)
-            .then(() => console.log(`✅ Reset email sent to ${email}`))
-            .catch(err => console.error('[EMAIL ERROR]', err));
+        await sendPasswordResetEmail(email, token);
+        console.log(`✅ Reset email sent to ${email}`);
 
-        // Return immediately to user (don't wait for email)
-        res.json({ message: 'Si cet email est enregistré, vous recevrez un lien de réinitialisation dans quelques instants.' });
+        res.json({ message: 'Si cet email est enregistré, vous recevrez un lien de réinitialisation.' });
     } catch (err) {
         console.error('Forgot password error:', err);
-        res.status(500).json({ error: 'Server error' });
+        // Expose error message for debugging (remove in strict prod if needed, but useful now)
+        res.status(500).json({ error: 'Erreur envoi email: ' + err.message });
     }
 });
 

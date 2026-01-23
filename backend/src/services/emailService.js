@@ -52,12 +52,8 @@ const sendWelcomeEmail = async (userEmail, username) => {
         `
     };
 
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('Welcome email sent to:', userEmail);
-    } catch (error) {
-        console.error('Error sending welcome email:', error);
-    }
+    await transporter.sendMail(mailOptions);
+    console.log('Welcome email sent to:', userEmail);
 };
 
 // Email de réinitialisation de mot de passe
@@ -90,12 +86,8 @@ const sendPasswordResetEmail = async (userEmail, resetToken) => {
         `
     };
 
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('Password reset email sent to:', userEmail);
-    } catch (error) {
-        console.error('Error sending reset email:', error);
-    }
+    await transporter.sendMail(mailOptions);
+    console.log('Password reset email sent to:', userEmail);
 };
 
 // Email de notification de nouveau message
@@ -127,12 +119,8 @@ const sendNewMessageNotification = async (userEmail, senderName, propertyTitle) 
         `
     };
 
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('New message notification sent to:', userEmail);
-    } catch (error) {
-        console.error('Error sending message notification:', error);
-    }
+    await transporter.sendMail(mailOptions);
+    console.log('New message notification sent to:', userEmail);
 };
 
 module.exports = {
