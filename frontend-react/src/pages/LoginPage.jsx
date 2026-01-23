@@ -55,6 +55,12 @@ const LoginPage = () => {
                         />
                     </div>
 
+                    <div className="form-group" style={{ textAlign: 'right', marginTop: '-1rem' }}>
+                        <Link to="/forgot-password" style={{ fontSize: '0.9rem', color: 'var(--secondary)', textDecoration: 'none' }}>
+                            Mot de passe oublié ?
+                        </Link>
+                    </div>
+
                     <button type="submit" className="btn btn-secondary w-full" disabled={loading}>
                         {loading ? 'Connexion...' : 'Se connecter'} <ArrowRight size={18} />
                     </button>
