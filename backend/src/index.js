@@ -118,6 +118,11 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
 });
 
+// Root route for friendly message
+app.get('/', (req, res) => {
+    res.send('✅ Tsamssira-Pro API is alive. Use /api/... endpoints.');
+});
+
 // API 404 Handler - Force JSON for /api/* routes that are not found
 app.use('/api/*', (req, res) => {
     res.status(404).json({ error: `API route not found: ${req.originalUrl}` });
