@@ -13,6 +13,7 @@ if (!fs.existsSync(uploadDir)) {
 
 const dotenv = require('dotenv');
 dotenv.config({ path: path.join(__dirname, '../.env') });
+console.log('--- FORCING REDEPLOY FOR EMAIL FIX ---');
 console.log('Using SMTP User:', process.env.EMAIL_USER ? 'Loaded' : 'MISSING');
 console.log('Using SMTP Pass:', process.env.EMAIL_PASSWORD ? 'Loaded' : 'MISSING');
 
