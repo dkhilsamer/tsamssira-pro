@@ -8,9 +8,17 @@ const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Close menu on route change
+    // Close menu on route change and sync user state
     useEffect(() => {
         setIsMenuOpen(false);
+
+        // Sync user state from localStorage (e.g. after login/logout in another tab or component)
+        const syncUser = () => {
+            setUser(JSON.parse(localStorage.getItem('user')));
+        };
+        window.addEventListener('storage', syncUser);
+
+        return () => window.removeEventListener('storage', syncUser);
     }, [location]);
 
     const handleLogout = () => {
