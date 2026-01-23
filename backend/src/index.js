@@ -60,7 +60,7 @@ const sessionConfig = {
         secure: true, // enforce HTTPS
         httpOnly: true,
         maxAge: 3600000, // 1h
-        sameSite: 'lax'
+        sameSite: 'none' // Required for cross-site cookies (Vercel -> Render)
     }
 };
 
