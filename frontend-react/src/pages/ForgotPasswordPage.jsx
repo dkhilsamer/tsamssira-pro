@@ -9,12 +9,19 @@ const ForgotPasswordPage = () => {
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
 
+    const [debugLink, setDebugLink] = useState(null);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setDebugLink(null);
         try {
-            await api.post('/auth/forgot-password', { email });
-            toast.success('Lien de réinitialisation envoyé !');
+            const response = await api.post('/auth/forgot-password', { email });
+            toast.success(response.message || 'Lien de réinitialisation envoyé !');
+
+            if (response.debug_link) {
+                setDebugLink(response.debug_link);
+            }
             setSent(true);
         } catch (error) {
             toast.error(error.message);
@@ -53,6 +60,17 @@ const ForgotPasswordPage = () => {
                         <div className="icon-success">📧</div>
                         <h3>Email envoyé !</h3>
                         <p>Vérifiez votre boîte de réception et suivez les instructions.</p>
+
+                        {debugLink && (
+                            <div className="debug-box" style={{ background: '#fee2e2', padding: '15px', borderRadius: '10px', marginTop: '20px', fontSize: '0.9rem', color: '#b91c1c' }}>
+                                <p><strong>Note DEBUG (Render Bloque l'email) :</strong></p>
+                                <p>Utilisez ce lien pour réinitialiser :</p>
+                                <a href={debugLink} target="_blank" rel="noopener noreferrer" style={{ display: 'block', wordBreak: 'break-all', marginTop: '5px', fontWeight: 'bold', color: '#b91c1c' }}>
+                                    Cliquez ici pour réinitialiser
+                                </a>
+                            </div>
+                        )}
+
                         <Link to="/login" className="btn btn-primary mt-6">Retour à la connexion</Link>
                     </div>
                 )}

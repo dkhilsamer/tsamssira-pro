@@ -137,7 +137,7 @@ const DashboardPage = () => {
                     <div className="quick-actions">
                         <h3>Actions Rapides</h3>
                         <div className="actions-grid">
-                            <button className="action-btn glass">
+                            <button className="action-btn glass" onClick={() => navigate('/add-property')}>
                                 <Plus size={24} />
                                 <span>Publier une annonce</span>
                             </button>
@@ -149,7 +149,7 @@ const DashboardPage = () => {
                                 <TrendingUp size={24} />
                                 <span>Booster un bien</span>
                             </button>
-                            <button className="action-btn glass">
+                            <button className="action-btn glass" onClick={() => navigate('/dashboard/my-properties')}>
                                 <Clock size={24} />
                                 <span>Historique</span>
                             </button>

@@ -103,14 +103,25 @@ router.post('/forgot-password', async (req, res) => {
 
         // Send reset email using emailService (synchronous await for debugging)
         const { sendPasswordResetEmail } = require('../services/emailService');
-        await sendPasswordResetEmail(email, token);
-        console.log(`✅ Reset email sent to ${email}`);
+        const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
 
-        res.json({ message: 'Si cet email est enregistré, vous recevrez un lien de réinitialisation.' });
+        try {
+            await sendPasswordResetEmail(email, token);
+            console.log(`✅ Reset email sent to ${email}`);
+            res.json({ message: 'Si cet email est enregistré, vous recevrez un lien de réinitialisation.' });
+        } catch (emailErr) {
+            console.error('❌ Email failed (likely blocked by Render):', emailErr.message);
+            // FALLBACK FOR DEV/BLOCKED ENVIRONMENTS: Return the link directly
+            console.log('⚠️ RETURNING DEBUG LINK TO FRONTEND ⚠️');
+            res.json({
+                message: 'Email bloqué par le serveur (Pare-feu). Voici le lien de réinitialisation :',
+                debug_link: resetLink // Frontend will display this if present
+            });
+        }
+
     } catch (err) {
         console.error('Forgot password error:', err);
-        // Expose error message for debugging (remove in strict prod if needed, but useful now)
-        res.status(500).json({ error: 'Erreur envoi email: ' + err.message });
+        res.status(500).json({ error: 'Server error: ' + err.message });
     }
 });
 

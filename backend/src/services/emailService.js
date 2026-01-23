@@ -2,11 +2,11 @@ const nodemailer = require('nodemailer');
 
 // Configuration du transporteur email
 const createTransporter = () => {
-    // Pour Gmail ou service SMTP
+    // Configuration explicite pour Gmail (plus fiable sur Render)
     return nodemailer.createTransport({
-        service: 'gmail', // Keep using service: gmail for simplicity if works, but add debug
-        // Alternatively use explicit settings if 'gmail' service alias is problematic
-        // host: 'smtp.gmail.com', port: 465, secure: true,
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true pour 465, false pour les autres ports
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD
@@ -14,9 +14,9 @@ const createTransporter = () => {
         // Debug settings
         logger: true,
         debug: true,
-        connectionTimeout: 10000, // 10 seconds
-        greetingTimeout: 10000,
-        socketTimeout: 10000
+        connectionTimeout: 20000, // 20 seconds
+        greetingTimeout: 20000,
+        socketTimeout: 20000
     });
 };
 
@@ -131,8 +131,47 @@ const sendNewMessageNotification = async (userEmail, senderName, propertyTitle) 
     console.log('New message notification sent to:', userEmail);
 };
 
+// Email de notification de demande de location
+const sendRentalRequestNotification = async (ownerEmail, visitorName, visitorEmail, visitorPhone, propertyTitle, message) => {
+    const transporter = createTransporter();
+
+    const mailOptions = {
+        from: `"Tsamssira Pro" <${process.env.EMAIL_USER}>`,
+        to: ownerEmail,
+        subject: `🔔 Nouvelle demande pour ${propertyTitle}`,
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f8fafc;">
+                <div style="background: white; padding: 40px; border-radius: 10px;">
+                    <h2 style="color: #0f172a;">🔔 Nouvelle demande reçue</h2>
+                    <p style="color: #64748b; font-size: 16px; line-height: 1.6;">
+                        Vous avez reçu une demande pour votre bien <strong>${propertyTitle}</strong>.
+                    </p>
+                    <div style="background: #f1f5f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <p style="margin: 0 0 10px 0;"><strong>Nom:</strong> ${visitorName}</p>
+                        <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${visitorEmail}</p>
+                        <p style="margin: 0 0 10px 0;"><strong>Téléphone:</strong> ${visitorPhone}</p>
+                        <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 15px 0;">
+                        <p style="margin: 0;"><strong>Message:</strong></p>
+                        <p style="margin-top: 5px; color: #334155;">${message}</p>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/dashboard" 
+                           style="background: #0f172a; color: white; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                            Accéder au tableau de bord
+                        </a>
+                    </div>
+                </div>
+            </div>
+        `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('Rental request notification sent to:', ownerEmail);
+};
+
 module.exports = {
     sendWelcomeEmail,
     sendPasswordResetEmail,
-    sendNewMessageNotification
+    sendNewMessageNotification,
+    sendRentalRequestNotification
 };

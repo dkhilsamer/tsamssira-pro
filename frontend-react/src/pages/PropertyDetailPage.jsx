@@ -69,6 +69,14 @@ const PropertyDetailPage = () => {
         }
     };
 
+    const [activeImage, setActiveImage] = useState('');
+
+    useEffect(() => {
+        if (property) {
+            setActiveImage(property.main_image);
+        }
+    }, [property]);
+
     const getImageUrl = (path) => {
         if (!path) return 'https://via.placeholder.com/1200x600?text=Indisponible';
         if (path.startsWith('http')) return path;
@@ -78,11 +86,29 @@ const PropertyDetailPage = () => {
 
     if (loading) return <div className="loading-state"><div className="spinner"></div></div>;
 
+    const allImages = property ? [property.main_image, ...(property.images || [])].filter(Boolean) : [];
+
     return (
         <div className="property-detail container py-12 animate-fade-in">
-            <div className="main-image">
-                <img src={getImageUrl(property.main_image)} alt={property.title} />
-                <div className="type-badge">{property.type}</div>
+            <div className="gallery-section">
+                <div className="main-image">
+                    <img src={getImageUrl(activeImage)} alt={property.title} />
+                    <div className="type-badge">{property.type}</div>
+                </div>
+
+                {allImages.length > 1 && (
+                    <div className="image-thumbnails">
+                        {allImages.map((img, index) => (
+                            <div
+                                key={index}
+                                className={`thumbnail ${activeImage === img ? 'active' : ''}`}
+                                onClick={() => setActiveImage(img)}
+                            >
+                                <img src={getImageUrl(img)} alt={`Vue ${index + 1}`} />
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <div className="content-grid">
@@ -174,20 +200,49 @@ const PropertyDetailPage = () => {
 
             <style jsx>{`
                 .property-detail { padding-top: 1.5rem; }
+                
+                .gallery-section { margin-bottom: 2rem; }
+                @media (min-width: 768px) { .gallery-section { margin-bottom: 3rem; } }
+
                 .main-image {
                     height: 50vh;
                     min-height: 300px;
                     border-radius: 20px;
                     overflow: hidden;
                     position: relative;
-                    margin-bottom: 2rem;
+                    margin-bottom: 1rem;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
                 }
-                .main-image img { width: 100%; height: 100%; object-fit: cover; }
+                .main-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
                 
                 @media (min-width: 768px) {
-                    .property-detail { padding-top: 3rem; }
-                    .main-image { height: 500px; border-radius: 30px; margin-bottom: 3rem; }
+                    .main-image { height: 500px; border-radius: 30px; }
                 }
+
+                .image-thumbnails {
+                    display: flex;
+                    gap: 1rem;
+                    overflow-x: auto;
+                    padding-bottom: 0.5rem;
+                    scrollbar-width: thin;
+                }
+                .image-thumbnails::-webkit-scrollbar { height: 6px; }
+                .image-thumbnails::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+                .thumbnail {
+                    width: 100px;
+                    height: 80px;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    cursor: pointer;
+                    opacity: 0.6;
+                    transition: all 0.2s;
+                    border: 2px solid transparent;
+                    flex-shrink: 0;
+                }
+                .thumbnail:hover { opacity: 1; }
+                .thumbnail.active { opacity: 1; border-color: var(--primary); transform: scale(1.05); }
+                .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 
                 .type-badge {
                     position: absolute;
@@ -199,6 +254,7 @@ const PropertyDetailPage = () => {
                     border-radius: 10px;
                     font-weight: 700;
                     font-size: 0.9rem;
+                    z-index: 2;
                 }
                 .content-grid {
                     display: grid;

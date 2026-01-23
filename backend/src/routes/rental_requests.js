@@ -3,18 +3,9 @@ const router = express.Router();
 const RentalRequest = require('../models/RentalRequest');
 const Property = require('../models/Property');
 const User = require('../models/User');
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-    service: process.env.SMTP_SERVICE,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
-});
+const { sendRentalRequestNotification } = require('../services/emailService');
 
 // Get all requests (Admin/Owner only - simplified to auth required)
-// Get all requests (Admin sees all, Owner sees only their property requests)
 router.get('/', async (req, res) => {
     const userId = req.session.userId;
     const role = req.session.role;
@@ -51,23 +42,19 @@ router.post('/', async (req, res) => {
             const property = await Property.findById(property_id);
             if (property && property.user_id) {
                 const owner = await User.findById(property.user_id);
-                if (owner && owner.email && process.env.SMTP_USER && process.env.SMTP_PASS) {
-                    await transporter.sendMail({
-                        from: process.env.SMTP_USER,
-                        to: owner.email,
-                        subject: `Nouvelle demande pour ${property.title}`,
-                        html: `
-                            <h3>Nouvelle demande reçue</h3>
-                            <p><strong>De:</strong> ${visitor_name} (${visitor_email}, ${visitor_phone})</p>
-                            <p><strong>Message:</strong></p>
-                            <p>${message}</p>
-                            <p>Connectez-vous à votre tableau de bord pour répondre.</p>
-                        `
-                    });
+                if (owner && owner.email) {
+                    await sendRentalRequestNotification(
+                        owner.email,
+                        visitor_name,
+                        visitor_email,
+                        visitor_phone,
+                        property.title,
+                        message || 'Pas de message'
+                    );
                 }
             }
         } catch (emailErr) {
-            console.error('Email notification failed:', emailErr);
+            console.error('Email notification failed:', emailErr.message);
             // Don't fail the request if email fails
         }
 
