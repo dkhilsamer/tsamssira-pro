@@ -10,35 +10,33 @@ class Message {
     }
 
     static async getConversations(userId) {
-        // Get list of unique users this user has interacted with, with latest message info
+        // Robust query: Get other user in conversation, and the latest message details
         const sql = `
             SELECT 
                 u.id AS user_id, 
                 u.username, 
-                u.email,
-                m.message AS last_message,
-                m.created_at AS last_message_date,
-                m.is_read,
-                m.sender_id AS last_sender_id
-            FROM messages m
-            JOIN users u ON (m.sender_id = u.id OR m.receiver_id = u.id)
-            WHERE (m.sender_id = ? OR m.receiver_id = ?) AND u.id != ?
-            AND m.id IN (
-                SELECT MAX(id) 
-                FROM messages 
+                u.email, 
+                m.message AS last_message, 
+                m.created_at AS last_message_time,
+                m.is_read
+            FROM users u
+            JOIN (
+                SELECT 
+                    CASE 
+                        WHEN sender_id = ? THEN receiver_id 
+                        ELSE sender_id 
+                    END AS other_user_id,
+                    MAX(created_at) AS max_time
+                FROM messages
                 WHERE sender_id = ? OR receiver_id = ?
-                GROUP BY LEAST(sender_id, receiver_id), GREATEST(sender_id, receiver_id)
-            )
+                GROUP BY other_user_id
+            ) latest ON u.id = latest.other_user_id
+            JOIN messages m ON (
+                (m.sender_id = ? AND m.receiver_id = u.id) OR 
+                (m.sender_id = u.id AND m.receiver_id = ?)
+            ) AND m.created_at = latest.max_time
             ORDER BY m.created_at DESC
         `;
-        // We need simplify this query or handle it better.
-        // A simpler way: Find all distinct pairs, then find latest message for each pair.
-        // But for MVP, let's just get all messages and process in JS or do a simpler query.
-
-        // Simpler query: Get all messages involving user, join with other user info.
-        // Optimization: Let's focus on basic retrieval first.
-
-        // Let's rely on backend filtering for now.
         return await db.query(sql, [userId, userId, userId, userId, userId]);
     }
 
