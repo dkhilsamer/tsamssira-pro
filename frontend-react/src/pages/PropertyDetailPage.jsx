@@ -38,7 +38,11 @@ const PropertyDetailPage = () => {
     const handleContact = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/requests', { ...contactData, property_id: id });
+            await api.post('/requests', {
+                ...contactData,
+                property_id: id,
+                request_type: 'Renseignements' // Default value required by backend
+            });
             toast.success('Demande envoyée avec succès !');
         } catch (error) {
             toast.error(error.message);
@@ -144,6 +148,14 @@ const PropertyDetailPage = () => {
                                 required
                                 value={contactData.visitor_email}
                                 onChange={(e) => setContactData({ ...contactData, visitor_email: e.target.value })}
+                            />
+                            <input
+                                className="form-input"
+                                type="tel"
+                                placeholder="Téléphone"
+                                required
+                                value={contactData.visitor_phone}
+                                onChange={(e) => setContactData({ ...contactData, visitor_phone: e.target.value })}
                             />
                             <textarea
                                 className="form-input"
