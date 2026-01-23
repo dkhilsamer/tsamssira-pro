@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 // Configuration du transporteur email
 const createTransporter = () => {
     // Pour Gmail ou service SMTP
-    return nodemailer.createTransporter({
+    return nodemailer.createTransport({
         service: process.env.EMAIL_SERVICE || 'gmail',
         auth: {
             user: process.env.EMAIL_USER, // Votre email
