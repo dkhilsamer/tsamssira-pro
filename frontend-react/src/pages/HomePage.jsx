@@ -198,7 +198,7 @@ const HomePage = () => {
                 .search-box { max-width: 1100px; margin: 0 auto; padding: 1.5rem; border-radius: 24px; }
                 .search-grid { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 1.5rem; align-items: flex-end; }
                 .search-field { text-align: left; }
-                .search-field label { display: block; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600; color: #cbd5e1; }
+                .search-field label { display: block; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
                 .search-field input, .search-field select {
                     width: 100%;
                     padding: 0.8rem 1rem;
@@ -239,7 +239,7 @@ const HomePage = () => {
                     align-items: center;
                     gap: 0.75rem;
                 }
-                .sort-box label { color: #cbd5e1; font-size: 0.9rem; font-weight: 600; }
+                .sort-box label { color: #ffffff; font-size: 0.9rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
                 .sort-box select {
                     background: rgba(255, 255, 255, 0.1);
                     border: 1px solid rgba(255, 255, 255, 0.2);
