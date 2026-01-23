@@ -11,7 +11,7 @@ if (!fs.existsSync(uploadDir)) {
     console.log('Created uploads directory');
 }
 
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const db = require('./db'); // ensure db connection works
 
@@ -29,7 +29,8 @@ const corsOptions = {
         const allowedOrigins = [
             'http://localhost:5173',
             'http://localhost:3000',
-            'https://tsamssira-pro.onrender.com'
+            'https://tsamssira-pro.onrender.com',
+            'https://tsamssira-pro.vercel.app'
         ];
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
