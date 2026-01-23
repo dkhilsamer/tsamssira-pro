@@ -31,7 +31,9 @@ const corsOptions = {
             'http://localhost:3000',
             'https://tsamssira-pro.onrender.com',
             'https://tsamssira-pro.vercel.app',
-            'https://tsamssirapro.vercel.app'
+            'https://tsamssirapro.vercel.app',
+            'https://tsamssirapro.online',
+            'https://www.tsamssirapro.online'
         ];
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
