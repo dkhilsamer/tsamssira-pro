@@ -15,8 +15,9 @@ const MessagesPage = () => {
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
+        if (!user) return;
         fetchConversations();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (activeConv) {

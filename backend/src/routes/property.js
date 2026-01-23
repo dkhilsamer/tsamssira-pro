@@ -260,16 +260,6 @@ router.put('/:id/boost', async (req, res) => {
             return res.json({ message: 'Votre demande de boost a été envoyée à l\'administrateur.' });
         }
 
-        await Property.boostProperty(id);
-
-        const boostEndDate = new Date();
-        boostEndDate.setMonth(boostEndDate.getMonth() + 1);
-
-        res.json({
-            message: 'Propriété boostée avec succès!',
-            boost_end_date: boostEndDate,
-            remaining_days: 30
-        });
     } catch (err) {
         console.error('Boost property error:', err);
         res.status(500).json({ error: 'Server error: ' + err.message });
