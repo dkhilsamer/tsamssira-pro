@@ -11,7 +11,10 @@ if (!fs.existsSync(uploadDir)) {
     console.log('Created uploads directory');
 }
 
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+const dotenv = require('dotenv');
+dotenv.config({ path: path.join(__dirname, '../.env') });
+console.log('Using SMTP User:', process.env.EMAIL_USER ? 'Loaded' : 'MISSING');
+console.log('Using SMTP Pass:', process.env.EMAIL_PASSWORD ? 'Loaded' : 'MISSING');
 
 const db = require('./db'); // ensure db connection works
 
