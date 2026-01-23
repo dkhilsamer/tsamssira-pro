@@ -29,7 +29,7 @@ const corsOptions = {
         const allowedOrigins = [
             'http://localhost:5173',
             'http://localhost:3000',
-            'https://tsamssira-pro.onrender.com',
+            'https://tsamssirapro.onrender.com',
             'https://tsamssira-pro.vercel.app',
             'https://tsamssirapro.vercel.app',
             'https://tsamssirapro.online',
