@@ -30,7 +30,8 @@ const corsOptions = {
             'http://localhost:5173',
             'http://localhost:3000',
             'https://tsamssira-pro.onrender.com',
-            'https://tsamssira-pro.vercel.app'
+            'https://tsamssira-pro.vercel.app',
+            'https://tsamssirapro.vercel.app'
         ];
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
