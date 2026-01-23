@@ -3,15 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-    service: process.env.SMTP_SERVICE, // e.g. 'gmail'
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-    }
-});
+const { sendWelcomeEmail, sendPasswordResetEmail } = require('../services/emailService');
 
 // In-memory token store: { token: { userId, expires } }
 const resetTokens = new Map();
@@ -70,7 +62,6 @@ router.post('/register', async (req, res) => {
         });
 
         // Send welcome email
-        const { sendWelcomeEmail } = require('../services/emailService');
         sendWelcomeEmail(email, username).catch(err => console.error('Welcome email error:', err));
 
         return res.status(201).json({ message: 'Compte créé avec succès', userId });
@@ -136,7 +127,6 @@ router.post('/forgot-password', async (req, res) => {
         resetTokens.set(token, { userId: user.id, expires });
 
         // Send reset email using emailService (synchronous await for debugging)
-        const { sendPasswordResetEmail } = require('../services/emailService');
         const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
 
         try {

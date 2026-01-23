@@ -3,7 +3,8 @@ const router = express.Router();
 const RentalRequest = require('../models/RentalRequest');
 const Property = require('../models/Property');
 const User = require('../models/User');
-const { sendRentalRequestNotification } = require('../services/emailService');
+const Message = require('../models/Message');
+const { sendRentalRequestNotification, sendEmail } = require('../services/emailService');
 
 // Get all requests (Admin/Owner only - simplified to auth required)
 router.get('/', async (req, res) => {
@@ -26,6 +27,20 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get requests sent BY the user
+router.get('/sent', async (req, res) => {
+    const userId = req.session.userId;
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+        const requests = await RentalRequest.getByVisitorId(userId);
+        res.json(requests);
+    } catch (err) {
+        console.error('Get sent requests error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // Create a new request (Public)
 router.post('/', async (req, res) => {
     const { property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message } = req.body;
@@ -35,12 +50,16 @@ router.post('/', async (req, res) => {
     }
 
     try {
-        const insertId = await RentalRequest.create(req.body);
+        const insertId = await RentalRequest.create({
+            ...req.body,
+            user_id: req.session.userId || null
+        });
 
-        // Notification Email Logic
+        // Notification Logic (Email + In-app Message)
         try {
             const property = await Property.findById(property_id);
             if (property && property.user_id) {
+                // 1. Email Notification
                 const owner = await User.findById(property.user_id);
                 if (owner && owner.email) {
                     await sendRentalRequestNotification(
@@ -52,10 +71,25 @@ router.post('/', async (req, res) => {
                         message || 'Pas de message'
                     );
                 }
+
+                // 2. In-app Message Notification
+                const visitorDisplay = visitor_name || 'Un visiteur';
+                let messageContent = `Nouvelle demande pour "${property.title}":\n`;
+                messageContent += `Type: ${request_type}\n`;
+                messageContent += `Nom: ${visitorDisplay}\n`;
+                messageContent += `Message: ${message || 'Pas de message'}`;
+
+                await Message.create({
+                    sender_id: req.session.userId || 1, // Fallback to admin/system if guest
+                    receiver_id: property.user_id,
+                    property_id: property.id,
+                    content: messageContent,
+                    type: 'rental_request'
+                });
             }
-        } catch (emailErr) {
-            console.error('Email notification failed:', emailErr.message);
-            // Don't fail the request if email fails
+        } catch (notifyErr) {
+            console.error('Notification failed:', notifyErr.message);
+            // Don't fail the request if notification fails
         }
 
         res.status(201).json({ message: 'Request submitted successfully', id: insertId });
@@ -77,6 +111,42 @@ router.put('/:id/status', async (req, res) => {
 
     try {
         await RentalRequest.updateStatus(id, status);
+
+        // Notify the requester if they are a member
+        try {
+            const request = await RentalRequest.findById(id);
+            if (request && request.user_id) {
+                const property = await Property.findById(request.property_id);
+                const owner = await User.findById(req.session.userId);
+
+                let statusText = status === 'accepted' ? 'acceptée' : 'refusée';
+                let messageContent = `Votre demande pour "${property?.title || 'le bien'}" a été ${statusText} par le propriétaire.`;
+
+                await Message.create({
+                    sender_id: req.session.userId,
+                    receiver_id: request.user_id,
+                    property_id: request.property_id,
+                    content: messageContent,
+                    type: 'chat'
+                });
+
+                // Optionally send email
+                const requester = await User.findById(request.user_id);
+                if (requester && requester.email) {
+                    const subject = `Mise à jour de votre demande - Tsamssira Pro`;
+                    const html = `
+                        <h2>Sujet: Votre demande a été ${statusText}</h2>
+                        <p>Bonjour ${requester.username},</p>
+                        <p>Le propriétaire a ${statusText} votre demande pour "${property?.title}".</p>
+                        <p>Connectez-vous pour voir les détails et discuter.</p>
+                    `;
+                    await sendEmail(requester.email, subject, html).catch(err => console.error('Status update email failed:', err));
+                }
+            }
+        } catch (notifyErr) {
+            console.error('Notification on status update failed:', notifyErr);
+        }
+
         res.json({ message: 'Status updated' });
     } catch (err) {
         console.error('Update status error:', err);

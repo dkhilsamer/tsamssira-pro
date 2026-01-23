@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
+const User = require('../models/User');
+const Property = require('../models/Property');
+const { sendNewMessageNotification } = require('../services/emailService');
 
 // Middleware to check auth
 const requireAuth = (req, res, next) => {
@@ -53,9 +56,6 @@ router.post('/', async (req, res) => {
         });
 
         // Send notification email to the receiver
-        const User = require('../models/User');
-        const Property = require('../models/Property');
-        const { sendNewMessageNotification } = require('../services/emailService');
 
         try {
             const [sender, receiver, property] = await Promise.all([

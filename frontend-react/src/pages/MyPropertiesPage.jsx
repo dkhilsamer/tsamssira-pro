@@ -102,7 +102,8 @@ const MyPropertiesPage = () => {
                                         </div>
                                     ) : (
                                         <button className="btn-light-boost" onClick={() => navigate(`/payment?id=${prop.id}`)}>
-                                            <TrendingUp size={14} /> Booster
+                                            <TrendingUp size={14} />
+                                            {JSON.parse(localStorage.getItem('user'))?.role === 'admin' ? 'Booster (Admin)' : 'Demander Boost'}
                                         </button>
                                     )}
                                 </div>

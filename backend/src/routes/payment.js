@@ -2,13 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const db = require('../db');
+const Message = require('../models/Message');
+const Property = require('../models/Property');
+const User = require('../models/User');
 
-// Actually, let's use inline SQL for simplicity or create the model if we want to be clean.
-// Given previous view of `add_boost_columns.sql` (Step 407 summary), we have `boost_requests` table.
-// Let's implement logic directly here for now or use a model if it exists. 
-// I'll check if BoostRequest model exists first. 
-// Wait, I shouldn't guess. I'll write safe code. 
-// Let's assume no model yet and use db.query.
+// Routes for Property Boost Management
 
 // Get pending requests (Admin)
 router.get('/pending', async (req, res) => {
@@ -38,6 +36,27 @@ router.post('/request/:propertyId', async (req, res) => {
 
     try {
         await db.query('INSERT INTO boost_requests (property_id, user_id, status) VALUES (?, ?, ?)', [propertyId, userId, 'pending']);
+
+        // Notify Admins via Messaging
+        try {
+            const property = await Property.findById(propertyId);
+            const user = await User.findById(userId);
+
+            const admins = await db.query("SELECT id FROM users WHERE role = 'admin' LIMIT 1");
+            if (admins.length > 0) {
+                const adminId = admins[0].id;
+                await Message.create({
+                    sender_id: userId,
+                    receiver_id: adminId,
+                    property_id: propertyId,
+                    content: `Demande de boost pour la propriété "${property?.title || propertyId}" par ${user?.username || 'un utilisateur'}.`,
+                    type: 'boost_request'
+                });
+            }
+        } catch (msgErr) {
+            console.error('Error creating boost message notification:', msgErr);
+        }
+
         res.json({ success: true, message: 'Demande de boost envoyée.' });
     } catch (err) {
         console.error('Request boost error:', err);

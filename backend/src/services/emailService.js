@@ -1,28 +1,32 @@
 const nodemailer = require('nodemailer');
 
-// Configuration du transporteur email
-const createTransporter = () => {
-    // Configuration explicite pour Gmail (plus fiable sur Render)
+// Internal helper for transporter
+const getTransporter = () => {
     return nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
-        secure: false, // true pour 465, false pour les autres ports
+        secure: false,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD
-        },
-        // Debug settings
-        logger: true,
-        debug: true,
-        connectionTimeout: 20000, // 20 seconds
-        greetingTimeout: 20000,
-        socketTimeout: 20000
+        }
+    });
+};
+
+// Generic send email function
+const sendEmail = async (to, subject, html) => {
+    const transporter = getTransporter();
+    await transporter.sendMail({
+        from: `"Tsamssira Pro" <${process.env.EMAIL_USER}>`,
+        to,
+        subject,
+        html
     });
 };
 
 // Email de bienvenue
 const sendWelcomeEmail = async (userEmail, username) => {
-    const transporter = createTransporter();
+    const transporter = getTransporter();
 
     const mailOptions = {
         from: `"Tsamssira Pro" <${process.env.EMAIL_USER}>`,
@@ -66,7 +70,7 @@ const sendWelcomeEmail = async (userEmail, username) => {
 
 // Email de réinitialisation de mot de passe
 const sendPasswordResetEmail = async (userEmail, resetToken) => {
-    const transporter = createTransporter();
+    const transporter = getTransporter();
     const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${resetToken}`;
 
     const mailOptions = {
@@ -100,7 +104,7 @@ const sendPasswordResetEmail = async (userEmail, resetToken) => {
 
 // Email de notification de nouveau message
 const sendNewMessageNotification = async (userEmail, senderName, propertyTitle) => {
-    const transporter = createTransporter();
+    const transporter = getTransporter();
 
     const mailOptions = {
         from: `"Tsamssira Pro" <${process.env.EMAIL_USER}>`,
@@ -133,7 +137,7 @@ const sendNewMessageNotification = async (userEmail, senderName, propertyTitle) 
 
 // Email de notification de demande de location
 const sendRentalRequestNotification = async (ownerEmail, visitorName, visitorEmail, visitorPhone, propertyTitle, message) => {
-    const transporter = createTransporter();
+    const transporter = getTransporter();
 
     const mailOptions = {
         from: `"Tsamssira Pro" <${process.env.EMAIL_USER}>`,
@@ -170,6 +174,7 @@ const sendRentalRequestNotification = async (ownerEmail, visitorName, visitorEma
 };
 
 module.exports = {
+    sendEmail,
     sendWelcomeEmail,
     sendPasswordResetEmail,
     sendNewMessageNotification,

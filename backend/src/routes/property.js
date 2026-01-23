@@ -3,6 +3,9 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const Property = require('../models/Property');
+const User = require('../models/User');
+const Message = require('../models/Message');
+const { sendEmail } = require('../services/emailService');
 
 // Get all properties
 // Get all properties
@@ -247,8 +250,6 @@ router.put('/:id/boost', async (req, res) => {
             });
         } else {
             // User: Request Boost - Create a Message to Admin
-            const User = require('../models/User');
-            const Message = require('../models/Message');
 
             // Find Admin (Tadmin)
             const adminUser = await User.findByUsername('Tadmin');
@@ -259,7 +260,8 @@ router.put('/:id/boost', async (req, res) => {
                     sender_id: userId,
                     receiver_id: adminUser.id,
                     property_id: id,
-                    content: boostMsg
+                    content: boostMsg,
+                    type: 'boost_request'
                 });
             } else {
                 console.error('Tadmin user not found, cannot send boost request message.');
@@ -290,6 +292,26 @@ router.delete('/:id/boost', async (req, res) => {
         res.json({ message: 'Boost removed' });
     } catch (err) {
         console.error('Remove boost error:', err);
+        res.status(500).json({ error: 'Server error: ' + err.message });
+    }
+});
+
+// Admin approve boost request (from messaging)
+router.put('/:id/boost/approve', async (req, res) => {
+    const { id } = req.params;
+    const userId = req.session?.userId;
+
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (req.session.role !== 'admin') return res.status(403).json({ error: 'Admin only' });
+
+    try {
+        const property = await Property.findById(id);
+        if (!property) return res.status(404).json({ error: 'Property not found' });
+
+        await Property.boostProperty(id);
+        res.json({ message: 'Boost approuvé et activé avec succès!' });
+    } catch (err) {
+        console.error('Approve boost error:', err);
         res.status(500).json({ error: 'Server error: ' + err.message });
     }
 });

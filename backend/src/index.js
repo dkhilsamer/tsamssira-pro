@@ -28,20 +28,24 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 // CORS configuration for production
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://tsamssirapro.onrender.com',
+    'https://tsamssira-pro.vercel.app',
+    'https://tsamssirapro.vercel.app',
+    'https://tsamssirapro.online',
+    'https://www.tsamssirapro.online',
+    'https://tsamssirapro.online/',
+    'https://www.tsamssirapro.online/'
+];
+
 const corsOptions = {
     origin: function (origin, callback) {
-        const allowedOrigins = [
-            'http://localhost:5173',
-            'http://localhost:3000',
-            'https://tsamssirapro.onrender.com',
-            'https://tsamssira-pro.vercel.app',
-            'https://tsamssirapro.vercel.app',
-            'https://tsamssirapro.online',
-            'https://www.tsamssirapro.online'
-        ];
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes(origin + '/')) {
             callback(null, true);
         } else {
+            console.error('❌ CORS Reject Origin:', origin);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -50,7 +54,10 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 };
 
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

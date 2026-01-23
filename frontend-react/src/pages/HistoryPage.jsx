@@ -14,15 +14,16 @@ const HistoryPage = () => {
 
     const fetchHistory = async () => {
         try {
-            // Fetch properties and requests to build a synthetic history
-            // In a real app we would have an /history endpoint
-            const [propertiesRes, requestsRes] = await Promise.all([
+            // Fetch properties, received requests, and sent requests
+            const [propertiesRes, receivedReqsRes, sentReqsRes] = await Promise.all([
                 api.get('/dashboard/my-properties'),
-                api.get('/rental-requests')
+                api.get('/requests'),
+                api.get('/requests/sent')
             ]);
 
             const properties = propertiesRes || [];
-            const requests = requestsRes || [];
+            const receivedRequests = receivedReqsRes || [];
+            const sentRequests = sentReqsRes || [];
 
             const timeline = [];
 
@@ -39,7 +40,6 @@ const HistoryPage = () => {
 
                 // Add Boost Events if applicable
                 if (p.is_boosted) {
-                    // Check if boost start date exists, else use fallback
                     const date = p.boost_start_date ? new Date(p.boost_start_date) : new Date(p.updated_at);
                     timeline.push({
                         type: 'boost_activated',
@@ -52,15 +52,27 @@ const HistoryPage = () => {
                 }
             });
 
-            // Add Request Events
-            requests.forEach(r => {
+            // Add Received Request Events
+            receivedRequests.forEach(r => {
                 timeline.push({
                     type: 'request_received',
                     date: new Date(r.created_at),
                     title: 'Demande reçue',
-                    description: `Nouvelle demande de ${r.visitor_name} pour un bien.`,
-                    link: '/dashboard', // Or detail page logic
+                    description: `Nouvelle demande de ${r.visitor_name} pour "${r.property_title || 'un bien'}".`,
+                    link: '/dashboard',
                     icon: <AlertCircle size={18} color="#d97706" />
+                });
+            });
+
+            // Add Sent Request Events
+            sentRequests.forEach(r => {
+                timeline.push({
+                    type: 'request_sent',
+                    date: new Date(r.created_at),
+                    title: 'Demande envoyée',
+                    description: `Vous avez envoyé une demande pour "${r.property_title}".`,
+                    link: `/properties/${r.property_id}`,
+                    icon: <Send size={18} color="#2563eb" />
                 });
             });
 

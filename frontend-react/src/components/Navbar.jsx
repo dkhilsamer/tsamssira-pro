@@ -102,7 +102,7 @@ const Navbar = () => {
                     gap: 8px;
                 }
                 .logo-img {
-                    height: 40px;
+                    height: 60px;
                     width: auto;
                     object-fit: contain;
                 }

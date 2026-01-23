@@ -17,12 +17,12 @@ class RentalRequest {
     }
 
     static async create(data) {
-        const { property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message } = data;
+        const { property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message, user_id } = data;
         // Auto-accept requests as per user requirement
         const result = await db.query(
-            `INSERT INTO rental_requests (property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message, status) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')`,
-            [property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message]
+            `INSERT INTO rental_requests (property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message, status, user_id) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
+            [property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message, user_id || null]
         );
         return result.insertId;
     }
@@ -46,6 +46,17 @@ class RentalRequest {
             FROM rental_requests r
             JOIN properties p ON r.property_id = p.id
             WHERE p.user_id = ?
+            ORDER BY r.created_at DESC
+        `;
+        return await db.query(sql, [userId]);
+    }
+
+    static async getByVisitorId(userId) {
+        const sql = `
+            SELECT r.*, p.title as property_title 
+            FROM rental_requests r
+            JOIN properties p ON r.property_id = p.id
+            WHERE r.user_id = ?
             ORDER BY r.created_at DESC
         `;
         return await db.query(sql, [userId]);

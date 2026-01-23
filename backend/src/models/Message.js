@@ -1,16 +1,18 @@
 const db = require('../db');
 
 class Message {
-    static async create({ sender_id, receiver_id, property_id, content }) {
+    static async create({ sender_id, receiver_id, property_id, content, type = 'chat' }) {
+        // Log basic message info to console for debugging
+        console.log(`Sending message: ${type} from ${sender_id} to ${receiver_id}`);
+
         const result = await db.query(
-            'INSERT INTO messages (sender_id, receiver_id, property_id, message) VALUES (?, ?, ?, ?)',
-            [sender_id, receiver_id, property_id || null, content]
+            'INSERT INTO messages (sender_id, receiver_id, property_id, message, type) VALUES (?, ?, ?, ?, ?)',
+            [sender_id, receiver_id, property_id || null, content, type]
         );
         return result.insertId;
     }
 
     static async getConversations(userId) {
-        // Robust query: Get other user in conversation, and the latest message details
         const sql = `
             SELECT 
                 u.id AS user_id, 
@@ -18,7 +20,10 @@ class Message {
                 u.email, 
                 m.message AS last_message, 
                 m.created_at AS last_message_time,
-                m.is_read
+                m.is_read,
+                m.type,
+                m.property_id,
+                (SELECT COUNT(*) FROM messages m2 WHERE m2.sender_id = u.id AND m2.receiver_id = ? AND m2.is_read = 0) as unread_count
             FROM users u
             JOIN (
                 SELECT 
@@ -37,14 +42,14 @@ class Message {
             ) AND m.created_at = latest.max_time
             ORDER BY m.created_at DESC
         `;
-        return await db.query(sql, [userId, userId, userId, userId, userId]);
+        return await db.query(sql, [userId, userId, userId, userId, userId, userId]);
     }
 
     static async getMessages(userId, otherUserId) {
         // property_id logic could be complex (conversation per property vs per user).
         // Let's stick to per-user conversation for now.
         const sql = `
-            SELECT m.*, u.username as sender_name, m.message as content
+            SELECT m.*, u.username as sender_name, m.message as content, m.type, m.property_id
             FROM messages m
             JOIN users u ON m.sender_id = u.id
             WHERE (m.sender_id = ? AND m.receiver_id = ?) 
@@ -61,6 +66,16 @@ class Message {
             WHERE receiver_id = ? AND sender_id = ?
         `;
         return await db.query(sql, [userId, otherUserId]);
+    }
+
+    static async getUnreadCount(userId) {
+        const sql = `
+            SELECT COUNT(*) as count 
+            FROM messages 
+            WHERE receiver_id = ? AND is_read = 0
+        `;
+        const rows = await db.query(sql, [userId]);
+        return rows[0].count;
     }
 }
 

@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Search, Send, User, Circle } from 'lucide-react';
+import { Search, Send, User, Circle, MessageSquare, ClipboardList, TrendingUp } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useLocation } from 'react-router-dom';
 
 const MessagesPage = () => {
+    const location = useLocation();
     const [conversations, setConversations] = useState([]);
     const [activeConv, setActiveConv] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -19,10 +21,30 @@ const MessagesPage = () => {
         fetchConversations();
     }, [user]);
 
+    // Handle navigation from other pages (e.g., RequestsPage "Contacter" button)
+    useEffect(() => {
+        const targetId = location.state?.userId;
+        const targetUsername = location.state?.username;
+
+        if (targetId) {
+            const existingConv = conversations.find(c => c.user_id === targetId);
+
+            if (existingConv) {
+                setActiveConv(existingConv);
+            } else if (targetUsername) {
+                // If it's a new contact (not in list), create a temporary one
+                setActiveConv({
+                    user_id: targetId,
+                    username: targetUsername,
+                    is_new: true
+                });
+            }
+        }
+    }, [location.state, conversations]);
+
     useEffect(() => {
         if (activeConv) {
             fetchMessages(activeConv.user_id);
-            // Polling for new messages every 5 seconds
             const interval = setInterval(() => fetchMessages(activeConv.user_id, true), 5000);
             return () => clearInterval(interval);
         }
@@ -39,17 +61,19 @@ const MessagesPage = () => {
     const fetchConversations = async () => {
         try {
             const data = await api.get('/messages/conversations');
-            setConversations(data);
-            setLoading(false);
+            setConversations(data || []);
         } catch (error) {
             toast.error(error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     const fetchMessages = async (otherUserId, silent = false) => {
         try {
             const data = await api.get(`/messages/${otherUserId}`);
-            setMessages(data);
+            setMessages(data || []);
+            if (silent) fetchConversations(); // Sync sidebar on poll
         } catch (error) {
             if (!silent) toast.error(error.message);
         }
@@ -75,6 +99,17 @@ const MessagesPage = () => {
 
     if (loading) return <div className="loading-state"><div className="spinner"></div></div>;
 
+    const formatTime = (timeString) => {
+        try {
+            if (!timeString) return '';
+            const date = new Date(timeString);
+            if (isNaN(date.getTime())) return '';
+            return formatDistanceToNow(date, { addSuffix: true, locale: fr });
+        } catch (e) {
+            return '';
+        }
+    };
+
     return (
         <div className="messages-layout container animate-fade-in">
             <div className="messages-container glass">
@@ -98,14 +133,12 @@ const MessagesPage = () => {
                                 >
                                     <div className="avatar">
                                         <User size={24} />
-                                        {conv.unread_count > 0 && <span className="unread-dot"></span>}
+                                        {(conv.unread_count > 0) && <span className="unread-dot"></span>}
                                     </div>
                                     <div className="conv-info">
                                         <div className="conv-header">
                                             <span className="name">{conv.username}</span>
-                                            <span className="time">
-                                                {formatDistanceToNow(new Date(conv.last_message_time), { addSuffix: true, locale: fr })}
-                                            </span>
+                                            <span className="time">{formatTime(conv.last_message_time)}</span>
                                         </div>
                                         <p className="last-msg">{conv.last_message}</p>
                                     </div>
@@ -135,10 +168,48 @@ const MessagesPage = () => {
                                 {messages.map((msg, index) => (
                                     <div
                                         key={index}
-                                        className={`msg-wrapper ${msg.sender_id === user.id ? 'sent' : 'received'}`}
+                                        className={`msg-wrapper ${msg.sender_id === user?.id ? 'sent' : 'received'}`}
                                     >
                                         <div className="msg-bubble">
-                                            {msg.content}
+                                            {msg.type === 'rental_request' && (
+                                                <div className="rental-request-msg">
+                                                    <div className="request-header">
+                                                        <ClipboardList size={18} />
+                                                        Demande de location
+                                                    </div>
+                                                    <div className="request-content">
+                                                        {msg.content}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {msg.type === 'boost_request' && (
+                                                <div className="boost-request-msg">
+                                                    <div className="request-header">
+                                                        <TrendingUp size={18} />
+                                                        Demande de Boost
+                                                    </div>
+                                                    <div className="request-content">
+                                                        {msg.content}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {(!msg.type || (msg.type !== 'rental_request' && msg.type !== 'boost_request')) && msg.content}
+                                            {msg.type === 'boost_request' && user?.role === 'admin' && msg.sender_id !== user?.id && (
+                                                <button
+                                                    className="btn-approve-boost"
+                                                    onClick={async () => {
+                                                        try {
+                                                            await api.put(`/properties/${msg.property_id}/boost/approve`);
+                                                            toast.success('Boost approuvé et activé!');
+                                                            fetchMessages(activeConv.user_id);
+                                                        } catch (error) {
+                                                            toast.error(error.message);
+                                                        }
+                                                    }}
+                                                >
+                                                    ✅ Approuver le boost
+                                                </button>
+                                            )}
                                             <span className="msg-time">
                                                 {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
@@ -295,12 +366,67 @@ const MessagesPage = () => {
                     color: var(--text-main); 
                     border-bottom-left-radius: 4px;
                 }
+                
+                /* Request Messages Styles */
+                .rental-request-msg, .boost-request-msg {
+                    padding: 0.75rem;
+                    border-radius: 12px;
+                    margin-bottom: 0.5rem;
+                    border-left-width: 4px;
+                    border-left-style: solid;
+                }
+                .rental-request-msg {
+                    background: rgba(212, 175, 55, 0.1);
+                    border-left-color: var(--secondary);
+                }
+                .boost-request-msg {
+                    background: #fffbeb;
+                    border-left-color: #f59e0b;
+                }
+                .request-header {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-weight: 700;
+                    margin-bottom: 0.25rem;
+                    font-size: 0.9rem;
+                }
+                .rental-request-msg .request-header { color: var(--secondary); }
+                .boost-request-msg .request-header { color: #b45309; }
+                
+                .request-content {
+                    font-size: 0.85rem;
+                    white-space: pre-wrap;
+                    line-height: 1.4;
+                }
+                .rental-request-msg .request-content { color: var(--primary); }
+                .boost-request-msg .request-content { color: #78350f; }
+                
                 .msg-time {
                     display: block;
                     font-size: 0.7rem;
                     margin-top: 0.5rem;
                     opacity: 0.7;
                     text-align: right;
+                }
+                
+                .btn-approve-boost {
+                    display: block;
+                    width: 100%;
+                    margin-top: 1rem;
+                    padding: 0.75rem 1rem;
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                    border: none;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+                }
+                .btn-approve-boost:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
                 }
                 
                 .chat-input {

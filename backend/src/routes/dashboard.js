@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Property = require('../models/Property');
 const RentalRequest = require('../models/RentalRequest');
+const Message = require('../models/Message');
 const db = require('../db');
 
 // Dashboard stats (Admin/Owner)
@@ -22,6 +23,12 @@ router.get('/stats', async (req, res) => {
             requests = await RentalRequest.getByOwnerId(userId);
         }
 
+        // Count requests sent BY the user
+        const sentRequests = await RentalRequest.getByVisitorId(userId);
+
+        // Count unread messages
+        const unreadCount = await Message.getUnreadCount(userId);
+
         // Calculate total views
         const totalViews = properties.reduce((sum, p) => sum + (p.views || 0), 0);
 
@@ -31,6 +38,8 @@ router.get('/stats', async (req, res) => {
         const stats = {
             properties: properties.length,
             requests: requests.length,
+            sentRequests: sentRequests.length,
+            unreadMessages: unreadCount,
             pending: requests.filter(r => r.status === 'pending').length,
             accepted: requests.filter(r => r.status === 'accepted').length,
             totalViews: totalViews,

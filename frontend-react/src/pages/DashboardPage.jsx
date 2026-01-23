@@ -3,7 +3,8 @@ import api from '../services/api';
 import { toast } from 'react-hot-toast';
 import {
     LayoutDashboard, Plus, Home, MessageSquare,
-    Settings, Users, Eye, TrendingUp, Clock, CheckCircle2
+    Settings, Users, Eye, TrendingUp, Clock, CheckCircle2,
+    Send, Mail
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -47,6 +48,7 @@ const DashboardPage = () => {
                     </Link>
                     <Link to="/messages" className="nav-link">
                         <MessageSquare size={20} /> Messages
+                        {stats?.unreadMessages > 0 && <span className="badge-sidebar">{stats.unreadMessages}</span>}
                     </Link>
                     {user?.role === 'admin' && (
                         <Link to="/dashboard/users" className="nav-link">
@@ -83,7 +85,7 @@ const DashboardPage = () => {
                             <span className="value">{stats?.properties || 0}</span>
                         </div>
                     </div>
-                    <div className="stat-card glass">
+                    <div className="stat-card glass" onClick={() => navigate('/dashboard/requests')} style={{ cursor: 'pointer' }}>
                         <div className="icon" style={{ backgroundColor: '#fef3c7', color: '#d97706' }}>
                             <MessageSquare size={24} />
                         </div>
@@ -99,6 +101,24 @@ const DashboardPage = () => {
                         <div className="info">
                             <span className="label">Vues Totales</span>
                             <span className="value">{stats?.totalViews || 0}</span>
+                        </div>
+                    </div>
+                    <div className="stat-card glass" onClick={() => navigate('/dashboard/history')} style={{ cursor: 'pointer' }}>
+                        <div className="icon" style={{ backgroundColor: '#e0e7ff', color: '#4338ca' }}>
+                            <Send size={24} />
+                        </div>
+                        <div className="info">
+                            <span className="label">Demandes Envoyées</span>
+                            <span className="value">{stats?.sentRequests || 0}</span>
+                        </div>
+                    </div>
+                    <div className="stat-card glass" onClick={() => navigate('/messages')} style={{ cursor: 'pointer' }}>
+                        <div className="icon" style={{ backgroundColor: '#fee2e2', color: '#ef4444' }}>
+                            <Mail size={24} />
+                        </div>
+                        <div className="info">
+                            <span className="label">Messages non-lus</span>
+                            <span className="value">{stats?.unreadMessages || 0}</span>
                         </div>
                     </div>
                     <div className="stat-card glass">
@@ -142,9 +162,9 @@ const DashboardPage = () => {
                                 <Plus size={24} />
                                 <span>Publier une annonce</span>
                             </button>
-                            <button className="action-btn glass" onClick={() => navigate('/messages')}>
+                            <button className="action-btn glass" onClick={() => navigate('/dashboard/requests')}>
                                 <MessageSquare size={24} />
-                                <span>Voir les messages</span>
+                                <span>Voir les demandes</span>
                             </button>
                             <button className="action-btn glass" onClick={() => navigate('/dashboard/my-properties')}>
                                 <TrendingUp size={24} />
@@ -157,7 +177,7 @@ const DashboardPage = () => {
                         </div>
                     </div>
                 </div>
-            </main>
+            </main >
 
             <style jsx>{`
                 .dashboard-layout {
@@ -220,6 +240,16 @@ const DashboardPage = () => {
                     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
                 }
                 .nav-link.active { border: 1px solid var(--border); }
+                .badge-sidebar {
+                    background: #ef4444;
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 20px;
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    margin-left: auto;
+                    box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+                }
                 
                 .dashboard-main { padding: 3rem; }
                 .main-header { margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: center; }
@@ -306,7 +336,7 @@ const DashboardPage = () => {
                     .recent-activity { grid-template-columns: 1fr; }
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 
