@@ -16,6 +16,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import PaymentPage from './pages/PaymentPage';
 import UsersPage from './pages/UsersPage';
+import HistoryPage from './pages/HistoryPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -74,6 +75,11 @@ const App = () => {
                         <Route path="/payment" element={
                             <ProtectedRoute>
                                 <PaymentPage />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/dashboard/history" element={
+                            <ProtectedRoute>
+                                <HistoryPage />
                             </ProtectedRoute>
                         } />
 

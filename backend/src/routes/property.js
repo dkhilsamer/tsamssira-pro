@@ -242,22 +242,26 @@ router.put('/:id/boost', async (req, res) => {
                 remaining_days: 30
             });
         } else {
-            // User: Request Boost (We'll verify if a request already exists or simply return a message saying it's pending)
-            // Ideally we'd have a 'boost_requests' table, but for now let's reuse a simple logic 
-            // or just inform them to contact admin. 
-            // The user asked "demande du boost to admin sans payment".
-            // We can use the existing /messages logic to auto-send a request message to admin?
-            // Or simply return a success message saying "Request sent".
-
-            // Let's implement a simple email notification to Admin for now.
+            // User: Request Boost - Create a Message to Admin
             const User = require('../models/User');
-            const { sendNewMessageNotification } = require('../services/emailService');
+            const Message = require('../models/Message');
 
-            // Find Admin (assuming username 'Tadmin' or role 'admin')
-            // We'll just notify the hardcoded site email or a generic admin
-            // For this MVP, we just return success.
+            // Find Admin (Tadmin)
+            const adminUser = await User.findByUsername('Tadmin');
 
-            return res.json({ message: 'Votre demande de boost a été envoyée à l\'administrateur.' });
+            if (adminUser) {
+                const boostMsg = `🔔 DEMANDE DE BOOST\n\nL'utilisateur souhaite booster le bien : "${property.title}" (ID: ${id}).\n\nVeuillez examiner ce bien et approuver le boost si valide.`;
+                await Message.create({
+                    sender_id: userId,
+                    receiver_id: adminUser.id,
+                    property_id: id,
+                    content: boostMsg
+                });
+            } else {
+                console.error('Tadmin user not found, cannot send boost request message.');
+            }
+
+            return res.json({ message: 'Votre demande de boost a été envoyée à l\'administrateur par message.' });
         }
 
     } catch (err) {

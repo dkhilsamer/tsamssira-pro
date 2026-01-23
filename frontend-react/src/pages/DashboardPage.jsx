@@ -5,9 +5,10 @@ import {
     LayoutDashboard, Plus, Home, MessageSquare,
     Settings, Users, Eye, TrendingUp, Clock, CheckCircle2
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const DashboardPage = () => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
@@ -149,7 +150,7 @@ const DashboardPage = () => {
                                 <TrendingUp size={24} />
                                 <span>Booster un bien</span>
                             </button>
-                            <button className="action-btn glass" onClick={() => navigate('/dashboard/my-properties')}>
+                            <button className="action-btn glass" onClick={() => navigate('/dashboard/history')}>
                                 <Clock size={24} />
                                 <span>Historique</span>
                             </button>
