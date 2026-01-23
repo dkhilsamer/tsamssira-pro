@@ -31,7 +31,7 @@ const Navbar = () => {
         <nav className="navbar glass">
             <div className="nav-container">
                 <Link to="/" className="logo">
-                    Tsamssira Pro <span className="logo-icon">🏠</span>
+                    Tsamssira Pro <img src="/logo.png" alt="Logo" className="logo-img" />
                 </Link>
 
                 {/* Mobile Menu Toggle */}
@@ -101,8 +101,10 @@ const Navbar = () => {
                     align-items: center;
                     gap: 8px;
                 }
-                .logo-icon {
-                    font-size: 1.4rem;
+                .logo-img {
+                    height: 40px;
+                    width: auto;
+                    object-fit: contain;
                 }
                 .mobile-toggle {
                     display: none;
