@@ -30,8 +30,8 @@ const Footer = () => {
                     <h4>Contact</h4>
                     <ul>
                         <li><MapPin size={16} /> Tunis, Tunisie</li>
-                        <li><Phone size={16} /> +216 12 345 678</li>
-                        <li><Mail size={16} /> contact@tsamssira.tn</li>
+                        <li><Phone size={16} /> +216 20 089 332</li>
+                        <li><Mail size={16} /> tsamssirapro@gmail.com</li>
                     </ul>
                 </div>
             </div>

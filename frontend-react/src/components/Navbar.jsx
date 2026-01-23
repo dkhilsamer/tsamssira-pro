@@ -22,7 +22,9 @@ const Navbar = () => {
     return (
         <nav className="navbar glass">
             <div className="nav-container">
-                <Link to="/" className="logo">Tsamssira Pro</Link>
+                <Link to="/" className="logo">
+                    Tsamssira Pro <span className="logo-icon">🏠</span>
+                </Link>
 
                 {/* Mobile Menu Toggle */}
                 <button className="mobile-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -87,6 +89,12 @@ const Navbar = () => {
                     color: var(--primary);
                     text-decoration: none;
                     white-space: nowrap;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .logo-icon {
+                    font-size: 1.4rem;
                 }
                 .mobile-toggle {
                     display: none;

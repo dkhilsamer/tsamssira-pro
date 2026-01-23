@@ -17,7 +17,8 @@ const LoginPage = () => {
             localStorage.setItem('user', JSON.stringify(data.user));
             toast.success('Connexion réussie !');
             navigate('/dashboard');
-            window.location.reload(); // Quick way to update Navbar
+            window.dispatchEvent(new Event("storage")); // Trigger storage event for Navbar
+            window.location.reload(); // Ensure global state refresh
         } catch (error) {
             toast.error(error.message);
         } finally {
