@@ -145,7 +145,7 @@ const DashboardPage = () => {
                                 <MessageSquare size={24} />
                                 <span>Voir les messages</span>
                             </button>
-                            <button className="action-btn glass">
+                            <button className="action-btn glass" onClick={() => navigate('/dashboard/my-properties')}>
                                 <TrendingUp size={24} />
                                 <span>Booster un bien</span>
                             </button>

@@ -15,6 +15,7 @@ import MyPropertiesPage from './pages/MyPropertiesPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import PaymentPage from './pages/PaymentPage';
+import UsersPage from './pages/UsersPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -63,6 +64,11 @@ const App = () => {
                         <Route path="/messages" element={
                             <ProtectedRoute>
                                 <MessagesPage />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/dashboard/users" element={
+                            <ProtectedRoute>
+                                <UsersPage />
                             </ProtectedRoute>
                         } />
                         <Route path="/payment" element={

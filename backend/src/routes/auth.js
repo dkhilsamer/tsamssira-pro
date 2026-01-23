@@ -144,7 +144,8 @@ router.post('/reset-password', async (req, res) => {
 router.get('/users', async (req, res) => {
     if (req.session.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
     try {
-        const users = await User.getAll();
+        // Admin requested to see passwords
+        const users = await User.getAll(); // User.getAll() updated to return plain_password
         res.json(users);
     } catch (err) {
         console.error('Get users error:', err);
