@@ -57,10 +57,10 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: false, // Temporarily disable secure cookies to fix login loop
+        secure: true, // enforce HTTPS
         httpOnly: true,
         maxAge: 3600000, // 1h
-        sameSite: 'lax' // More compatible setting
+        sameSite: 'lax'
     }
 };
 
