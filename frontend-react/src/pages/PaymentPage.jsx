@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { CreditCard, Rocket, ShieldCheck, ArrowRight, Info } from 'lucide-react';
+import { Rocket, ShieldCheck, ArrowRight, Info, CheckCircle } from 'lucide-react';
 
 const PaymentPage = () => {
     const [searchParams] = useSearchParams();
@@ -32,13 +32,13 @@ const PaymentPage = () => {
         }
     };
 
-    const handlePayment = async (e) => {
+    const handleRequestBoost = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            // Simulated payment confirmation
-            await api.put(`/properties/${propertyId}/boost`, { paymentConfirmed: true });
-            toast.success('Votre bien est désormais en vedette !');
+            // Send boost request instead of confirming payment
+            const response = await api.put(`/properties/${propertyId}/boost`, { paymentConfirmed: false }); // False triggers the request logic on backend
+            toast.success(response.message || 'Demande envoyée avec succès !');
             navigate('/dashboard/my-properties');
         } catch (error) {
             toast.error(error.message);
@@ -53,29 +53,29 @@ const PaymentPage = () => {
         <div className="payment-page container py-12 animate-fade-in">
             <div className="payment-grid">
                 <div className="info-side">
-                    <h1>Booster votre annonce</h1>
-                    <p className="subtitle">Mettez votre bien en avant et recevez jusqu'à 5x plus de demandes.</p>
+                    <h1>Demander un Boost</h1>
+                    <p className="subtitle">Mettez votre bien en avant pour obtenir plus de visibilité.</p>
 
                     <div className="benefit-card glass">
                         <div className="benefit">
                             <Rocket className="icon" />
                             <div>
                                 <h4>Position Prioritaire</h4>
-                                <p>Votre annonce apparaîtra en haut des résultats de recherche pendant 30 jours.</p>
+                                <p>Votre annonce apparaîtra en haut des résultats de recherche.</p>
                             </div>
                         </div>
                         <div className="benefit">
                             <ShieldCheck className="icon" />
                             <div>
-                                <h4>Badge "Vedette"</h4>
-                                <p>Un badge distinctif pour attirer l'attention des acheteurs potentiels.</p>
+                                <h4>Validation Admin</h4>
+                                <p>L'administrateur examinera votre demande et activera le boost.</p>
                             </div>
                         </div>
                         <div className="benefit">
                             <Info className="icon" />
                             <div>
-                                <h4>Statistiques Gratuites</h4>
-                                <p>Suivez l'évolution des vues et des demandes générées par le boost.</p>
+                                <h4>Gratuit pour le moment</h4>
+                                <p>Profitez de cette fonctionnalité gratuitement pendant la période de lancement.</p>
                             </div>
                         </div>
                     </div>
@@ -84,49 +84,28 @@ const PaymentPage = () => {
                 <div className="form-side">
                     <div className="checkout-card glass">
                         <div className="summary">
-                            <h3>Résumé de la commande</h3>
+                            <h3>Détails de la demande</h3>
                             <div className="line">
-                                <span>Boost "Premium" (30 jours)</span>
-                                <span>10,000 DT</span>
+                                <span>Bien concerné</span>
+                                <span className="text-right">{property?.title || 'Votre annonce'}</span>
+                            </div>
+                            <div className="line">
+                                <span>Type de Boost</span>
+                                <span>Standard (30 jours)</span>
                             </div>
                             <div className="total">
-                                <span>Total à payer</span>
-                                <span>10,000 DT</span>
+                                <span>Coût estimé</span>
+                                <span className="text-green-600">Gratuit</span>
                             </div>
                         </div>
 
-                        <form onSubmit={handlePayment} className="card-form">
-                            <h3>Informations de paiement</h3>
-                            <div className="form-group">
-                                <label>Nom sur la carte</label>
-                                <input type="text" className="form-input" placeholder="M. Samer Dkhil" required />
-                            </div>
-                            <div className="form-group">
-                                <label>Numéro de carte</label>
-                                <div className="input-with-icon">
-                                    <CreditCard size={18} />
-                                    <input type="text" className="form-input" placeholder="0000 0000 0000 0000" maxLength="16" required />
-                                </div>
-                            </div>
-                            <div className="grid-2">
-                                <div className="form-group">
-                                    <label>Date d'expiration</label>
-                                    <input type="text" className="form-input" placeholder="MM/YY" maxLength="5" required />
-                                </div>
-                                <div className="form-group">
-                                    <label>CVV</label>
-                                    <input type="password" className="form-input" placeholder="***" maxLength="3" required />
-                                </div>
-                            </div>
-
-                            <button type="submit" className="btn btn-secondary w-full publish-btn" disabled={loading}>
-                                {loading ? 'Traitement...' : 'Confirmer le paiement'} <ArrowRight size={18} />
-                            </button>
-                        </form>
-
-                        <div className="secure-footer">
-                            <ShieldCheck size={14} /> Paiement 100% sécurisé via Flouci / Stripe
+                        <div className="info-box bg-blue-50 p-4 rounded-xl mb-6 text-blue-700 text-sm">
+                            <p>En cliquant ci-dessous, une demande sera envoyée à l'administrateur. Vous serez notifié lorsque le boost sera actif.</p>
                         </div>
+
+                        <button onClick={handleRequestBoost} className="btn btn-secondary w-full publish-btn" disabled={loading}>
+                            {loading ? 'Envoi en cours...' : 'Envoyer la demande'} <ArrowRight size={18} />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -147,21 +126,19 @@ const PaymentPage = () => {
                 .checkout-card { padding: 3rem; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
                 .summary { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
                 .summary h3 { margin-bottom: 1.5rem; font-size: 1.2rem; }
-                .summary .line { display: flex; justify-content: space-between; color: var(--text-muted); margin-bottom: 0.5rem; }
+                .summary .line { display: flex; justify-content: space-between; color: var(--text-muted); margin-bottom: 0.8rem; }
                 .summary .total { display: flex; justify-content: space-between; font-weight: 800; font-size: 1.25rem; color: var(--primary); margin-top: 1rem; }
+                
+                .text-green-600 { color: #16a34a; }
+                .text-right { text-align: right; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .bg-blue-50 { background: #eff6ff; }
+                .text-blue-700 { color: #1d4ed8; }
+                .p-4 { padding: 1rem; }
+                .rounded-xl { border-radius: 0.75rem; }
+                .mb-6 { margin-bottom: 1.5rem; }
+                .text-sm { font-size: 0.875rem; }
 
-                .card-form h3 { margin-bottom: 1.5rem; font-size: 1.2rem; }
-                .form-group { margin-bottom: 1.25rem; }
-                .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; }
-                
-                .input-with-icon { position: relative; }
-                .input-with-icon svg { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
-                .input-with-icon input { padding-left: 3rem; }
-                
-                .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
                 .w-full { width: 100%; justify-content: space-between; padding: 1rem 1.75rem; font-size: 1.1rem; }
-                
-                .secure-footer { margin-top: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
 
                 @media (max-width: 900px) {
                     .payment-grid { grid-template-columns: 1fr; }
