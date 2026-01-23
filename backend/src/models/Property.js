@@ -183,6 +183,10 @@ class Property {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays > 0 ? diffDays : 0;
     }
+
+    static async incrementViews(id) {
+        return await db.query('UPDATE properties SET views = COALESCE(views, 0) + 1 WHERE id = ?', [id]);
+    }
 }
 
 module.exports = Property;

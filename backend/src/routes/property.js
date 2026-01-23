@@ -59,6 +59,10 @@ router.get('/:id', async (req, res) => {
     try {
         const property = await Property.findById(id);
         if (!property) return res.status(404).json({ error: 'Property not found' });
+
+        // Increment views (Non-blocking)
+        Property.incrementViews(id).catch(err => console.error('Error incrementing views:', err));
+
         res.json(property);
     } catch (err) {
         console.error('Get property error:', err);
