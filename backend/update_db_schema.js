@@ -1,4 +1,7 @@
-const db = require('./backend/src/db');
+const path = require('path');
+const dotenv = require('dotenv');
+dotenv.config({ path: path.join(__dirname, '.env') });
+const db = require('./src/db');
 
 async function updateSchema() {
     try {
