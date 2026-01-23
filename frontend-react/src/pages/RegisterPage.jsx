@@ -8,8 +8,11 @@ const RegisterPage = () => {
     const [formData, setFormData] = useState({
         username: '',
         password: '',
+        confirmPassword: '',
         email: '',
         phone: '',
+        birth_date: '',
+        gender: '',
         role: 'viziteur'
     });
     const [loading, setLoading] = useState(false);
@@ -17,6 +20,12 @@ const RegisterPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (formData.password !== formData.confirmPassword) {
+            toast.error('Les mots de passe ne correspondent pas.');
+            return;
+        }
+
         setLoading(true);
         try {
             await api.post('/auth/register', formData);
@@ -68,6 +77,33 @@ const RegisterPage = () => {
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         />
                     </div>
+
+                    <div className="form-group">
+                        <label>Date de Naissance</label>
+                        <input
+                            type="date"
+                            className="form-input"
+                            required
+                            value={formData.birth_date}
+                            onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Sexe</label>
+                        <select
+                            className="form-input"
+                            required
+                            value={formData.gender}
+                            onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                        >
+                            <option value="">Sélectionner</option>
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+
                     <div className="form-group">
                         <label><Lock size={16} /> Mot de passe</label>
                         <input
@@ -78,6 +114,18 @@ const RegisterPage = () => {
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         />
                     </div>
+
+                    <div className="form-group">
+                        <label><Lock size={16} /> Confirmer Mot de passe</label>
+                        <input
+                            type="password"
+                            className="form-input"
+                            required
+                            value={formData.confirmPassword}
+                            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                        />
+                    </div>
+
                     <div className="form-group">
                         <label>Vous êtes ?</label>
                         <select

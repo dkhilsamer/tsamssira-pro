@@ -44,29 +44,39 @@ router.post('/login', async (req, res) => {
 
 // Register
 router.post('/register', async (req, res) => {
-    const { username, email, password, phone, address } = req.body;
-    if (!username || !email || !password) {
-        return res.status(400).json({ error: 'Missing required fields' });
+    const { username, email, password, confirmPassword, phone, address, birth_date, gender } = req.body;
+
+    // Validation
+    if (!username || !email || !password || !confirmPassword || !birth_date || !gender) {
+        return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis' });
     }
+
+    if (password !== confirmPassword) {
+        return res.status(400).json({ error: 'Les mots de passe ne correspondent pas' });
+    }
+
     try {
         const existingUser = await User.findByUsername(username);
         if (existingUser) {
-            return res.status(409).json({ error: 'Username already taken' });
+            return res.status(409).json({ error: 'Nom d\'utilisateur déjà pris' });
         }
         const existingEmail = await User.findByEmail(email);
         if (existingEmail) {
-            return res.status(409).json({ error: 'Email already used' });
+            return res.status(409).json({ error: 'Cet email est déjà utilisé' });
         }
-        const userId = await User.create({ username, email, password, role: 'proprietaire', phone, address });
+
+        const userId = await User.create({
+            username, email, password, role: 'proprietaire', phone, address, birth_date, gender
+        });
 
         // Send welcome email
         const { sendWelcomeEmail } = require('../services/emailService');
         sendWelcomeEmail(email, username).catch(err => console.error('Welcome email error:', err));
 
-        return res.status(201).json({ message: 'User created', userId });
+        return res.status(201).json({ message: 'Compte créé avec succès', userId });
     } catch (err) {
         console.error('Register error:', err);
-        return res.status(500).json({ error: 'Server error' });
+        return res.status(500).json({ error: 'Erreur serveur: ' + err.message });
     }
 });
 
@@ -84,17 +94,41 @@ router.post('/logout', (req, res) => {
 
 // Forgot Password
 router.post('/forgot-password', async (req, res) => {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email required' });
+    const { email, username, birth_date, gender } = req.body;
+
+    // Strict Validation
+    if (!email || !username || !birth_date || !gender) {
+        return res.status(400).json({ error: 'Veuillez remplir tous les champs de sécurité.' });
+    }
 
     try {
         const user = await User.findByEmail(email);
+
+        // Security Check: Verify all fields match
         if (!user) {
-            // Check security best practices: maybe don't reveal if user exists?
-            // For this dev app, revealing "Email not found" is helpful for user.
-            return res.status(404).json({ error: 'Email not found' });
+            return res.status(404).json({ error: 'Informations incorrectes.' });
         }
 
+        // Check username matches
+        if (user.username !== username) {
+            return res.status(400).json({ error: 'Le nom d\'utilisateur ne correspond pas à cet email.' });
+        }
+
+        // Check gender matches
+        if (user.gender !== gender) {
+            return res.status(400).json({ error: 'Le sexe ne correspond pas.' });
+        }
+
+        // Check birth_date matches (Date string comparison)
+        // Ensure format yyyy-mm-dd
+        const userBirth = new Date(user.birth_date).toISOString().split('T')[0];
+        const inputBirth = new Date(birth_date).toISOString().split('T')[0];
+
+        if (userBirth !== inputBirth) {
+            return res.status(400).json({ error: 'La date de naissance ne correspond pas.' });
+        }
+
+        // Verification Passed! Generate Token
         // Generate token
         const token = crypto.randomBytes(20).toString('hex');
         const expires = Date.now() + 3600000; // 1 hour
@@ -108,20 +142,21 @@ router.post('/forgot-password', async (req, res) => {
         try {
             await sendPasswordResetEmail(email, token);
             console.log(`✅ Reset email sent to ${email}`);
-            res.json({ message: 'Si cet email est enregistré, vous recevrez un lien de réinitialisation.' });
+            res.json({ message: 'Vérification réussie. Un email a été envoyé.' });
         } catch (emailErr) {
             console.error('❌ Email failed (likely blocked by Render):', emailErr.message);
             // FALLBACK FOR DEV/BLOCKED ENVIRONMENTS: Return the link directly
             console.log('⚠️ RETURNING DEBUG LINK TO FRONTEND ⚠️');
             res.json({
-                message: 'Email bloqué par le serveur (Pare-feu). Voici le lien de réinitialisation :',
-                debug_link: resetLink // Frontend will display this if present
+                message: 'Informations validées. Email bloqué par le serveur (Pare-feu). Voici le lien :',
+                debug_link: resetLink
             });
         }
 
     } catch (err) {
         console.error('Forgot password error:', err);
-        res.status(500).json({ error: 'Server error: ' + err.message });
+        // Expose error message for debugging (remove in strict prod if needed, but useful now)
+        res.status(500).json({ error: 'Erreur sécurité: ' + err.message });
     }
 });
 

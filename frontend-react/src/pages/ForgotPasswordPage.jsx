@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Mail, ArrowLeft, Send } from 'lucide-react';
+import { Mail, ArrowLeft, Send, User } from 'lucide-react';
 
 const ForgotPasswordPage = () => {
-    const [email, setEmail] = useState('');
+    const [formData, setFormData] = useState({
+        email: '',
+        username: '',
+        birth_date: '',
+        gender: ''
+    });
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
 
@@ -16,8 +21,8 @@ const ForgotPasswordPage = () => {
         setLoading(true);
         setDebugLink(null);
         try {
-            const response = await api.post('/auth/forgot-password', { email });
-            toast.success(response.message || 'Lien de réinitialisation envoyé !');
+            const response = await api.post('/auth/forgot-password', formData);
+            toast.success(response.message || 'Vérification réussie !');
 
             if (response.debug_link) {
                 setDebugLink(response.debug_link);
@@ -35,31 +40,68 @@ const ForgotPasswordPage = () => {
             <div className="auth-container glass animate-fade-in">
                 <div className="auth-header">
                     <h2>Mot de passe oublié ?</h2>
-                    <p>Entrez votre email pour recevoir un lien de réinitialisation.</p>
+                    <p>Pour sécuriser votre compte, veuillez confirmer vos informations personnelles.</p>
                 </div>
 
                 {!sent ? (
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-group">
-                            <label><Mail size={16} /> Email</label>
+                            <label><User size={16} /> Email</label>
                             <input
                                 type="email"
                                 className="form-input"
                                 required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-secondary w-full" disabled={loading}>
-                            {loading ? 'Envoi...' : 'Envoyer le lien'} <Send size={18} />
+                        <div className="form-group">
+                            <label><User size={16} /> Nom d'utilisateur</label>
+                            <input
+                                type="text"
+                                className="form-input"
+                                required
+                                value={formData.username}
+                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Date de Naissance</label>
+                            <input
+                                type="date"
+                                className="form-input"
+                                required
+                                value={formData.birth_date}
+                                onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Sexe</label>
+                            <select
+                                className="form-input"
+                                required
+                                value={formData.gender}
+                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                            >
+                                <option value="">Sélectionner</option>
+                                <option value="Homme">Homme</option>
+                                <option value="Femme">Femme</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" className="btn btn-secondary w-full mt-4" disabled={loading}>
+                            {loading ? 'Vérification...' : 'Vérifier et Envoyer'} <Send size={18} />
                         </button>
                     </form>
                 ) : (
                     <div className="sent-message text-center">
-                        <div className="icon-success">📧</div>
-                        <h3>Email envoyé !</h3>
-                        <p>Vérifiez votre boîte de réception et suivez les instructions.</p>
+                        <div className="icon-success">✅</div>
+                        <h3>Identité Vérifiée !</h3>
+                        <p>Si l'email a pu être envoyé, vérifiez votre boîte de réception.</p>
 
                         {debugLink && (
                             <div className="debug-box" style={{ background: '#fee2e2', padding: '15px', borderRadius: '10px', marginTop: '20px', fontSize: '0.9rem', color: '#b91c1c' }}>

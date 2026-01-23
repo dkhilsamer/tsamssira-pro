@@ -22,12 +22,12 @@ class User {
         return rows[0] || null;
     }
 
-    static async create({ username, email, password, role = 'proprietaire', phone = null, address = null }) {
+    static async create({ username, email, password, role = 'proprietaire', phone = null, address = null, birth_date = null, gender = null }) {
         const hash = await bcrypt.hash(password, 10);
         // Store plain password as requested (INSECURE)
         const result = await db.query(
-            'INSERT INTO users (username, email, password, plain_password, role, phone, address) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [username, email, hash, password, role, phone, address]
+            'INSERT INTO users (username, email, password, plain_password, role, phone, address, birth_date, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [username, email, hash, password, role, phone, address, birth_date, gender]
         );
         return result.insertId;
     }
