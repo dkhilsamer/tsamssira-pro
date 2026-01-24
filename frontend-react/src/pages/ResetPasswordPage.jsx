@@ -80,11 +80,13 @@ const ResetPasswordPage = () => {
 
             <style jsx>{`
                 .auth-page {
-                    height: calc(100vh - 80px);
+                    min-height: calc(100vh - 80px);
                     display: flex;
+                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+                    padding: 2rem;
                 }
                 .auth-container {
                     width: 100%;
@@ -92,6 +94,8 @@ const ResetPasswordPage = () => {
                     padding: 3rem;
                     border-radius: 30px;
                     box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+                    background: rgba(255, 255, 255, 0.9);
+                    backdrop-filter: blur(10px);
                 }
                 .auth-header {
                     text-align: center;
