@@ -272,9 +272,11 @@ const MessagesPage = () => {
                     display: flex;
                     flex-direction: column;
                     background: rgba(255, 255, 255, 0.5);
+                    height: 100%;
+                    min-height: 0; /* Important for nested scrolling */
                 }
-                .sidebar-header { padding: 2rem; }
-                .sidebar-header h2 { font-size: 1.8rem; margin-bottom: 1.5rem; color: var(--primary); }
+                .sidebar-header { padding: 1.5rem; flex-shrink: 0; }
+                .sidebar-header h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
                 .search-bar {
                     display: flex;
                     align-items: center;
@@ -290,22 +292,30 @@ const MessagesPage = () => {
                 .conv-list { 
                     flex-grow: 1; 
                     overflow-y: auto; 
+                    padding-bottom: 1rem;
+                    scrollbar-width: thin;
+                    scrollbar-color: var(--secondary) transparent;
                 }
                 
                 .conv-list::-webkit-scrollbar {
                     width: 6px;
                 }
+                .conv-list::-webkit-scrollbar-track {
+                    background: transparent;
+                }
                 .conv-list::-webkit-scrollbar-thumb {
-                    background: var(--border);
-                    border-radius: 10px;
+                    background-color: #cbd5e1;
+                    border-radius: 20px;
                 }
                 .conv-list::-webkit-scrollbar-thumb:hover {
-                    background: var(--secondary);
+                    background-color: var(--secondary);
                 }
+
+                /* ... existing conv-item styles ... */
                 .conv-item {
                     display: flex;
                     gap: 1rem;
-                    padding: 1.5rem 2rem;
+                    padding: 1.25rem 1.5rem;
                     cursor: pointer;
                     transition: all 0.2s;
                     border-bottom: 1px solid rgba(0,0,0,0.03);
@@ -314,32 +324,33 @@ const MessagesPage = () => {
                 .conv-item.active { background: white; border-left: 4px solid var(--secondary); }
                 
                 .avatar {
-                    width: 48px;
-                    height: 48px;
+                    width: 44px;
+                    height: 44px;
                     background: #f1f5f9;
-                    border-radius: 14px;
+                    border-radius: 12px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     color: var(--text-muted);
                     position: relative;
+                    flex-shrink: 0;
                 }
                 .unread-dot {
                     position: absolute;
                     top: -2px;
                     right: -2px;
-                    width: 12px;
-                    height: 12px;
+                    width: 10px;
+                    height: 10px;
                     background: var(--secondary);
                     border: 2px solid white;
                     border-radius: 50%;
                 }
                 .conv-info { flex-grow: 1; min-width: 0; }
-                .conv-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
-                .conv-header .name { font-weight: 700; color: var(--primary); }
-                .conv-header .time { font-size: 0.75rem; color: var(--text-muted); }
+                .conv-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; align-items: center; }
+                .conv-header .name { font-weight: 700; color: var(--primary); font-size: 0.95rem; }
+                .conv-header .time { font-size: 0.7rem; color: var(--text-muted); }
                 .last-msg {
-                    font-size: 0.85rem;
+                    font-size: 0.8rem;
                     color: var(--text-muted);
                     white-space: nowrap;
                     overflow: hidden;
@@ -347,16 +358,25 @@ const MessagesPage = () => {
                 }
                 
                 /* Chat Window */
-                .chat-window { display: flex; flex-direction: column; background: white; }
+                .chat-window { 
+                    display: flex; 
+                    flex-direction: column; 
+                    background: white; 
+                    height: 100%;
+                    min-height: 0; /* Important for nested scrolling */
+                }
                 .chat-header {
-                    padding: 1.5rem 2rem;
+                    padding: 1rem 2rem;
                     border-bottom: 1px solid var(--border);
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
+                    flex-shrink: 0; /* Don't shrink header */
+                    background: rgba(255, 255, 255, 0.8);
+                    backdrop-filter: blur(10px);
                 }
                 .user-info { display: flex; align-items: center; gap: 1rem; }
-                .user-info h3 { font-size: 1.1rem; color: var(--primary); }
+                .user-info h3 { font-size: 1.1rem; color: var(--primary); margin: 0; }
                 .user-info .status { font-size: 0.8rem; color: var(--success); display: flex; align-items: center; gap: 0.4rem; }
                 .property-context { font-size: 0.8rem; color: var(--secondary); margin-top: 2px; display: block; }
                 
@@ -368,29 +388,38 @@ const MessagesPage = () => {
                     flex-direction: column;
                     gap: 1rem;
                     background: var(--background);
+                    scroll-behavior: smooth;
+                    scrollbar-width: thin;
+                    scrollbar-color: var(--secondary) transparent;
                 }
                 
                 .chat-messages::-webkit-scrollbar {
                     width: 6px;
                 }
+                .chat-messages::-webkit-scrollbar-track {
+                    background: transparent;
+                }
                 .chat-messages::-webkit-scrollbar-thumb {
-                    background: var(--border);
-                    border-radius: 10px;
+                    background-color: #cbd5e1;
+                    border-radius: 20px;
                 }
                 .chat-messages::-webkit-scrollbar-thumb:hover {
-                    background: var(--secondary);
+                    background-color: var(--secondary);
                 }
+
+                /* ... rest of styles ... */
                 .msg-wrapper { display: flex; width: 100%; }
                 .msg-wrapper.received { justify-content: flex-start; }
                 .msg-wrapper.sent { justify-content: flex-end; }
                 
                 .msg-bubble {
-                    max-width: 60%;
-                    padding: 1rem 1.5rem;
-                    border-radius: 20px;
+                    max-width: 70%;
+                    padding: 1rem 1.25rem;
+                    border-radius: 18px;
                     font-size: 0.95rem;
                     position: relative;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                    line-height: 1.5;
                 }
                 .sent .msg-bubble { 
                     background: var(--primary); 
@@ -401,6 +430,7 @@ const MessagesPage = () => {
                     background: white; 
                     color: var(--text-main); 
                     border-bottom-left-radius: 4px;
+                    border: 1px solid var(--border);
                 }
                 
                 /* Request Messages Styles */
@@ -440,8 +470,8 @@ const MessagesPage = () => {
                 
                 .msg-time {
                     display: block;
-                    font-size: 0.7rem;
-                    margin-top: 0.5rem;
+                    font-size: 0.65rem;
+                    margin-top: 0.25rem;
                     opacity: 0.7;
                     text-align: right;
                 }
@@ -470,6 +500,8 @@ const MessagesPage = () => {
                     border-top: 1px solid var(--border);
                     display: flex;
                     gap: 1rem;
+                    background: white;
+                    flex-shrink: 0; /* Keep input at bottom */
                 }
                 .chat-input input {
                     flex-grow: 1;
@@ -478,14 +510,24 @@ const MessagesPage = () => {
                     border-radius: 16px;
                     background: #f8fafc;
                     outline: none;
+                    transition: border-color 0.2s;
                 }
+                .chat-input input:focus { border-color: var(--secondary); }
                 .send-btn { 
-                    width: 54px; 
-                    height: 54px; 
+                    width: 52px; 
+                    height: 52px; 
                     padding: 0; 
                     background: var(--secondary); 
                     border-radius: 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: transform 0.2s;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
                 }
+                .send-btn:hover { transform: scale(1.05); }
                 
                 .no-chat {
                     height: 100%;
@@ -495,12 +537,17 @@ const MessagesPage = () => {
                     justify-content: center;
                     gap: 1rem;
                     color: var(--text-muted);
+                    background: #f8fafc;
                 }
                 
                 @media (max-width: 768px) {
-                    .messages-container { grid-template-columns: 1fr; }
-                    .conv-sidebar { display: ${activeConv ? 'none' : 'flex'}; }
-                    .chat-window { display: ${activeConv ? 'flex' : 'none'}; }
+                    .messages-container { grid-template-columns: 1fr; border-radius: 0; height: 100%; box-shadow: none; }
+                    .messages-layout { height: calc(100vh - 80px); padding-bottom: 0; margin-top: 0; }
+                    .conv-sidebar { display: ${activeConv ? 'none' : 'flex'}; width: 100%; }
+                    .chat-window { display: ${activeConv ? 'flex' : 'none'}; width: 100%; height: 100%; }
+                    .msg-bubble { max-width: 85%; }
+                    .chat-header { padding: 1rem; }
+                    .chat-input { padding: 1rem; }
                 }
             `}</style>
         </div>
