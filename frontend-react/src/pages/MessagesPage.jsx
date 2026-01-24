@@ -12,21 +12,12 @@ const MessagesPage = () => {
     const [activeConv, setActiveConv] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [cooldown, setCooldown] = useState(0);
 
     // Retrieve user from localStorage
     const user = JSON.parse(localStorage.getItem('user'));
     const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        let timer;
-        if (cooldown > 0) {
-            timer = setInterval(() => {
-                setCooldown(prev => prev - 1);
-            }, 1000);
-        }
-        return () => clearInterval(timer);
-    }, [cooldown]);
+
 
     // Handle initial navigation with state
     useEffect(() => {
@@ -90,9 +81,8 @@ const MessagesPage = () => {
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim() || !activeConv || cooldown > 0) return;
+        if (!newMessage.trim() || !activeConv) return;
 
-        setCooldown(10); // Start cooldown immediately to prevent duplicates
 
         try {
             await api.post('/messages', {
@@ -105,7 +95,6 @@ const MessagesPage = () => {
             fetchConversations(); // Update preview
         } catch (error) {
             toast.error(error.message);
-            setCooldown(0); // Reset cooldown on error so they can retry
         }
     };
 
@@ -242,22 +231,16 @@ const MessagesPage = () => {
                             <form className="chat-input" onSubmit={handleSendMessage}>
                                 <input
                                     type="text"
-                                    placeholder={cooldown > 0 ? `Veuillez patienter ${cooldown}s...` : "Écrivez votre message..."}
+                                    placeholder="Écrivez votre message..."
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
-                                    disabled={cooldown > 0}
                                 />
                                 <button
                                     type="submit"
                                     className="btn btn-primary send-btn"
-                                    disabled={cooldown > 0 || !newMessage.trim()}
-                                    style={{ opacity: cooldown > 0 ? 0.7 : 1, cursor: cooldown > 0 ? 'not-allowed' : 'pointer' }}
+                                    disabled={!newMessage.trim()}
                                 >
-                                    {cooldown > 0 ? (
-                                        <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{cooldown}s</span>
-                                    ) : (
-                                        <Send size={20} />
-                                    )}
+                                    <Send size={20} />
                                 </button>
                             </form>
                         </>
