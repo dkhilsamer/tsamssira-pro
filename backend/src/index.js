@@ -30,7 +30,7 @@ runCleanup();
 setInterval(runCleanup, 12 * 60 * 60 * 1000); // 12 hours
 
 const app = express();
-app.set('trust proxy', true); // Trust all proxies (Vercel + Render) to correctly detect HTTPS
+app.set('trust proxy', 1); // Trust Render's proxy (1 layer)
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -100,11 +100,12 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: false,
     rolling: true,
+    proxy: true, // Required for secure cookies behind proxies
     cookie: {
         secure: true,
         httpOnly: true,
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        sameSite: 'lax', // 'lax' is safer for Safari when using a Same-Origin proxy (Vercel Rewrite)
+        sameSite: 'none', // Most compatible for cross-domain/proxy contexts
         path: '/'
     }
 };
