@@ -13,7 +13,11 @@ L.Icon.Default.mergeOptions({
 });
 
 const PropertyMap = ({ properties, height = "400px" }) => {
-    // Center of Tunisia approximately
+    // Precise bounds for Tunisia
+    const tunisiaBounds = [
+        [30.2, 7.5], // Southwest
+        [37.5, 11.6] // Northeast
+    ];
     const center = [33.8869, 9.5375];
     const zoom = 6;
 
@@ -22,7 +26,15 @@ const PropertyMap = ({ properties, height = "400px" }) => {
 
     return (
         <div style={{ height, width: '100%', borderRadius: 'var(--radius)', overflow: 'hidden', border: '1px solid var(--border)' }}>
-            <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
+            <MapContainer
+                center={center}
+                zoom={zoom}
+                scrollWheelZoom={false}
+                style={{ height: '100%', width: '100%' }}
+                maxBounds={tunisiaBounds}
+                maxBoundsViscosity={1.0}
+                minZoom={6}
+            >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

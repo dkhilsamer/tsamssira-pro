@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { User, LogOut, MessageSquare, LayoutDashboard, Home, Menu, X, Sun, Moon } from 'lucide-react';
+import { User, LogOut, MessageSquare, LayoutDashboard, Home, Menu, X, Sun, Moon, Clock, List } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import NotificationBell from './NotificationBell';
 
@@ -66,6 +66,19 @@ const Navbar = () => {
                             <Link to="/messages" className={`nav-item ${location.pathname === '/messages' ? 'active' : ''}`}>
                                 <MessageSquare size={18} /> Messages
                             </Link>
+
+                            {/* Mobile only shortcuts */}
+                            <div className="mobile-only">
+                                <Link to="/dashboard/my-properties" className={`nav-item ${location.pathname === '/dashboard/my-properties' ? 'active' : ''}`}>
+                                    <Home size={18} /> Mes Annonces
+                                </Link>
+                                <Link to="/dashboard/requests" className={`nav-item ${location.pathname === '/dashboard/requests' ? 'active' : ''}`}>
+                                    <List size={18} /> Mes Demandes
+                                </Link>
+                                <Link to="/dashboard/history" className={`nav-item ${location.pathname === '/dashboard/history' ? 'active' : ''}`}>
+                                    <Clock size={18} /> Historique
+                                </Link>
+                            </div>
                             <div className="user-menu">
                                 <NotificationBell />
                                 <button
@@ -219,6 +232,8 @@ const Navbar = () => {
                     transform: rotate(15deg);
                     color: var(--secondary);
                 }
+                
+                .mobile-only { display: none; }
 
                 @media (max-width: 992px) {
                     .mobile-toggle { display: block; }
@@ -276,6 +291,14 @@ const Navbar = () => {
                         padding: 1rem 1.5rem;
                         color: var(--text-main);
                         border-radius: 12px;
+                    }
+                    .mobile-only {
+                        display: flex;
+                        flex-direction: column;
+                        width: 100%;
+                        gap: 1rem;
+                        border-top: 1px solid var(--border);
+                        padding-top: 1rem;
                     }
                     .nav-item:hover, .nav-item.active {
                         background: var(--background);

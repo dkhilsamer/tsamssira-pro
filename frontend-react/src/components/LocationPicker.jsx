@@ -11,6 +11,10 @@ L.Icon.Default.mergeOptions({
 });
 
 const LocationPicker = ({ lat, lng, onChange }) => {
+    const tunisiaBounds = [
+        [30.2, 7.5], // Southwest
+        [37.5, 11.6] // Northeast
+    ];
     const center = lat && lng ? [lat, lng] : [33.8869, 9.5375]; // Tunisia center
     const zoom = lat && lng ? 13 : 6;
 
@@ -28,7 +32,15 @@ const LocationPicker = ({ lat, lng, onChange }) => {
 
     return (
         <div className="location-picker-container">
-            <MapContainer center={center} zoom={zoom} scrollWheelZoom={true} style={{ height: '300px', width: '100%', borderRadius: '12px' }}>
+            <MapContainer
+                center={center}
+                zoom={zoom}
+                scrollWheelZoom={true}
+                style={{ height: '300px', width: '100%', borderRadius: '12px' }}
+                maxBounds={tunisiaBounds}
+                maxBoundsViscosity={1.0}
+                minZoom={6}
+            >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
