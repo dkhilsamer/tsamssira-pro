@@ -21,6 +21,9 @@
 - 📱 **PWA Ready** - Installable sur iPhone/Android
 - 🎨 **Design Premium** - Glassmorphism, animations fluides
 - 🌍 **100% Responsive** - PC, tablette, mobile
+- 🌓 **Dark Mode** - Thème sombre avec persistance
+- 🗺️ **Carte interactive** - Visualisation géographique des biens
+- 🔔 **Notifications en temps réel** - Alertes pour messages et demandes
 
 ---
 
@@ -32,7 +35,9 @@
 - **React Router v6** - Navigation SPA
 - **Axios** - Client HTTP
 - **Lucide React** - Icônes modernes
+- **Leaflet** - Cartes interactives
 - **Service Worker** - PWA support
+- **Capacitor** - Application mobile native
 
 ### Backend
 - **Node.js 18+** - Runtime JavaScript
@@ -42,6 +47,7 @@
 - **Nodemailer** - Envoi d'emails SMTP
 - **Express Session** - Gestion des sessions
 - **Multer** - Upload de fichiers
+- **Sharp** - Traitement d'images et watermarking
 
 ### Services Tiers
 - **Gmail SMTP** - Emails transactionnels
@@ -61,7 +67,7 @@ npm ou yarn
 
 ### 1️⃣ Cloner le projet
 ```bash
-git clone https://github.com/votre-username/tsamssira_pro.git
+git clone https://github.com/dkhilsamer/tsamssira-pro.git
 cd tsamssira_pro
 ```
 
@@ -114,41 +120,55 @@ npm run dev
 
 ## 🚀 Déploiement Production
 
-### Backend (Railway / Render)
+### 🗄️ ÉTAPE 1 : Base de données PostgreSQL sur Render
 
-**Railway** (Recommandé) :
-```bash
-npm i -g @railway/cli
-railway login
-railway init
-railway up
-```
+1. Créer un compte sur [render.com](https://render.com)
+2. Nouveau **PostgreSQL** database :
+   - **Name** : `tsamssira-db`
+   - **Region** : `Frankfurt (EU Central)`
+   - **Plan** : **Free**
+3. Dans le **Shell**, exécutez le contenu de `backend/init-db.sql`
+4. Copiez **Internal Database URL** pour l'étape suivante
 
-**Variables d'environnement** à configurer :
-- `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
-- `SESSION_SECRET`
-- `EMAIL_SERVICE`, `EMAIL_USER`, `EMAIL_PASSWORD`
-- `FRONTEND_URL` (URL de votre frontend déployé)
+### 🖥️ ÉTAPE 2 : Backend sur Render
 
-### Frontend (Vercel / Netlify)
+1. Nouveau **Web Service** depuis GitHub
+2. Configurez :
+   - **Root Directory** : `backend`
+   - **Build Command** : `npm install`
+   - **Start Command** : `npm start`
+   - **Plan** : **Free**
 
-**Build de production** :
-```bash
-cd frontend-react
-npm run build
-```
+3. Variables d'environnement :
+   ```
+   DATABASE_URL=[URL de l'étape 1]
+   SESSION_SECRET=tsamssira_production_secret_2026
+   EMAIL_SERVICE=gmail
+   EMAIL_USER=tsamsssirapro@gmail.com
+   EMAIL_PASSWORD=[votre mot de passe app]
+   FRONTEND_URL=https://tsamssira.pages.dev
+   NODE_ENV=production
+   ```
 
-**Déploiement Vercel** :
-```bash
-npm i -g vercel
-vercel --prod
-```
+### 🎨 ÉTAPE 3 : Frontend sur Cloudflare Pages
 
-**Déploiement Netlify** :
-```bash
-npm i -g netlify-cli
-netlify deploy --prod --dir=dist
-```
+1. Compte sur [dash.cloudflare.com](https://dash.cloudflare.com)
+2. **Workers & Pages** → **Create application** → **Pages**
+3. Connectez GitHub et sélectionnez le repository
+4. Configurez :
+   - **Framework** : `Vite`
+   - **Build command** : `npm run build`
+   - **Output directory** : `dist`
+   - **Root directory** : `frontend-react`
+   - **Variable** : `VITE_BACKEND_URL=[URL du backend Render]`
+
+### 🔥 ÉTAPE 4 : Keepalive (UptimeRobot)
+
+1. Compte sur [uptimerobot.com](https://uptimerobot.com)
+2. **Add New Monitor** :
+   - **Type** : `HTTP(s)`
+   - **URL** : `https://[votre-backend].onrender.com/api/health`
+   - **Interval** : `5 minutes`
 
 ---
 
@@ -182,6 +202,30 @@ L'application peut être installée sur mobile :
 
 ---
 
+## 📱 Application Mobile Native (Capacitor)
+
+### Générer les projets natifs
+
+```bash
+cd frontend-react
+npm run build
+npx cap sync
+```
+
+### Lancer sur émulateur/appareil
+
+**Android** :
+```bash
+npx cap open android
+```
+
+**iOS** :
+```bash
+npx cap open ios
+```
+
+---
+
 ## 🗄️ Structure du Projet
 
 ```
@@ -203,16 +247,47 @@ tsamssira_pro/
 │   │   ├── components/      # Composants réutilisables
 │   │   ├── pages/           # Pages de l'application
 │   │   ├── services/        # API client (axios)
+│   │   ├── context/         # React Context (Theme)
 │   │   ├── index.css        # Styles globaux
 │   │   └── App.jsx          # Composant racine
 │   ├── public/
 │   │   ├── manifest.json    # Configuration PWA
 │   │   └── sw.js            # Service Worker
+│   ├── android/             # Projet Android natif
+│   ├── ios/                 # Projet iOS natif
 │   ├── .env                 # Variables d'environnement
 │   └── package.json
 │
 └── README.md
 ```
+
+---
+
+## 🎨 Fonctionnalités Premium Implémentées
+
+### 🌓 Modern Dark Mode
+- Implémenté avec React Context (`ThemeContext.jsx`)
+- Persistance dans `localStorage`
+- Toggle animé Sun/Moon dans la Navbar
+
+### 📍 Carte Interactive (Leaflet)
+- Vue dynamique "Carte" sur la HomePage
+- Marqueurs cliquables avec popups
+- Navigation vers les détails des biens
+
+### 🔔 Notifications Temps Réel
+- Système dédié pour messages et demandes de location
+- Table `notifications` avec API endpoints
+- Badge animé dans la Navbar avec dropdown
+
+### 📊 Analytics & Watermarking
+- Statistiques de vues par propriété
+- Watermark automatique sur les images (Sharp)
+- Dashboard propriétaire enrichi
+
+### 🏦 Contact Direct Propriétaire
+- Affichage du username, téléphone et email sur chaque annonce
+- Facilite la communication directe
 
 ---
 
@@ -227,15 +302,27 @@ tsamssira_pro/
 
 ---
 
-## 🎯 Roadmap
+## 🚀 Vision & Roadmap Future
 
-- [ ] Système de favoris
-- [ ] Notifications push en temps réel
-- [ ] Intégration paiement Konnect/Flouci
-- [ ] Chat vidéo pour visites virtuelles
-- [ ] Carte interactive (Google Maps)
-- [ ] Comparateur de propriétés
-- [ ] Export PDF des annonces
+### 🏗️ Phase 1 : Intelligence & Automatisation
+- **🤖 Assistant IA Rédacteur** : Génération automatique de descriptions captivantes
+- **📸 Smart Image Optimizer** : Détection automatique et floutage de visages/plaques
+- **💬 Chatbot de Pré-qualification** : Réponses automatiques aux questions fréquentes
+
+### 🌍 Phase 2 : Expérience Immersive
+- **📽️ Visite Virtuelle 360°** : Photos panoramiques interactives
+- **🗺️ POI (Points d'Intérêt)** : Commodités proches sur la carte
+- **🌍 Support Multilingue** : Arabe, Français, Anglais
+
+### 🏦 Phase 3 : Écosystème de Paiement
+- **💳 Intégration Konnect / ClickToPay** : Paiement direct des boosts
+- **📄 Gestion des Contrats** : Génération de PDF pré-remplis
+- **⭐ Système de Notation** : Avis vérifiés sur les propriétaires
+
+### 📱 Phase 4 : Expansion Mobile Native
+- ✅ **Application Mobile Native** : Capacitor intégré, projets Android/iOS générés
+- **🔔 Notifications Push** : Alertes instantanées pour nouvelles annonces
+- **📲 Publication sur les Stores** : App Store & Play Store
 
 ---
 
@@ -256,7 +343,19 @@ MIT © 2026 Tsamssira Pro
 **Développé avec ❤️ pour l'immobilier tunisien**
 
 - 📧 Email : tsamsssirapro@gmail.com
-- 🌐 Site : [tsamssira-pro.onrender.com](https://tsamssira-pro.onrender.com)
+- 🌐 Site : [tsamssirapro.online](https://tsamssirapro.online)
+- 💻 GitHub : [github.com/dkhilsamer/tsamssira-pro](https://github.com/dkhilsamer/tsamssira-pro)
+
+---
+
+## 🔗 URLs Production
+
+| Service | URL |
+|---------|-----|
+| **Site web** | https://tsamssirapro.online |
+| **API Backend** | https://tsamssira-backend.onrender.com |
+| **API Health** | https://tsamssira-backend.onrender.com/api/health |
+| **Code GitHub** | https://github.com/dkhilsamer/tsamssira-pro |
 
 ---
 
@@ -267,3 +366,5 @@ MIT © 2026 Tsamssira Pro
 - [Express](https://expressjs.com)
 - [MySQL](https://mysql.com)
 - [Vite](https://vitejs.dev)
+- [Leaflet](https://leafletjs.com)
+- [Capacitor](https://capacitorjs.com)
