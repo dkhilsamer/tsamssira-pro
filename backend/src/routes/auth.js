@@ -268,4 +268,56 @@ router.put('/users/:id/role', async (req, res) => {
     }
 });
 
+// Get Current Profile
+router.get('/profile', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        // Don't send password
+        const { password, plain_password, ...safeUser } = user;
+        res.json(safeUser);
+    } catch (err) {
+        console.error('Get profile error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Update Profile
+router.put('/profile', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { username, email, phone, address, birth_date, gender } = req.body;
+
+    try {
+        // Check uniqueness if username/email changed
+        if (username) {
+            const existingUser = await User.findByUsername(username);
+            if (existingUser && existingUser.id !== req.session.userId) {
+                return res.status(409).json({ error: 'Ce nom d\'utilisateur est déjà pris' });
+            }
+        }
+        if (email) {
+            const existingEmail = await User.findByEmail(email);
+            if (existingEmail && existingEmail.id !== req.session.userId) {
+                return res.status(409).json({ error: 'Cet email est déjà utilisé' });
+            }
+        }
+
+        await User.update(req.session.userId, { username, email, phone, address, birth_date, gender });
+
+        // Update session if username changed
+        if (username) req.session.username = username;
+
+        // Get updated user to return
+        const updatedUser = await User.findById(req.session.userId);
+        const { password, plain_password, ...safeUser } = updatedUser;
+
+        res.json({ message: 'Profil mis à jour avec succès', user: safeUser });
+    } catch (err) {
+        console.error('Update profile error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 module.exports = router;

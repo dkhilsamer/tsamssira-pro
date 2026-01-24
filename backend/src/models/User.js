@@ -48,6 +48,25 @@ class User {
     static async updateRole(id, role) {
         return await db.query('UPDATE users SET role = ? WHERE id = ?', [role, id]);
     }
+
+    static async update(id, fields) {
+        const { username, email, phone, address, birth_date, gender } = fields;
+        const validFields = [];
+        const values = [];
+
+        if (username !== undefined) { validFields.push('username = ?'); values.push(username); }
+        if (email !== undefined) { validFields.push('email = ?'); values.push(email); }
+        if (phone !== undefined) { validFields.push('phone = ?'); values.push(phone); }
+        if (address !== undefined) { validFields.push('address = ?'); values.push(address); }
+        if (birth_date !== undefined) { validFields.push('birth_date = ?'); values.push(birth_date); }
+        if (gender !== undefined) { validFields.push('gender = ?'); values.push(gender); }
+
+        if (validFields.length === 0) return 0;
+
+        values.push(id);
+        const sql = `UPDATE users SET ${validFields.join(', ')} WHERE id = ?`;
+        return await db.query(sql, values);
+    }
 }
 
 module.exports = User;
