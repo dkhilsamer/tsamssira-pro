@@ -92,6 +92,12 @@ const EditPropertyPage = () => {
         e.preventDefault();
         setLoading(true);
 
+        if (Number(formData.price) <= 0 || Number(formData.area) <= 0 || Number(formData.bedrooms) <= 0 || Number(formData.bathrooms) <= 0) {
+            toast.error("Toutes les valeurs numériques doivent être positives");
+            setLoading(false);
+            return;
+        }
+
         const data = new FormData();
         const trimmedData = { ...formData };
         if (trimmedData.title) trimmedData.title = trimmedData.title.trim();
@@ -196,6 +202,7 @@ const EditPropertyPage = () => {
                             <label>Prix (DT)</label>
                             <input
                                 type="number"
+                                min="1"
                                 className="form-input"
                                 required
                                 value={formData.price}
@@ -206,6 +213,7 @@ const EditPropertyPage = () => {
                             <label>Surface (m²)</label>
                             <input
                                 type="number"
+                                min="1"
                                 className="form-input"
                                 required
                                 value={formData.area}
@@ -246,6 +254,7 @@ const EditPropertyPage = () => {
                             <label>Chambres</label>
                             <input
                                 type="number"
+                                min="1"
                                 className="form-input"
                                 value={formData.bedrooms}
                                 onChange={(e) => setFormData({ ...formData, bedrooms: parseInt(e.target.value) })}
@@ -255,6 +264,7 @@ const EditPropertyPage = () => {
                             <label>Salles de bain</label>
                             <input
                                 type="number"
+                                min="1"
                                 className="form-input"
                                 value={formData.bathrooms}
                                 onChange={(e) => setFormData({ ...formData, bathrooms: parseInt(e.target.value) })}

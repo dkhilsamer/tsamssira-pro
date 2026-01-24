@@ -50,6 +50,12 @@ const AddPropertyPage = () => {
         e.preventDefault();
         setLoading(true);
 
+        if (Number(formData.price) <= 0 || Number(formData.area) <= 0 || Number(formData.bedrooms) <= 0 || Number(formData.bathrooms) <= 0) {
+            toast.error("Toutes les valeurs numériques doivent être positives");
+            setLoading(false);
+            return;
+        }
+
         const data = new FormData();
         // Trim strings explicitly
         const trimmedData = { ...formData };
@@ -142,6 +148,7 @@ const AddPropertyPage = () => {
                             <label>Prix (DT)</label>
                             <input
                                 type="number"
+                                min="1"
                                 className="form-input"
                                 placeholder="Prix total"
                                 required
@@ -153,6 +160,7 @@ const AddPropertyPage = () => {
                             <label>Surface (m²)</label>
                             <input
                                 type="number"
+                                min="1"
                                 className="form-input"
                                 placeholder="Surface en m²"
                                 required

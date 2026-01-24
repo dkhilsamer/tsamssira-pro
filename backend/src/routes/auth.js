@@ -84,7 +84,7 @@ router.post('/logout', (req, res) => {
             console.error('Logout error:', err);
             return res.status(500).json({ error: 'Could not log out' });
         }
-        res.clearCookie('connect.sid');
+        res.clearCookie('tsamssira_session');
         return res.json({ message: 'Logged out' });
     });
 });

@@ -30,7 +30,7 @@ runCleanup();
 setInterval(runCleanup, 12 * 60 * 60 * 1000); // 12 hours
 
 const app = express();
-app.set('trust proxy', 1); // Required for Render/Heroku to handle secure cookies
+app.set('trust proxy', true); // Trust all proxies (Vercel + Render) to correctly detect HTTPS
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -58,13 +58,17 @@ const corsOptions = {
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With', 'Accept']
 };
 
-app.use(cors({
-    origin: true,
-    credentials: true
-}));
+app.use(cors(corsOptions));
+
+// Disable caching for API to ensure session cookies are always handled correctly
+app.use('/api', (req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -90,15 +94,18 @@ const sessionStore = new MySQLStore({
 
 // Session configuration
 const sessionConfig = {
-    store: sessionStore, // Use MySQL for session storage
+    store: sessionStore,
+    name: 'tsamssira_session',
     secret: process.env.SESSION_SECRET || 'change_this_secret',
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // true only in production (likely HTTPS)
+        secure: true,
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours (increased from 1h for better UX)
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // 'none' for prod (cross-site), 'lax' for local
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        sameSite: 'lax', // 'lax' is safer for Safari when using a Same-Origin proxy (Vercel Rewrite)
+        path: '/'
     }
 };
 

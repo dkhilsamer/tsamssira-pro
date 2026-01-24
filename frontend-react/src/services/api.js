@@ -3,7 +3,9 @@ import axios from 'axios';
 // Use relative path in production to leverage Vercel Rewrites (Proxy)
 // This solves Safari/iOS cookie blocking issues
 const isProd = import.meta.env.PROD;
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || (import.meta.env.PROD ? '' : 'http://localhost:3000');
+// Force relative path in production to ensure we use Vercel Rewrites (Same-Origin)
+// This enables cookies to work correctly on Safari/iOS by treating the request as First-Party
+const BACKEND_URL = isProd ? '' : (import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000');
 const API_BASE = `${BACKEND_URL}/api`;
 
 const api = axios.create({

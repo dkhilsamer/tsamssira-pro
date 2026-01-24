@@ -14,6 +14,10 @@ const MessagesPage = () => {
     const [newMessage, setNewMessage] = useState('');
     const [cooldown, setCooldown] = useState(0);
 
+    // Retrieve user from localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+    const messagesEndRef = useRef(null);
+
     useEffect(() => {
         let timer;
         if (cooldown > 0) {
@@ -24,17 +28,65 @@ const MessagesPage = () => {
         return () => clearInterval(timer);
     }, [cooldown]);
 
-    // ... existing navigation useEffect ...
+    // Handle initial navigation with state
+    useEffect(() => {
+        fetchConversations();
 
-    // ... existing poll useEffect ...
+        if (location.state?.startConversationWith) {
+            const targetUser = location.state.startConversationWith;
+            setActiveConv({
+                user_id: targetUser.id,
+                username: targetUser.username,
+                // Add default values if needed
+            });
+            fetchMessages(targetUser.id);
+        }
+    }, [location.state]);
 
-    // ... existing scroll useEffect ...
+    // Polling for new messages
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchConversations();
+            if (activeConv) {
+                // Pass true for silent update to avoid loading indicators or intrusive errors
+                fetchMessages(activeConv.user_id, true);
+            }
+        }, 5000); // Poll every 5 seconds
 
-    // ... scroll utils ...
+        return () => clearInterval(interval);
+    }, [activeConv]);
 
-    // ... fetchConversations ...
+    // Scroll to bottom when messages change
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
-    // ... fetchMessages ...
+    const fetchConversations = async () => {
+        try {
+            const data = await api.get('/messages/conversations');
+            // Assuming data is an array of conversations
+            setConversations(data || []);
+        } catch (error) {
+            console.error('Error fetching conversations:', error);
+        }
+    };
+
+    const fetchMessages = async (userId, silent = false) => {
+        if (!userId) return;
+        try {
+            const data = await api.get(`/messages/${userId}`);
+            setMessages(data || []);
+
+            // If fetching for active convo, mark as read
+            if (!silent && userId === activeConv?.user_id) {
+                // Option: Trigger a read status update here if API supports it
+            }
+        } catch (error) {
+            if (!silent) console.error('Error fetching messages:', error);
+        }
+    };
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -57,16 +109,23 @@ const MessagesPage = () => {
         }
     };
 
-    // ... loading check ...
+    const formatTime = (dateString, simple = false) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (simple) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        return formatDistanceToNow(date, { addSuffix: true, locale: fr });
+    };
 
-    // ... formatTime ...
+    if (!user) {
+        return <div className="p-8 text-center">Veuillez vous connecter pour voir vos messages.</div>;
+    }
 
     return (
         <div className="messages-layout container animate-fade-in">
-            {/* ... sidebar ... */}
             <div className="messages-container glass">
                 <div className="conv-sidebar">
-                    {/* ... sidebar header ... */}
                     <div className="sidebar-header">
                         <h2>Messages</h2>
                         <div className="search-bar">
@@ -76,13 +135,15 @@ const MessagesPage = () => {
                     </div>
 
                     <div className="conv-list">
-                        {/* ... conv items ... */}
                         {conversations.length > 0 ? (
                             conversations.map(conv => (
                                 <div
                                     key={conv.user_id}
                                     className={`conv-item ${activeConv?.user_id === conv.user_id ? 'active' : ''}`}
-                                    onClick={() => setActiveConv(conv)}
+                                    onClick={() => {
+                                        setActiveConv(conv);
+                                        fetchMessages(conv.user_id);
+                                    }}
                                 >
                                     <div className="avatar">
                                         <User size={24} />
@@ -107,25 +168,23 @@ const MessagesPage = () => {
                 <div className="chat-window">
                     {activeConv ? (
                         <>
-                            {/* ... chat header ... */}
                             <div className="chat-header">
                                 <div className="user-info">
                                     <div className="avatar"><User size={24} /></div>
                                     <div>
                                         <h3>{activeConv.username}</h3>
-                                        {activeConv.property_id && (
+                                        {activeConv.property_id ? (
                                             <span className="property-context">
                                                 Discussion à propos de: <strong>{activeConv.property_title || 'un bien'}</strong>
                                             </span>
-                                        ) || (
-                                                <span className="status"><Circle size={8} fill="#10b981" color="#10b981" /> En ligne</span>
-                                            )}
+                                        ) : (
+                                            <span className="status"><Circle size={8} fill="#10b981" color="#10b981" /> En ligne</span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
                             <div className="chat-messages">
-                                {/* ... messages mapping ... */}
                                 {messages.map((msg, index) => (
                                     <div
                                         key={index}
@@ -172,7 +231,7 @@ const MessagesPage = () => {
                                                 </button>
                                             )}
                                             <span className="msg-time">
-                                                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                {formatTime(msg.created_at, true)}
                                             </span>
                                         </div>
                                     </div>
@@ -274,9 +333,46 @@ const MessagesPage = () => {
                     background-color: var(--secondary);
                 }
 
-                /* ... existing conv-item ... */
-                /* ... rest of conv styles ... */
+                .conv-item {
+                    display: flex;
+                    gap: 1rem;
+                    padding: 1rem 1.5rem;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    border-bottom: 1px solid rgba(0,0,0,0.03);
+                }
+                .conv-item:hover { background: rgba(255,255,255,0.8); }
+                .conv-item.active { background: white; border-left: 4px solid var(--primary); }
                 
+                .conv-info { flex-grow: 1; min-width: 0; }
+                .conv-header { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+                .conv-header .name { font-weight: 600; color: var(--text-main); }
+                .conv-header .time { font-size: 0.75rem; color: var(--text-muted); }
+                .last-msg { 
+                    font-size: 0.85rem; 
+                    color: var(--text-muted); 
+                    white-space: nowrap; 
+                    overflow: hidden; 
+                    text-overflow: ellipsis; 
+                }
+                .no-conv { padding: 1.5rem; text-align: center; color: var(--text-muted); }
+
+                .avatar {
+                    width: 45px; height: 45px;
+                    border-radius: 50%;
+                    background: var(--surface);
+                    display: flex; align-items: center; justify-content: center;
+                    color: var(--primary);
+                    position: relative;
+                    flex-shrink: 0;
+                }
+                .unread-dot {
+                    position: absolute; top: 0; right: 0;
+                    width: 12px; height: 12px;
+                    background: #ef4444; border-radius: 50%;
+                    border: 2px solid white;
+                }
+
                 /* Chat Window */
                 .chat-window { 
                     display: flex; 
@@ -285,7 +381,16 @@ const MessagesPage = () => {
                     height: 100%;
                     min-height: 0; 
                 }
-                /* ... chat header ... */
+                .chat-header {
+                    padding: 1rem 2rem;
+                    border-bottom: 1px solid var(--border);
+                    background: white;
+                    flex-shrink: 0;
+                }
+                .user-info { display: flex; align-items: center; gap: 1rem; }
+                .user-info h3 { margin: 0; font-size: 1.1rem; }
+                .status { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem; }
+                .property-context { font-size: 0.85rem; color: var(--text-muted); }
                 
                 .chat-messages {
                     flex-grow: 1;
@@ -316,14 +421,103 @@ const MessagesPage = () => {
                     background-color: var(--secondary);
                 }
 
-                /* ... msg styles ... */
-                /* ... input styles ... */
+                .msg-wrapper { display: flex; }
+                .msg-wrapper.sent { justify-content: flex-end; }
+                .msg-bubble {
+                    max-width: 70%;
+                    padding: 0.8rem 1.2rem;
+                    border-radius: 18px;
+                    position: relative;
+                    font-size: 0.95rem;
+                }
+                .msg-wrapper.received .msg-bubble {
+                    background: white;
+                    color: var(--text-main);
+                    border-bottom-left-radius: 4px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                }
+                .msg-wrapper.sent .msg-bubble {
+                    background: var(--primary);
+                    color: white;
+                    border-bottom-right-radius: 4px;
+                    box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.3);
+                }
+                .msg-time {
+                    display: block;
+                    font-size: 0.7rem;
+                    margin-top: 0.3rem;
+                    opacity: 0.7;
+                    text-align: right;
+                }
+
+                .rental-request-msg, .boost-request-msg {
+                    background: rgba(255,255,255,0.2);
+                    padding: 0.5rem;
+                    border-radius: 8px;
+                    margin-bottom: 0.5rem;
+                }
+                .request-header {
+                    display: flex; align-items: center; gap: 0.5rem;
+                    font-weight: bold; margin-bottom: 0.3rem;
+                    font-size: 0.9rem;
+                }
+                .request-content { font-size: 0.9rem; opacity: 0.9; }
+                
+                .btn-approve-boost {
+                    margin-top: 0.5rem;
+                    background: white;
+                    color: var(--primary);
+                    border: none;
+                    padding: 0.4rem 0.8rem;
+                    border-radius: 8px;
+                    font-size: 0.85rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    width: 100%;
+                    transition: transform 0.1s;
+                }
+                .btn-approve-boost:hover { transform: scale(1.02); }
+
+                .chat-input {
+                    padding: 1.5rem;
+                    background: white;
+                    border-top: 1px solid var(--border);
+                    display: flex;
+                    gap: 1rem;
+                    flex-shrink: 0;
+                }
+                .chat-input input {
+                    flex-grow: 1;
+                    padding: 1rem 1.5rem;
+                    border-radius: 30px;
+                    border: 1px solid var(--border);
+                    background: var(--surface);
+                    outline: none;
+                    transition: all 0.3s;
+                }
+                .chat-input input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1); }
+                .send-btn {
+                    width: 50px; height: 50px;
+                    border-radius: 50%;
+                    display: flex; align-items: center; justify-content: center;
+                    padding: 0;
+                }
+                
+                .no-chat {
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--text-muted);
+                    text-align: center;
+                }
+                .no-chat h3 { font-size: 1.5rem; margin: 1rem 0 0.5rem; color: var(--text-main); }
 
                 .chat-input input:disabled {
                     background: #e2e8f0;
                     cursor: not-allowed;
                 }
-            `}</style>
             `}</style>
         </div >
     );
