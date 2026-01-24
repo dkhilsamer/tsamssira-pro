@@ -30,6 +30,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src/**/*.js",
+    "src/**/*.jsx",
+    "vite.config.js"
   ]
 }
