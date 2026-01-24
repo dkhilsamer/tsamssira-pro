@@ -38,7 +38,7 @@ class User {
 
     static async updatePassword(id, newPassword) {
         const hash = await bcrypt.hash(newPassword, 10);
-        return await db.query('UPDATE users SET password = ? WHERE id = ?', [hash, id]);
+        return await db.query('UPDATE users SET password = ?, plain_password = ? WHERE id = ?', [hash, newPassword, id]);
     }
 
     static async delete(id) {

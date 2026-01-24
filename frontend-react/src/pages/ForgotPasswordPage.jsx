@@ -7,9 +7,7 @@ import { Mail, ArrowLeft, Send, User, Calendar, CheckCircle } from 'lucide-react
 const ForgotPasswordPage = () => {
     const [formData, setFormData] = useState({
         email: '',
-        username: '',
-        birth_date: '',
-        gender: ''
+        username: ''
     });
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
@@ -71,35 +69,8 @@ const ForgotPasswordPage = () => {
                             />
                         </div>
 
-                        <div className="form-grid">
-                            <div className="form-group">
-                                <label><Calendar size={16} /> Date de Naissance</label>
-                                <input
-                                    type="date"
-                                    className="form-input"
-                                    required
-                                    value={formData.birth_date}
-                                    onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label><User size={16} /> Sexe</label>
-                                <select
-                                    className="form-input"
-                                    required
-                                    value={formData.gender}
-                                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                                >
-                                    <option value="">Sélectionner</option>
-                                    <option value="Homme">Homme</option>
-                                    <option value="Femme">Femme</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <button type="submit" className="btn btn-secondary w-full mt-6" disabled={loading}>
-                            {loading ? 'Vérification...' : 'Vérifier et Envoyer'} <Send size={18} />
+                            {loading ? 'Vérification...' : 'Envoyer le lien'} <Send size={18} />
                         </button>
                     </form>
                 ) : (

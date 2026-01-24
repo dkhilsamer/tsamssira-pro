@@ -91,38 +91,26 @@ router.post('/logout', (req, res) => {
 
 // Forgot Password
 router.post('/forgot-password', async (req, res) => {
-    const { email, username, birth_date, gender } = req.body;
+    const { email, username } = req.body;
 
-    // Strict Validation
-    if (!email || !username || !birth_date || !gender) {
-        return res.status(400).json({ error: 'Veuillez remplir tous les champs de sécurité.' });
+    // Simplified Validation
+    if (!email || !username) {
+        return res.status(400).json({ error: 'Veuillez remplir email et nom d\'utilisateur.' });
     }
 
     try {
         const user = await User.findByEmail(email);
 
-        // Security Check: Verify all fields match
+        // Security Check: Verify fields match
         if (!user) {
+            // Fake delay to prevent enumeration
+            await new Promise(r => setTimeout(r, 1000));
             return res.status(404).json({ error: 'Informations incorrectes.' });
         }
 
         // Check username matches
         if (user.username !== username) {
             return res.status(400).json({ error: 'Le nom d\'utilisateur ne correspond pas à cet email.' });
-        }
-
-        // Check gender matches
-        if (user.gender !== gender) {
-            return res.status(400).json({ error: 'Le sexe ne correspond pas.' });
-        }
-
-        // Check birth_date matches (Date string comparison)
-        // Ensure format yyyy-mm-dd
-        const userBirth = new Date(user.birth_date).toISOString().split('T')[0];
-        const inputBirth = new Date(birth_date).toISOString().split('T')[0];
-
-        if (userBirth !== inputBirth) {
-            return res.status(400).json({ error: 'La date de naissance ne correspond pas.' });
         }
 
         // Verification Passed! Generate Token
