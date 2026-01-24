@@ -34,7 +34,7 @@ const Navbar = () => {
         <nav className="navbar glass" aria-label="Menu principal">
             <div className="nav-container">
                 <Link to="/" className="logo" aria-label="Retour à l'accueil">
-                    Tsamssira Pro <img src="/logo.png" alt="Logo Tsamssira Pro" className="logo-img" />
+                    <img src="/logo.png" alt="Logo Tsamssira Pro" className="logo-img" /> Tsamssira Pro
                 </Link>
 
                 {/* Mobile Menu Toggle */}
@@ -126,9 +126,10 @@ const Navbar = () => {
                     gap: 8px;
                 }
                 .logo-img {
-                    height: 60px;
+                    height: 50px;
                     width: auto;
                     object-fit: contain;
+                    mix-blend-mode: multiply; /* Helps removing white background on light surfaces */
                 }
                 .mobile-toggle {
                     display: none;
@@ -156,7 +157,8 @@ const Navbar = () => {
                 }
                 .nav-item:hover, .nav-item.active {
                     color: var(--secondary);
-                    background: rgba(212, 175, 55, 0.05);
+                    background: rgba(212, 175, 55, 0.1);
+                    font-weight: 700;
                 }
                 .user-menu {
                     display: flex;
@@ -220,13 +222,14 @@ const Navbar = () => {
                         right: -100%;
                         width: 80%;
                         height: 100vh;
-                        background: white;
+                        background: var(--surface);
                         flex-direction: column;
                         justify-content: center;
                         transition: right 0.3s ease;
                         box-shadow: -10px 0 30px rgba(0,0,0,0.1);
                         padding: 2rem;
                         gap: 2rem;
+                        border-left: 1px solid var(--border);
                     }
                     .nav-links.open { right: 0; }
                     .user-menu {
@@ -236,7 +239,22 @@ const Navbar = () => {
                         width: 100%;
                     }
                     .auth-buttons { flex-direction: column; width: 100%; }
-                    .nav-item { width: 100%; justify-content: center; font-size: 1.2rem; }
+                    .nav-item { 
+                        width: 100%; 
+                        justify-content: center; 
+                        font-size: 1.3rem;
+                        padding: 1.2rem;
+                        color: var(--primary); /* Stronger contrast on mobile menu background */
+                    }
+                    .nav-item:hover, .nav-item.active {
+                        background: var(--background);
+                        color: var(--secondary);
+                    }
+                    .user-name {
+                        color: var(--primary);
+                        padding: 1rem;
+                        font-size: 1.2rem;
+                    }
                 }
 
                 @media (max-width: 480px) {

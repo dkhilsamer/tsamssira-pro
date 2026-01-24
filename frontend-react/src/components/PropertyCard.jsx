@@ -129,6 +129,7 @@ const PropertyCard = ({ property }) => {
                     font-size: 1.2rem;
                     margin-bottom: 0.75rem;
                     color: var(--primary);
+                    font-weight: 700;
                     white-space: nowrap;
                     overflow: hidden;
                     text-overflow: ellipsis;

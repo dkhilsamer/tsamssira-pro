@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Clock, Home, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Clock, Home, CheckCircle2, AlertCircle, Send, Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const HistoryPage = () => {
@@ -15,15 +15,17 @@ const HistoryPage = () => {
     const fetchHistory = async () => {
         try {
             // Fetch properties, received requests, and sent requests
-            const [propertiesRes, receivedReqsRes, sentReqsRes] = await Promise.all([
-                api.get('/dashboard/my-properties'),
+            const [propertiesRes, receivedReqsRes, sentReqsRes, notifsRes] = await Promise.all([
+                api.get('/properties/my-properties'),
                 api.get('/requests'),
-                api.get('/requests/sent')
+                api.get('/requests/sent'),
+                api.get('/notifications')
             ]);
 
             const properties = propertiesRes || [];
             const receivedRequests = receivedReqsRes || [];
             const sentRequests = sentReqsRes || [];
+            const notifications = notifsRes || [];
 
             const timeline = [];
 
@@ -73,6 +75,18 @@ const HistoryPage = () => {
                     description: `Vous avez envoyé une demande pour "${r.property_title}".`,
                     link: `/properties/${r.property_id}`,
                     icon: <Send size={18} color="#2563eb" />
+                });
+            });
+
+            // Add Notifications to Timeline
+            notifications.forEach(n => {
+                timeline.push({
+                    type: 'notification',
+                    date: new Date(n.created_at),
+                    title: n.title,
+                    description: n.message,
+                    link: n.link,
+                    icon: <Bell size={18} color="var(--secondary)" />
                 });
             });
 
@@ -154,8 +168,9 @@ const HistoryPage = () => {
 
                 .timeline-content { flex-grow: 1; }
                 .timeline-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-                .timeline-header h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-main); }
-                .date { font-size: 0.85rem; color: var(--text-muted); }
+                .timeline-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+                .date { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+                .timeline-content p { color: var(--text-main); line-height: 1.5; font-size: 1rem; }
                 
                 .btn-link { 
                     display: inline-block; 
@@ -168,6 +183,7 @@ const HistoryPage = () => {
                 .btn-link:hover { text-decoration: underline; }
 
                 .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); }
+                .empty-state p { font-size: 1.2rem; font-weight: 500; }
             `}</style>
         </div>
     );
