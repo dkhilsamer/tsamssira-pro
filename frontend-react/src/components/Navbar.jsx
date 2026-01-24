@@ -28,18 +28,24 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="navbar glass">
+        <nav className="navbar glass" aria-label="Menu principal">
             <div className="nav-container">
-                <Link to="/" className="logo">
-                    Tsamssira Pro <img src="/logo.png" alt="Logo" className="logo-img" />
+                <Link to="/" className="logo" aria-label="Retour à l'accueil">
+                    Tsamssira Pro <img src="/logo.png" alt="Logo Tsamssira Pro" className="logo-img" />
                 </Link>
 
                 {/* Mobile Menu Toggle */}
-                <button className="mobile-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                <button
+                    className="mobile-toggle"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+                    aria-expanded={isMenuOpen}
+                    aria-controls="nav-links"
+                >
                     {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>
 
-                <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+                <div id="nav-links" className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
                     <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                         <Home size={18} /> Accueil
                     </Link>

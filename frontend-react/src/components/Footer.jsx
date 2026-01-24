@@ -10,9 +10,9 @@ const Footer = () => {
                     <Link to="/" className="logo">Tsamssira Pro</Link>
                     <p>Votre partenaire de confiance pour l'immobilier en Tunisie. Trouvez la perle rare en quelques clics.</p>
                     <div className="social-links">
-                        <Facebook size={20} />
-                        <Instagram size={20} />
-                        <Twitter size={20} />
+                        <Facebook size={20} aria-label="Facebook" style={{ cursor: 'pointer' }} />
+                        <Instagram size={20} aria-label="Instagram" style={{ cursor: 'pointer' }} />
+                        <Twitter size={20} aria-label="Twitter" style={{ cursor: 'pointer' }} />
                     </div>
                 </div>
 

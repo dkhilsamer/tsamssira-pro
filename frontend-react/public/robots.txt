@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://tsamssira-pro.onrender.com/sitemap.xml
+Sitemap: https://www.tsamssirapro.online/sitemap.xml

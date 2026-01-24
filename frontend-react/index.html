@@ -5,19 +5,20 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="manifest" href="/manifest.json" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-  <title>Tsamssira Pro | Immobilier de Luxe en Tunisie</title>
+  <title>Tsamssira Pro | Immobilier de Luxe en Tunisie - Vente & Location</title>
   <meta name="description"
-    content="Trouvez votre futur chez-vous avec Tsamssira Pro. Vente et location de propriétés de luxe en Tunisie." />
+    content="Découvrez les meilleures propriétés de luxe en Tunisie avec Tsamssira Pro. Vente et location d'appartements, villas et maisons de prestige. Trouvez votre futur chez-vous dès aujourd'hui." />
+  <meta name="keywords" content="immobilier tunisie, luxe, vente, location, appartement tunis, villa hammamet, maison prestige" />
+  <meta name="author" content="Tsamssira Pro" />
+  <link rel="canonical" href="https://www.tsamssirapro.online/" />
 
-  <!-- Cache Control (Force reload) -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
+  <!-- Cache Control -->
+  <meta http-equiv="Cache-Control" content="public, max-age=3600" />
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,28 +29,62 @@
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://tsamssirapro.online/" />
+  <meta property="og:url" content="https://www.tsamssirapro.online/" />
   <meta property="og:title" content="Tsamssira Pro | Immobilier de Luxe en Tunisie" />
   <meta property="og:description"
     content="Trouvez votre futur chez-vous avec Tsamssira Pro. Vente et location de propriétés de luxe en Tunisie." />
-  <meta property="og:image" content="https://tsamssirapro.online/og-image.jpg" />
+  <meta property="og:image" content="https://www.tsamssirapro.online/og-image.jpg" />
+  <meta property="og:site_name" content="Tsamssira Pro" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content="https://tsamssirapro.online/" />
+  <meta property="twitter:url" content="https://www.tsamssirapro.online/" />
   <meta property="twitter:title" content="Tsamssira Pro | Immobilier de Luxe en Tunisie" />
   <meta property="twitter:description"
     content="Trouvez votre futur chez-vous avec Tsamssira Pro. Vente et location de propriétés de luxe en Tunisie." />
-  <meta property="twitter:image" content="https://tsamssirapro.online/og-image.jpg" />
+  <meta property="twitter:image" content="https://www.tsamssirapro.online/og-image.jpg" />
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- Static content for SEO and bots -->
+    <header style="display:none">
+      <h1>Tsamssira Pro - Immobilier de Luxe en Tunisie</h1>
+      <p>Votre partenaire de confiance pour l'achat, la vente et la location de biens immobiliers d'exception.</p>
+    </header>
+    <main style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:'Outfit', sans-serif; background-color:#0f172a; color:white;">
+      <div class="loader-container" style="text-align:center;">
+        <h2 style="font-size:2rem; margin-bottom:1rem;">Tsamssira Pro</h2>
+        <div class="spinner" style="width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top:4px solid #3b82f6; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto;"></div>
+        <p style="margin-top:1rem; opacity:0.8;">Chargement de votre expérience immobilière...</p>
+      </div>
+    </main>
+    <footer style="display:none">
+      <ul>
+        <li>Vente d'appartements de luxe</li>
+        <li>Location de villas de prestige</li>
+        <li>Maison de vacances en Tunisie</li>
+      </ul>
+    </footer>
+  </div>
+
+  <noscript>
+    <div style="padding: 20px; text-align: center; font-family: sans-serif;">
+      <h1>Tsamssira Pro</h1>
+      <p>Désolé, cette application nécessite JavaScript pour fonctionner correctement.</p>
+      <p>Veuillez activer JavaScript dans votre navigateur pour découvrir nos propriétés de luxe en Tunisie.</p>
+    </div>
+  </noscript>
+
+  <style>
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+
   <script type="module" src="/src/main.jsx"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
       });
     }
   </script>
