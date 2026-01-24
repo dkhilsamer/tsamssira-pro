@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import PropertyCard from '../components/PropertyCard';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import PropertyMap from '../components/PropertyMap';
+import { Search, SlidersHorizontal, Map as MapIcon, Grid } from 'lucide-react';
 
 const HomePage = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'map'
     const [filters, setFilters] = useState({
         city: '',
         type: '',
@@ -154,6 +156,21 @@ const HomePage = () => {
                 <div className="section-header">
                     <h2>Nos Propriétés en Vedette</h2>
                     <p>Découvrez nos biens les plus populaires et boostés</p>
+
+                    <div className="view-toggle">
+                        <button
+                            className={`toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                            onClick={() => setViewMode('grid')}
+                        >
+                            <Grid size={18} /> Grille
+                        </button>
+                        <button
+                            className={`toggle-btn ${viewMode === 'map' ? 'active' : ''}`}
+                            onClick={() => setViewMode('map')}
+                        >
+                            <MapIcon size={18} /> Carte
+                        </button>
+                    </div>
                 </div>
 
                 {loading ? (
@@ -161,6 +178,8 @@ const HomePage = () => {
                         <div className="spinner"></div>
                         <p>Chargement des perles rares...</p>
                     </div>
+                ) : viewMode === 'map' ? (
+                    <PropertyMap properties={properties} height="600px" />
                 ) : (
                     <div className="property-grid">
                         {properties.length > 0 ? (
@@ -265,7 +284,34 @@ const HomePage = () => {
                 .py-12 { padding-top: 5rem; padding-bottom: 5rem; }
                 .section-header { margin-bottom: 4rem; text-align: center; }
                 .section-header h2 { font-size: 2.8rem; color: var(--primary); margin-bottom: 0.5rem; }
-                .section-header p { color: var(--text-muted); font-size: 1.1rem; }
+                .section-header p { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1.5rem; }
+                
+                .view-toggle {
+                    display: inline-flex;
+                    background: var(--surface);
+                    padding: 0.25rem;
+                    border-radius: 12px;
+                    border: 1px solid var(--border);
+                    margin-top: 1rem;
+                }
+                .toggle-btn {
+                    padding: 0.5rem 1.25rem;
+                    border-radius: 10px;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-weight: 600;
+                    color: var(--text-muted);
+                    transition: all 0.2s;
+                }
+                .toggle-btn.active {
+                    background: var(--primary);
+                    color: white;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
                 .property-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; }
                 .loading-state { text-align: center; padding: 10rem 0; }
                 .no-results { grid-column: 1 / -1; text-align: center; padding: 5rem; background: #f1f5f9; border-radius: 20px; }

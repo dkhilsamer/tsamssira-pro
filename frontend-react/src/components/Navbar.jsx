@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { User, LogOut, MessageSquare, LayoutDashboard, Home, Menu, X } from 'lucide-react';
+import { User, LogOut, MessageSquare, LayoutDashboard, Home, Menu, X, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -59,6 +62,14 @@ const Navbar = () => {
                                 <MessageSquare size={18} /> Messages
                             </Link>
                             <div className="user-menu">
+                                <NotificationBell />
+                                <button
+                                    onClick={toggleTheme}
+                                    className="nav-item theme-toggle"
+                                    aria-label="Changer le thème"
+                                >
+                                    {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                                </button>
                                 <span className="user-name">
                                     <User size={18} /> {user.username}
                                 </span>
@@ -69,6 +80,13 @@ const Navbar = () => {
                         </>
                     ) : (
                         <div className="auth-buttons">
+                            <button
+                                onClick={toggleTheme}
+                                className="nav-item theme-toggle"
+                                aria-label="Changer le thème"
+                            >
+                                {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                            </button>
                             <Link to="/login" className="btn btn-primary-outline">Connexion</Link>
                             <Link to="/register" className="btn btn-secondary">Inscription</Link>
                         </div>
@@ -177,6 +195,21 @@ const Navbar = () => {
                     border: 2px solid var(--primary);
                     color: var(--primary);
                     background: transparent;
+                }
+                .theme-toggle {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: var(--text-main);
+                    padding: 0.5rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: transform 0.3s ease;
+                }
+                .theme-toggle:hover {
+                    transform: rotate(15deg);
+                    color: var(--secondary);
                 }
 
                 @media (max-width: 992px) {

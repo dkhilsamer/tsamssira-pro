@@ -3,6 +3,7 @@ const router = express.Router();
 const Message = require('../models/Message');
 const User = require('../models/User');
 const Property = require('../models/Property');
+const Notification = require('../models/Notification');
 const { sendNewMessageNotification } = require('../services/emailService');
 
 // Middleware to check auth
@@ -67,7 +68,18 @@ router.post('/', async (req, res) => {
             if (receiver && receiver.email) {
                 const senderName = sender ? sender.username : 'Un utilisateur';
                 const propertyTitle = property ? property.title : 'un bien immobilier';
+
+                // Email
                 await sendNewMessageNotification(receiver.email, senderName, propertyTitle);
+
+                // Internal Notification
+                await Notification.create({
+                    user_id: receiver_id,
+                    type: 'message',
+                    title: 'Nouveau message',
+                    message: `${senderName} vous a envoyé un message : "${content.substring(0, 30)}${content.length > 30 ? '...' : ''}"`,
+                    link: `/messages`
+                });
             }
         } catch (emailError) {
             console.error('Email notification error:', emailError);

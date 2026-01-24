@@ -5,6 +5,7 @@ const path = require('path');
 const Property = require('../models/Property');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const { addWatermark } = require('../services/watermarkService');
 const { sendEmail } = require('../services/emailService');
 
 // Get all properties
@@ -99,19 +100,24 @@ router.post('/', upload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'im
             if (file.path && file.path.startsWith('http')) {
                 data.main_image = file.path;
             } else {
+                const absolutePath = path.join(__dirname, '../../uploads/', file.filename);
+                await addWatermark(absolutePath);
                 data.main_image = '/uploads/' + file.filename;
             }
         }
 
         // Handle Extra Images
         if (req.files && req.files['images']) {
-            data.images = req.files['images'].map(file => {
+            data.images = [];
+            for (const file of req.files['images']) {
                 if (file.path && file.path.startsWith('http')) {
-                    return file.path;
+                    data.images.push(file.path);
                 } else {
-                    return '/uploads/' + file.filename;
+                    const absolutePath = path.join(__dirname, '../../uploads/', file.filename);
+                    await addWatermark(absolutePath);
+                    data.images.push('/uploads/' + file.filename);
                 }
-            });
+            }
         } else if (!data.images) {
             data.images = [];
         }

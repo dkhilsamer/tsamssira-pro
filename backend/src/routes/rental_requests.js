@@ -4,6 +4,7 @@ const RentalRequest = require('../models/RentalRequest');
 const Property = require('../models/Property');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const Notification = require('../models/Notification');
 const { sendRentalRequestNotification, sendEmail } = require('../services/emailService');
 
 // Get all requests (Admin/Owner only - simplified to auth required)
@@ -86,6 +87,15 @@ router.post('/', async (req, res) => {
                     content: messageContent,
                     type: 'rental_request'
                 });
+
+                // 3. Internal Notification
+                await Notification.create({
+                    user_id: property.user_id,
+                    type: 'request',
+                    title: 'Nouvelle demande',
+                    message: `Vous avez reçu une nouvelle demande pour "${property.title}" de la part de ${visitorDisplay}.`,
+                    link: `/dashboard/requests`
+                });
             }
         } catch (notifyErr) {
             console.error('Notification failed:', notifyErr.message);
@@ -128,6 +138,15 @@ router.put('/:id/status', async (req, res) => {
                     property_id: request.property_id,
                     content: messageContent,
                     type: 'chat'
+                });
+
+                // Internal Notification
+                await Notification.create({
+                    user_id: request.user_id,
+                    type: 'status_update',
+                    title: `Demande ${statusText}`,
+                    message: messageContent,
+                    link: `/dashboard/history`
                 });
 
                 // Optionally send email

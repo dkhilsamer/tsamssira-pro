@@ -1,4 +1,6 @@
 import React from 'react';
+import { ThemeProvider } from './context/ThemeContext';
+
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
@@ -30,84 +32,88 @@ const ProtectedRoute = ({ children }) => {
 
 const App = () => {
     return (
-        <Router>
-            <div className="app">
-                <Navbar />
-                <main>
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/property/:id" element={<PropertyDetailPage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <ThemeProvider>
+            <Router>
+                <div className="app">
+                    <Navbar />
+                    <main>
+                        <Routes>
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/property/:id" element={<PropertyDetailPage />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/register" element={<RegisterPage />} />
+                            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-                        {/* Protected Routes */}
-                        <Route path="/dashboard" element={
-                            <ProtectedRoute>
-                                <DashboardPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/dashboard/my-properties" element={
-                            <ProtectedRoute>
-                                <MyPropertiesPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/add-property" element={
-                            <ProtectedRoute>
-                                <AddPropertyPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/edit-property/:id" element={
-                            <ProtectedRoute>
-                                <EditPropertyPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/messages" element={
-                            <ProtectedRoute>
-                                <MessagesPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/dashboard/users" element={
-                            <ProtectedRoute>
-                                <UsersPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/payment" element={
-                            <ProtectedRoute>
-                                <PaymentPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/dashboard/history" element={
-                            <ProtectedRoute>
-                                <HistoryPage />
-                            </ProtectedRoute>
-                        } />
-                        <Route path="/dashboard/requests" element={
-                            <ProtectedRoute>
-                                <RequestsPage />
-                            </ProtectedRoute>
-                        } />
+                            {/* Protected Routes */}
+                            <Route path="/dashboard" element={
+                                <ProtectedRoute>
+                                    <DashboardPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/dashboard/my-properties" element={
+                                <ProtectedRoute>
+                                    <MyPropertiesPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/add-property" element={
+                                <ProtectedRoute>
+                                    <AddPropertyPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/edit-property/:id" element={
+                                <ProtectedRoute>
+                                    <EditPropertyPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/messages" element={
+                                <ProtectedRoute>
+                                    <MessagesPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/dashboard/users" element={
+                                <ProtectedRoute>
+                                    <UsersPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/payment" element={
+                                <ProtectedRoute>
+                                    <PaymentPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/dashboard/history" element={
+                                <ProtectedRoute>
+                                    <HistoryPage />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/dashboard/requests" element={
+                                <ProtectedRoute>
+                                    <RequestsPage />
+                                </ProtectedRoute>
+                            } />
 
-                        {/* Fallback */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                </main>
-                <Footer />
-                <Toaster position="top-right" />
-            </div>
+                            {/* Fallback */}
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </main>
+                    <Footer />
+                    <Toaster position="top-right" />
+                </div>
 
-            <style jsx>{`
+                <style jsx>{`
                 .app {
                     min-height: 100vh;
                     display: flex;
                     flex-direction: column;
+                    background-color: var(--background);
+                    color: var(--text-main);
                 }
                 main {
                     flex-grow: 1;
                 }
             `}</style>
-        </Router>
+            </Router>
+        </ThemeProvider>
     );
 };
 

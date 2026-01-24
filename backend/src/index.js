@@ -94,6 +94,7 @@ app.use('/api/requests', require('./routes/rental_requests'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/payment', require('./routes/payment'));
 app.use('/api/messages', require('./routes/messages'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 app.use('/', require('./routes/sitemap'));
 
