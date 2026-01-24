@@ -4,6 +4,7 @@ import api from '../services/api';
 import { toast } from 'react-hot-toast';
 import { Bed, Bath, Maximize, MapPin, Send, MessageCircle, ExternalLink, Map as MapIcon, User, Phone, Mail as MailIcon } from 'lucide-react';
 import PropertyMap from '../components/PropertyMap';
+import './PropertyDetailPage.css';
 
 const PropertyDetailPage = () => {
     const { id } = useParams();
@@ -114,7 +115,6 @@ const PropertyDetailPage = () => {
     if (loading) return <div className="loading-state"><div className="spinner"></div></div>;
 
     const allImages = property ? [property.main_image, ...(property.images || [])].filter(Boolean) : [];
-
     return (
         <div className="property-detail container py-12 animate-fade-in">
             <div className="gallery-section">
@@ -253,159 +253,6 @@ const PropertyDetailPage = () => {
                     </div>
                 </div>
             </div>
-
-            <style jsx>{`
-                .property-detail { padding-top: 1.5rem; }
-                
-                .gallery-section { margin-bottom: 2rem; }
-                @media (min-width: 768px) { .gallery-section { margin-bottom: 3rem; } }
-
-                .main-image {
-                    height: 50vh;
-                    min-height: 300px;
-                    border-radius: 20px;
-                    overflow: hidden;
-                    position: relative;
-                    margin-bottom: 1rem;
-                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-                }
-                .main-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-                
-                @media (min-width: 768px) {
-                    .main-image { height: 500px; border-radius: 30px; }
-                }
-
-                .image-thumbnails {
-                    display: flex;
-                    gap: 1rem;
-                    overflow-x: auto;
-                    padding-bottom: 0.5rem;
-                    scrollbar-width: thin;
-                }
-                .image-thumbnails::-webkit-scrollbar { height: 6px; }
-                .image-thumbnails::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
-                .thumbnail {
-                    width: 100px;
-                    height: 80px;
-                    border-radius: 12px;
-                    overflow: hidden;
-                    cursor: pointer;
-                    opacity: 0.6;
-                    transition: all 0.2s;
-                    border: 2px solid transparent;
-                    flex-shrink: 0;
-                }
-                .thumbnail:hover { opacity: 1; }
-                .thumbnail.active { opacity: 1; border-color: var(--primary); transform: scale(1.05); }
-                .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-
-                .type-badge {
-                    position: absolute;
-                    top: 15px;
-                    right: 15px;
-                    background: var(--secondary);
-                    color: white;
-                    padding: 6px 16px;
-                    border-radius: 10px;
-                    font-weight: 700;
-                    font-size: 0.9rem;
-                    z-index: 2;
-                }
-                .content-grid {
-                    display: grid;
-                    grid-template-columns: 1fr;
-                    gap: 2rem;
-                }
-                @media (min-width: 1024px) {
-                    .content-grid { grid-template-columns: 2fr 1fr; gap: 3rem; }
-                }
-
-                .details-card {
-                    background: var(--surface);
-                    padding: 1.5rem;
-                    border-radius: 24px;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-                }
-                @media (min-width: 768px) {
-                    .details-card { padding: 3rem; border-radius: 30px; }
-                }
-
-                .header .price { font-size: 1.8rem; color: var(--secondary); font-weight: 800; margin-bottom: 0.5rem; }
-                .header h1 { font-size: 1.8rem; color: var(--primary); margin-bottom: 0.5rem; line-height: 1.2; }
-                @media (min-width: 768px) {
-                    .header .price { font-size: 2.5rem; }
-                    .header h1 { font-size: 2.5rem; }
-                }
-                
-                .header .location { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 1rem; }
-                .header-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-                .map-link { display: flex; align-items: center; gap: 0.5rem; color: var(--secondary); font-weight: 600; text-decoration: none; font-size: 0.9rem; }
-                .map-link:hover { text-decoration: underline; }
-                
-                .stats-grid { 
-                    display: grid; 
-                    grid-template-columns: repeat(3, 1fr); 
-                    gap: 1rem; 
-                    margin: 2rem 0;
-                    padding: 1.5rem;
-                    background: var(--background);
-                    border-radius: 16px;
-                }
-                .stat { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; color: var(--primary); }
-                .stat .value { font-size: 1.1rem; font-weight: 700; }
-                .stat .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-                
-                @media (min-width: 768px) {
-                    .stat { flex-direction: row; text-align: left; }
-                }
-                
-                .description h3 { font-size: 1.3rem; margin-bottom: 1rem; }
-                .description p { color: #4b5563; line-height: 1.7; font-size: 1rem; }
-                
-                .map-section h3 { font-size: 1.3rem; margin-bottom: 1rem; }
-                .mt-12 { margin-top: 3rem; }
-
-                .contact-card { padding: 2rem; border-radius: 24px; border: 1px solid var(--border); }
-                @media (min-width: 768px) {
-                    .contact-card { padding: 2.5rem; border-radius: 30px; }
-                }
-                .contact-card h3 { margin-bottom: 1.5rem; color: var(--primary); font-size: 1.2rem; }
-
-                .divider { text-align: center; margin: 1.5rem 0; color: var(--text-muted); font-weight: 600; font-size: 0.8rem; position: relative; }
-                .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: var(--border); }
-                .divider::before { left: 0; } .divider::after { right: 0; }
-                
-                .contact-form { display: flex; flex-direction: column; gap: 1rem; }
-                .w-full { width: 100%; }
-                .mb-6 { margin-bottom: 1.5rem; }
-
-                .owner-contact-info {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.8rem;
-                    background: var(--background);
-                    padding: 1.2rem;
-                    border-radius: 16px;
-                }
-                .owner-detail, .owner-link {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    color: var(--text-main);
-                    font-size: 0.95rem;
-                    font-weight: 500;
-                    text-decoration: none;
-                    transition: color 0.2s;
-                }
-                .owner-link:hover { color: var(--secondary); }
-                .owner-detail { color: var(--primary); font-weight: 700; }
-                
-                @media (max-width: 1024px) {
-                    .content-grid { grid-template-columns: 1fr; }
-                    .sidebar { position: static; }
-                }
-            `}</style>
         </div>
     );
 };
