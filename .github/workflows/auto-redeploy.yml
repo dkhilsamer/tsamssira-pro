@@ -11,15 +11,17 @@ permissions:
 jobs:
   trigger-deploy:
     runs-on: ubuntu-latest
+    env:
+      RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
     steps:
       - name: Trigger Render Deploy Hook
-        if: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        if: env.RENDER_DEPLOY_HOOK != ''
         run: |
-          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          curl -X POST "$RENDER_DEPLOY_HOOK"
           echo "Triggered deploy hook successfully."
 
       - name: Check for Secret
-        if: ${{ !secrets.RENDER_DEPLOY_HOOK }}
+        if: env.RENDER_DEPLOY_HOOK == ''
         run: |
-          echo "::error::Secret RENDER_DEPLOY_HOOK is missing! Please add it in GitHub Repository Settings > Secrets and variables > Actions."
+          echo "::error::Secret RENDER_DEPLOY_HOOK is missing! Please add it as a secret in GitHub Repository Settings > Secrets and variables > Actions."
           exit 1
