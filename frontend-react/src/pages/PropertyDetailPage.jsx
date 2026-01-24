@@ -43,9 +43,16 @@ const PropertyDetailPage = () => {
             await api.post('/requests', {
                 ...contactData,
                 property_id: id,
-                request_type: 'Renseignements' // Default value required by backend
+                request_type: 'Renseignements'
             });
             toast.success('Demande envoyée avec succès !');
+            setContactData({
+                visitor_name: '',
+                visitor_email: '',
+                visitor_phone: '',
+                num_persons: 1,
+                message: 'Je suis intéressé par cette propriété.'
+            });
         } catch (error) {
             toast.error(error.message);
         }
@@ -59,42 +66,19 @@ const PropertyDetailPage = () => {
             return;
         }
 
-        // Prevent self-chat
         if (user.id === property.user_id) {
             toast.error("Vous ne pouvez pas discuter avec vous-même !");
             return;
         }
 
-        try {
-            const msg = `Bonjour, je suis intéressé par votre propriété "${property.title}".`;
-            // Check if we should send an initial message or just redirect
-            // Let's send the message to ensure the conversation exists
-            await api.post('/messages', {
-                receiver_id: property.user_id,
-                content: msg,
-                property_id: property.id
-            });
-
-            navigate('/messages', {
-                state: {
-                    userId: property.user_id,
-                    username: property.owner_username,
-                    propertyId: property.id,
-                    propertyTitle: property.title
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            // Even if message fails (e.g. redundant), navigate anyway
-            navigate('/messages', {
-                state: {
-                    userId: property.user_id,
-                    username: property.owner_username,
-                    propertyId: property.id,
-                    propertyTitle: property.title
-                }
-            });
-        }
+        navigate('/messages', {
+            state: {
+                userId: property.user_id,
+                username: property.owner_username,
+                propertyId: property.id,
+                propertyTitle: property.title
+            }
+        });
     };
 
     const [activeImage, setActiveImage] = useState('');

@@ -78,6 +78,7 @@ router.post('/', async (req, res) => {
     try {
         const insertId = await RentalRequest.create({
             ...req.body,
+            visitor_phone: visitor_phone ? visitor_phone.toString().substring(0, 20) : '',
             user_id: req.session.userId || null
         });
 
