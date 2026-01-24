@@ -76,7 +76,12 @@ class Property {
     }
 
     static async findById(id) {
-        const rows = await db.query('SELECT * FROM properties WHERE id = ?', [id]);
+        const rows = await db.query(`
+            SELECT p.*, u.username as owner_username 
+            FROM properties p 
+            JOIN users u ON p.user_id = u.id 
+            WHERE p.id = ?
+        `, [id]);
         if (rows.length === 0) return null;
 
         const property = rows[0];

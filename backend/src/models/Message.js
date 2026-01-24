@@ -23,6 +23,7 @@ class Message {
                 m.is_read,
                 m.type,
                 m.property_id,
+                p.title as property_title,
                 (SELECT COUNT(*) FROM messages m2 WHERE m2.sender_id = u.id AND m2.receiver_id = ? AND m2.is_read = 0) as unread_count
             FROM users u
             JOIN (
@@ -40,6 +41,7 @@ class Message {
                 (m.sender_id = ? AND m.receiver_id = u.id) OR 
                 (m.sender_id = u.id AND m.receiver_id = ?)
             ) AND m.created_at = latest.max_time
+            LEFT JOIN properties p ON m.property_id = p.id
             ORDER BY m.created_at DESC
         `;
         return await db.query(sql, [userId, userId, userId, userId, userId, userId]);

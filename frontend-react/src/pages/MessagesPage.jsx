@@ -25,17 +25,21 @@ const MessagesPage = () => {
     useEffect(() => {
         const targetId = location.state?.userId;
         const targetUsername = location.state?.username;
+        const targetPropertyId = location.state?.propertyId;
+        const targetPropertyTitle = location.state?.propertyTitle;
 
         if (targetId) {
             const existingConv = conversations.find(c => c.user_id === targetId);
 
             if (existingConv) {
-                setActiveConv(existingConv);
+                setActiveConv({ ...existingConv, property_id: targetPropertyId || existingConv.property_id });
             } else if (targetUsername) {
                 // If it's a new contact (not in list), create a temporary one
                 setActiveConv({
                     user_id: targetId,
                     username: targetUsername,
+                    property_id: targetPropertyId,
+                    property_title: targetPropertyTitle,
                     is_new: true
                 });
             }
@@ -159,7 +163,13 @@ const MessagesPage = () => {
                                     <div className="avatar"><User size={24} /></div>
                                     <div>
                                         <h3>{activeConv.username}</h3>
-                                        <span className="status"><Circle size={8} fill="#10b981" color="#10b981" /> En ligne</span>
+                                        {activeConv.property_id && (
+                                            <span className="property-context">
+                                                Discussion à propos de: <strong>{activeConv.property_title || 'un bien'}</strong>
+                                            </span>
+                                        ) || (
+                                                <span className="status"><Circle size={8} fill="#10b981" color="#10b981" /> En ligne</span>
+                                            )}
                                     </div>
                                 </div>
                             </div>
@@ -334,6 +344,7 @@ const MessagesPage = () => {
                 .user-info { display: flex; align-items: center; gap: 1rem; }
                 .user-info h3 { font-size: 1.1rem; color: var(--primary); }
                 .user-info .status { font-size: 0.8rem; color: var(--success); display: flex; align-items: center; gap: 0.4rem; }
+                .property-context { font-size: 0.8rem; color: var(--secondary); margin-top: 2px; display: block; }
                 
                 .chat-messages {
                     flex-grow: 1;
