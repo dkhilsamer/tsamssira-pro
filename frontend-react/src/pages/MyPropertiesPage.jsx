@@ -12,6 +12,8 @@ const MyPropertiesPage = () => {
     const navigate = useNavigate();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
+    const user = JSON.parse(localStorage.getItem('user'));
+    const isAdmin = user?.role === 'admin';
     const [selectedPropRequests, setSelectedPropRequests] = useState(null);
     const [showRequestsModal, setShowRequestsModal] = useState(false);
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
@@ -64,6 +66,17 @@ const MyPropertiesPage = () => {
         }
     };
 
+    const handleRemoveBoost = async (id) => {
+        if (!window.confirm('Voulez-vous vraiment retirer le boost de cette annonce ?')) return;
+        try {
+            await api.delete(`/properties/${id}/boost`);
+            toast.success('Boost retiré avec succès');
+            fetchMyProperties();
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
     const fetchPropertyRequests = async (propertyId) => {
         try {
             const data = await api.get(`/requests/property/${propertyId}`);
@@ -87,8 +100,8 @@ const MyPropertiesPage = () => {
         <div className="my-properties container py-12 animate-fade-in">
             <div className="page-header">
                 <div>
-                    <h1>Mes Annonces</h1>
-                    <p>Gérez vos biens immobiliers et suivez leurs performances.</p>
+                    <h1>{isAdmin ? 'Gestion de tous les biens' : 'Mes Annonces'}</h1>
+                    <p>{isAdmin ? 'Mode Administrateur : Vous voyez toutes les annonces du site.' : 'Gérez vos biens immobiliers et suivez leurs performances.'}</p>
                 </div>
                 <Link to="/add-property" className="btn btn-secondary">
                     <Plus size={20} /> Publier un bien
@@ -125,13 +138,20 @@ const MyPropertiesPage = () => {
                                         <List size={14} /> Demandes
                                     </button>
                                     {prop.is_boosted ? (
-                                        <div className="badge-boost">
-                                            <TrendingUp size={14} /> Vedette active
+                                        <div className="flex items-center gap-2">
+                                            <div className="badge-boost">
+                                                <TrendingUp size={14} /> Vedette active
+                                            </div>
+                                            {isAdmin && (
+                                                <button className="btn-remove-boost" onClick={() => handleRemoveBoost(prop.id)} title="Retirer le boost">
+                                                    Retirer Boost
+                                                </button>
+                                            )}
                                         </div>
                                     ) : (
                                         <button className="btn-light-boost" onClick={() => navigate(`/payment?id=${prop.id}`)}>
                                             <TrendingUp size={14} />
-                                            {JSON.parse(localStorage.getItem('user'))?.role === 'admin' ? 'Booster (Admin)' : 'Demander Boost'}
+                                            {isAdmin ? 'Booster (Admin)' : 'Demander Boost'}
                                         </button>
                                     )}
                                 </div>
@@ -245,6 +265,22 @@ const MyPropertiesPage = () => {
                     transition: all 0.2s;
                 }
                 .btn-view-requests:hover { background: var(--border); }
+
+                .btn-remove-boost {
+                    background: var(--danger-bg);
+                    color: var(--danger-text);
+                    border: 1px solid var(--danger-text);
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+                .btn-remove-boost:hover {
+                    background: var(--danger-text);
+                    color: white;
+                }
 
                 .prop-actions { text-align: right; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; }
                 .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }

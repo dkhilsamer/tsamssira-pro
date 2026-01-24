@@ -44,7 +44,7 @@ const DashboardPage = () => {
                         <LayoutDashboard size={20} /> Aperçu
                     </Link>
                     <Link to="/dashboard/my-properties" className="nav-link">
-                        <Home size={20} /> Mes Biens
+                        <Home size={20} /> {user?.role === 'admin' ? 'Tous les Biens' : 'Mes Biens'}
                     </Link>
                     <Link to="/messages" className="nav-link">
                         <MessageSquare size={20} /> Messages
