@@ -16,7 +16,12 @@ import EditPropertyPage from './pages/EditPropertyPage';
 import MyPropertiesPage from './pages/MyPropertiesPage';
 import SettingsPage from './pages/SettingsPage';
 
-// ... (existing imports)
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import PaymentPage from './pages/PaymentPage';
+import UsersPage from './pages/UsersPage';
+import HistoryPage from './pages/HistoryPage';
+import RequestsPage from './pages/RequestsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
