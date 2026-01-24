@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Upload, Home, MapPin, Tag, Info, Image as ImageIcon, CheckCircle } from 'lucide-react';
+import { Upload, Home, MapPin, Tag, Info, Image as ImageIcon, CheckCircle, Map as MapIcon } from 'lucide-react';
+import LocationPicker from '../components/LocationPicker';
 
 const AddPropertyPage = () => {
     const navigate = useNavigate();
@@ -17,7 +18,10 @@ const AddPropertyPage = () => {
         area: '',
         type: 'Location',
         property_category: 'famille',
-        is_student: 0
+        is_student: 0,
+        latitude: '',
+        longitude: '',
+        google_maps_link: ''
     });
     const [mainImage, setMainImage] = useState(null);
     const [extraImages, setExtraImages] = useState([]);
@@ -136,6 +140,26 @@ const AddPropertyPage = () => {
                                 value={formData.area}
                                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                             />
+                        </div>
+                        <div className="form-group span-2">
+                            <label>Lien Google Maps (Optionnel)</label>
+                            <input
+                                className="form-input"
+                                placeholder="Collez le lien de partage Google Maps ici"
+                                value={formData.google_maps_link}
+                                onChange={(e) => setFormData({ ...formData, google_maps_link: e.target.value })}
+                            />
+                        </div>
+                        <div className="form-group span-2">
+                            <label><MapIcon size={16} className="inline mr-1" /> Emplacement précis sur la carte</label>
+                            <LocationPicker
+                                lat={formData.latitude}
+                                lng={formData.longitude}
+                                onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })}
+                            />
+                            {formData.latitude && (
+                                <p className="coords-info">Coordonnées: {parseFloat(formData.latitude).toFixed(6)}, {parseFloat(formData.longitude).toFixed(6)}</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -266,6 +290,7 @@ const AddPropertyPage = () => {
                 .file-name { font-size: 0.8rem; color: var(--text-main); font-weight: 600; margin-top: 0.5rem; display: flex; align-items: center; gap: 4px; }
                 
                 .form-footer { margin-top: 3rem; text-align: center; }
+                .coords-info { font-size: 0.8rem; color: var(--success); font-weight: 600; margin-top: 0.5rem; text-align: center; }
                 .publish-btn { padding: 1.25rem 4rem; font-size: 1.1rem; background: var(--secondary); color: var(--primary); }
                 .mt-6 { margin-top: 1.5rem; }
 

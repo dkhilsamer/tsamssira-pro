@@ -98,7 +98,7 @@ class Property {
             user_id, title, description, price, location, bedrooms, bathrooms, area, type,
             status = 'Disponible',
             property_category,
-
+            latitude, longitude, google_maps_link,
             max_occupants = 0,
             is_furnished = 0,
             price_per_person = 0,
@@ -107,9 +107,9 @@ class Property {
         } = data;
 
         const result = await db.query(
-            `INSERT INTO properties (user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, max_occupants, is_furnished, price_per_person, is_student, main_image) 
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-            [user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, max_occupants, is_furnished, price_per_person, is_student, main_image || null]
+            `INSERT INTO properties (user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, latitude, longitude, google_maps_link, max_occupants, is_furnished, price_per_person, is_student, main_image) 
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+            [user_id, title, description, price, location, bedrooms, bathrooms, area, type, status, property_category, latitude || null, longitude || null, google_maps_link || null, max_occupants, is_furnished, price_per_person, is_student, main_image || null]
         );
 
         const propertyId = result.insertId;

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Bed, Bath, Maximize, MapPin, Send, MessageCircle } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Send, MessageCircle, ExternalLink, Map as MapIcon } from 'lucide-react';
+import PropertyMap from '../components/PropertyMap';
 
 const PropertyDetailPage = () => {
     const { id } = useParams();
@@ -142,7 +143,14 @@ const PropertyDetailPage = () => {
                     <div className="header">
                         <div className="price">{new Intl.NumberFormat('fr-TN', { style: 'currency', currency: 'TND' }).format(property.price)}</div>
                         <h1>{property.title}</h1>
-                        <p className="location"><MapPin size={18} /> {property.location}</p>
+                        <div className="header-meta">
+                            <p className="location"><MapPin size={18} /> {property.location}</p>
+                            {property.google_maps_link && (
+                                <a href={property.google_maps_link} target="_blank" rel="noopener noreferrer" className="map-link">
+                                    <ExternalLink size={16} /> Voir sur Google Maps
+                                </a>
+                            )}
+                        </div>
                     </div>
 
                     <div className="stats-grid">
@@ -173,6 +181,13 @@ const PropertyDetailPage = () => {
                         <h3>Description</h3>
                         <p>{property.description}</p>
                     </div>
+
+                    {property.latitude && property.longitude && (
+                        <div className="map-section mt-12">
+                            <h3>Emplacement précis</h3>
+                            <PropertyMap properties={[property]} height="300px" />
+                        </div>
+                    )}
                 </div>
 
                 <div className="sidebar">
@@ -292,7 +307,7 @@ const PropertyDetailPage = () => {
                 }
 
                 .details-card {
-                    background: white;
+                    background: var(--surface);
                     padding: 1.5rem;
                     border-radius: 24px;
                     box-shadow: 0 10px 40px rgba(0,0,0,0.05);
@@ -309,6 +324,9 @@ const PropertyDetailPage = () => {
                 }
                 
                 .header .location { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 1rem; }
+                .header-meta { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+                .map-link { display: flex; align-items: center; gap: 0.5rem; color: var(--secondary); font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+                .map-link:hover { text-decoration: underline; }
                 
                 .stats-grid { 
                     display: grid; 
@@ -330,6 +348,9 @@ const PropertyDetailPage = () => {
                 .description h3 { font-size: 1.3rem; margin-bottom: 1rem; }
                 .description p { color: #4b5563; line-height: 1.7; font-size: 1rem; }
                 
+                .map-section h3 { font-size: 1.3rem; margin-bottom: 1rem; }
+                .mt-12 { margin-top: 3rem; }
+
                 .contact-card { padding: 2rem; border-radius: 24px; border: 1px solid var(--border); }
                 @media (min-width: 768px) {
                     .contact-card { padding: 2.5rem; border-radius: 30px; }

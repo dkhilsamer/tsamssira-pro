@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Save, Home, MapPin, Info, Image as ImageIcon, ChevronLeft } from 'lucide-react';
+import { Save, Home, MapPin, Info, Image as ImageIcon, ChevronLeft, Map as MapIcon } from 'lucide-react';
+import LocationPicker from '../components/LocationPicker';
 
 const EditPropertyPage = () => {
     const { id } = useParams();
@@ -19,7 +20,10 @@ const EditPropertyPage = () => {
         area: '',
         type: 'Location',
         property_category: 'famille',
-        is_student: 0
+        is_student: 0,
+        latitude: '',
+        longitude: '',
+        google_maps_link: ''
     });
 
     useEffect(() => {
@@ -40,7 +44,10 @@ const EditPropertyPage = () => {
                 area: data.area,
                 type: data.type,
                 property_category: data.property_category,
-                is_student: data.is_student
+                is_student: data.is_student,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                google_maps_link: data.google_maps_link
             });
         } catch (error) {
             toast.error('Erreur lors du chargement des données');
@@ -150,6 +157,26 @@ const EditPropertyPage = () => {
                                 onChange={(e) => setFormData({ ...formData, area: parseFloat(e.target.value) })}
                             />
                         </div>
+                        <div className="form-group span-2">
+                            <label>Lien Google Maps (Optionnel)</label>
+                            <input
+                                className="form-input"
+                                placeholder="Collez le lien de partage Google Maps ici"
+                                value={formData.google_maps_link}
+                                onChange={(e) => setFormData({ ...formData, google_maps_link: e.target.value })}
+                            />
+                        </div>
+                        <div className="form-group span-2">
+                            <label><MapIcon size={16} className="inline mr-1" /> Emplacement précis sur la carte</label>
+                            <LocationPicker
+                                lat={formData.latitude}
+                                lng={formData.longitude}
+                                onChange={(lat, lng) => setFormData({ ...formData, latitude: lat, longitude: lng })}
+                            />
+                            {formData.latitude && (
+                                <p className="coords-info">Coordonnées: {parseFloat(formData.latitude).toFixed(6)}, {parseFloat(formData.longitude).toFixed(6)}</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -244,6 +271,7 @@ const EditPropertyPage = () => {
                     .grid { grid-template-columns: 1fr; }
                     .span-2 { grid-column: span 1; }
                 }
+                .coords-info { font-size: 0.8rem; color: var(--success); font-weight: 600; margin-top: 0.5rem; text-align: center; }
             `}</style>
         </div>
     );

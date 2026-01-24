@@ -49,6 +49,11 @@ const Navbar = () => {
                 </button>
 
                 <div id="nav-links" className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
+                    {/* Logo specifically for mobile menu top */}
+                    <div className="mobile-menu-header">
+                        <img src="/logo.png" alt="Logo" className="logo-img-mobile" />
+                        <span className="logo-text">Tsamssira Pro</span>
+                    </div>
                     <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                         <Home size={18} /> Accueil
                     </Link>
@@ -129,7 +134,8 @@ const Navbar = () => {
                     height: 50px;
                     width: auto;
                     object-fit: contain;
-                    mix-blend-mode: multiply; /* Helps removing white background on light surfaces */
+                    mix-blend-mode: ${theme === 'light' ? 'multiply' : 'normal'};
+                    filter: ${theme === 'dark' ? 'brightness(0) invert(1)' : 'none'};
                 }
                 .mobile-toggle {
                     display: none;
@@ -155,11 +161,11 @@ const Navbar = () => {
                     padding: 0.5rem 0.8rem;
                     border-radius: 8px;
                 }
-                .nav-item:hover, .nav-item.active {
-                    color: var(--secondary);
-                    background: rgba(212, 175, 55, 0.1);
-                    font-weight: 700;
-                }
+                    .nav-item:hover, .nav-item.active {
+                        color: var(--secondary);
+                        background: rgba(212, 175, 55, 0.15);
+                        font-weight: 800;
+                    }
                 .user-menu {
                     display: flex;
                     align-items: center;
@@ -224,14 +230,38 @@ const Navbar = () => {
                         height: 100vh;
                         background: var(--surface);
                         flex-direction: column;
-                        justify-content: center;
+                        justify-content: flex-start;
                         transition: right 0.3s ease;
-                        box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-                        padding: 2rem;
-                        gap: 2rem;
+                        box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+                        padding: 1.5rem;
+                        gap: 0.5rem;
                         border-left: 1px solid var(--border);
                     }
-                    .nav-links.open { right: 0; }
+                .mobile-menu-header {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 1.25rem;
+                    padding: 3rem 1rem 2rem;
+                    margin-bottom: 1.5rem;
+                    border-bottom: 1px solid var(--border);
+                    width: 100%;
+                    background: var(--background);
+                }
+                .logo-img-mobile {
+                    height: 90px;
+                    width: auto;
+                    object-fit: contain;
+                    filter: ${theme === 'dark' ? 'brightness(0) invert(1)' : 'none'};
+                }
+                .logo-text {
+                    font-family: var(--font-heading);
+                    font-weight: 800;
+                    font-size: 1.8rem;
+                    color: var(--secondary);
+                    letter-spacing: -1px;
+                }
+                .nav-links.open { right: 0; }
                     .user-menu {
                         flex-direction: column;
                         border-left: none;
@@ -241,10 +271,11 @@ const Navbar = () => {
                     .auth-buttons { flex-direction: column; width: 100%; }
                     .nav-item { 
                         width: 100%; 
-                        justify-content: center; 
-                        font-size: 1.3rem;
-                        padding: 1.2rem;
-                        color: var(--primary); /* Stronger contrast on mobile menu background */
+                        justify-content: flex-start; 
+                        font-size: 1.1rem;
+                        padding: 1rem 1.5rem;
+                        color: var(--text-main);
+                        border-radius: 12px;
                     }
                     .nav-item:hover, .nav-item.active {
                         background: var(--background);

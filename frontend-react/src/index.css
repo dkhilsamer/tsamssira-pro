@@ -28,16 +28,17 @@
 }
 
 :root[data-theme='dark'] {
-  --primary: #f8fafc;
+  color-scheme: dark;
+  --primary: #ffffff;
   --secondary: #d4af37;
   --accent: #fbbf24;
-  --background: #0f172a;
-  --surface: #1e293b;
-  --text-main: #f1f5f9;
+  --background: #0a0f1c;
+  --surface: #161e2e;
+  --text-main: #ffffff;
   --text-muted: #94a3b8;
-  --border: #334155;
+  --border: #2d3748;
   --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  --glass: rgba(15, 23, 42, 0.8);
+  --glass: rgba(10, 15, 28, 0.9);
 }
 
 * {
