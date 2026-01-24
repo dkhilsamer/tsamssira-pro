@@ -149,17 +149,19 @@ const RequestsPage = () => {
                     border: 1px solid transparent;
                     transition: all 0.2s;
                 }
-                .request-card.pending { border-color: #fca5a5; } /* Slight red border hint or yellow? Let's generic */
+                .request-card.pending { border-color: var(--warning-bg); }
+                .request-card.accepted { border-color: var(--success-bg); }
+                .request-card.rejected { border-color: var(--danger-bg); }
                 
                 .card-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
                 .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-                .status-badge.pending { background: #fee2e2; color: #b91c1c; } /* Reddish for urgent? Or yellow. */
-                .status-badge.accepted { background: #dcfce7; color: #16a34a; }
-                .status-badge.rejected { background: #f3f4f6; color: #6b7280; }
+                .status-badge.pending { background: var(--warning-bg); color: var(--warning-text); }
+                .status-badge.accepted { background: var(--success-bg); color: var(--success-text); }
+                .status-badge.rejected { background: var(--border); color: var(--text-muted); }
                 
                 .card-body h3 { font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem; }
                 .contact-info { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; }
-                .message-box { background: rgba(255,255,255,0.5); padding: 0.8rem; border-radius: 12px; font-size: 0.9rem; }
+                .message-box { background: var(--background); padding: 0.8rem; border-radius: 12px; font-size: 0.9rem; border: 1px solid var(--border); }
 
                 .card-actions { 
                     display: flex; gap: 0.5rem; margin-top: 1.5rem; pt-4; border-top: 1px solid rgba(0,0,0,0.05); 
@@ -168,10 +170,10 @@ const RequestsPage = () => {
                     flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
                     padding: 0.6rem; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s;
                 }
-                .btn-icon.success { background: #dcfce7; color: #16a34a; }
-                .btn-icon.success:hover { background: #bbf7d0; }
-                .btn-icon.danger { background: #fee2e2; color: #ef4444; }
-                .btn-icon.danger:hover { background: #fecaca; }
+                .btn-icon.success { background: var(--success-bg); color: var(--success-text); }
+                .btn-icon.success:hover { background: var(--success-text); color: white; }
+                .btn-icon.danger { background: var(--danger-bg); color: var(--danger-text); }
+                .btn-icon.danger:hover { background: var(--danger-text); color: white; }
 
                 .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem; color: var(--text-muted); }
             `}</style>

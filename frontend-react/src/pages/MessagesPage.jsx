@@ -283,8 +283,8 @@ const MessagesPage = () => {
                     height: 100%;
                     border-radius: 30px;
                     overflow: hidden;
-                    box-shadow: 0 4px 50px rgba(0,0,0,0.1);
-                    background: white; /* Ensure background is solid for scrollbars */
+                    box-shadow: var(--shadow);
+                    background: var(--surface);
                 }
                 
                 /* Sidebar */
@@ -292,7 +292,7 @@ const MessagesPage = () => {
                     border-right: 1px solid var(--border);
                     display: flex;
                     flex-direction: column;
-                    background: rgba(255, 255, 255, 0.5);
+                    background: var(--glass);
                     height: 100%;
                     min-height: 0; 
                 }
@@ -303,12 +303,12 @@ const MessagesPage = () => {
                     align-items: center;
                     gap: 0.5rem;
                     padding: 0.8rem 1rem;
-                    background: white;
+                    background: var(--background);
                     border: 1px solid var(--border);
                     border-radius: 12px;
                     color: var(--text-muted);
                 }
-                .search-bar input { border: none; outline: none; width: 100%; font-family: var(--font-body); }
+                .search-bar input { border: none; outline: none; width: 100%; font-family: var(--font-body); background: transparent; color: var(--text-main); }
                 
                 .conv-list { 
                     flex-grow: 1; 
@@ -341,8 +341,8 @@ const MessagesPage = () => {
                     transition: all 0.2s;
                     border-bottom: 1px solid rgba(0,0,0,0.03);
                 }
-                .conv-item:hover { background: rgba(255,255,255,0.8); }
-                .conv-item.active { background: white; border-left: 4px solid var(--primary); }
+                .conv-item:hover { background: var(--background); }
+                .conv-item.active { background: var(--background); border-left: 4px solid var(--secondary); }
                 
                 .conv-info { flex-grow: 1; min-width: 0; }
                 .conv-header { display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
@@ -369,22 +369,22 @@ const MessagesPage = () => {
                 .unread-dot {
                     position: absolute; top: 0; right: 0;
                     width: 12px; height: 12px;
-                    background: #ef4444; border-radius: 50%;
-                    border: 2px solid white;
+                    background: var(--danger); border-radius: 50%;
+                    border: 2px solid var(--surface);
                 }
 
                 /* Chat Window */
                 .chat-window { 
                     display: flex; 
                     flex-direction: column; 
-                    background: white; 
+                    background: var(--surface); 
                     height: 100%;
                     min-height: 0; 
                 }
                 .chat-header {
                     padding: 1rem 2rem;
                     border-bottom: 1px solid var(--border);
-                    background: white;
+                    background: var(--surface);
                     flex-shrink: 0;
                 }
                 .user-info { display: flex; align-items: center; gap: 1rem; }
@@ -431,10 +431,11 @@ const MessagesPage = () => {
                     font-size: 0.95rem;
                 }
                 .msg-wrapper.received .msg-bubble {
-                    background: white;
+                    background: var(--background);
                     color: var(--text-main);
                     border-bottom-left-radius: 4px;
                     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                    border: 1px solid var(--border);
                 }
                 .msg-wrapper.sent .msg-bubble {
                     background: var(--primary);
@@ -480,7 +481,7 @@ const MessagesPage = () => {
 
                 .chat-input {
                     padding: 1.5rem;
-                    background: white;
+                    background: var(--surface);
                     border-top: 1px solid var(--border);
                     display: flex;
                     gap: 1rem;
@@ -512,7 +513,7 @@ const MessagesPage = () => {
                     color: var(--text-muted);
                     text-align: center;
                 }
-                .no-chat h3 { font-size: 1.5rem; margin: 1rem 0 0.5rem; color: var(--text-main); }
+                .no-chat h3 { font-size: 1.5rem; margin: 1rem 0 0.5rem; color: var(--primary); }
 
                 .chat-input input:disabled {
                     background: #e2e8f0;

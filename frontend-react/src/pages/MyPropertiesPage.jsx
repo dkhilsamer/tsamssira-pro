@@ -214,7 +214,7 @@ const MyPropertiesPage = () => {
                     align-items: center;
                     transition: all 0.2s;
                 }
-                .property-item:hover { transform: translateX(5px); background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+                .property-item:hover { transform: translateX(5px); background: var(--background); box-shadow: var(--shadow); }
                 
                 .prop-img { height: 120px; border-radius: 12px; overflow: hidden; }
                 .prop-img img { width: 100%; height: 100%; object-fit: cover; }
@@ -230,7 +230,7 @@ const MyPropertiesPage = () => {
                 .stat { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem; }
                 
                 .badge-boost { 
-                    background: #fef3c7; color: #d97706; padding: 4px 12px; border-radius: 20px; 
+                    background: var(--warning-bg); color: var(--warning-text); padding: 4px 12px; border-radius: 20px; 
                     font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px;
                 }
                 .btn-light-boost {
@@ -239,7 +239,7 @@ const MyPropertiesPage = () => {
                     cursor: pointer; display: flex; align-items: center; gap: 4px;
                 }
                 .btn-view-requests {
-                    background: #f1f5f9; border: 1px solid var(--border); color: var(--primary);
+                    background: var(--background); border: 1px solid var(--border); color: var(--primary);
                     padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
                     cursor: pointer; display: flex; align-items: center; gap: 4px;
                     transition: all 0.2s;
@@ -248,13 +248,13 @@ const MyPropertiesPage = () => {
 
                 .prop-actions { text-align: right; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; }
                 .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
-                .status-badge.visible { background: #dcfce7; color: #16a34a; }
-                .status-badge.hidden { background: #fee2e2; color: #ef4444; }
+                .status-badge.visible { background: var(--success-bg); color: var(--success-text); }
+                .status-badge.hidden { background: var(--danger-bg); color: var(--danger-text); }
                 
                 .actions-buttons { display: flex; gap: 1rem; }
                 .action-icon { color: var(--text-muted); padding: 8px; border-radius: 8px; transition: all 0.2s; background: none; border: none; cursor: pointer; }
-                .action-icon:hover { background: #f1f5f9; color: var(--primary); }
-                .action-icon.delete:hover { background: #fee2e2; color: #ef4444; }
+                .action-icon:hover { background: var(--background); color: var(--primary); }
+                .action-icon.delete:hover { background: var(--danger-bg); color: var(--danger-text); }
 
                 .empty-state { text-align: center; padding: 5rem; border-radius: 30px; }
                 .empty-state h3 { margin-top: 2rem; font-size: 1.5rem; }
@@ -272,8 +272,9 @@ const MyPropertiesPage = () => {
                     z-index: 2000; padding: 1rem; backdrop-filter: blur(4px);
                 }
                 .modal-content {
-                    background: white; width: 100%; max-width: 600px; max-height: 80vh;
+                    background: var(--surface); width: 100%; max-width: 600px; max-height: 80vh;
                     border-radius: 24px; padding: 2rem; overflow-y: auto; position: relative;
+                    border: 1px solid var(--border);
                 }
                 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
                 .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-muted); }
@@ -287,7 +288,7 @@ const MyPropertiesPage = () => {
                 .req-link { display: flex; align-items: center; gap: 0.3rem; color: var(--secondary); text-decoration: none; font-weight: 600; }
                 .req-link:hover { text-decoration: underline; }
                 .req-type { color: var(--text-muted); font-size: 0.8rem; }
-                .req-message { font-size: 0.95rem; color: var(--text-main); font-style: italic; background: white; padding: 1rem; border-radius: 12px; margin-bottom: 0.5rem; display: flex; gap: 0.5rem; }
+                .req-message { font-size: 0.95rem; color: var(--text-main); font-style: italic; background: var(--background); padding: 1rem; border-radius: 12px; margin-bottom: 0.5rem; display: flex; gap: 0.5rem; border: 1px solid var(--border); }
                 .req-date { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
                 
                 .no-requests { text-align: center; color: var(--text-muted); padding: 2rem; }

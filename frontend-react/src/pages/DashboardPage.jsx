@@ -77,7 +77,7 @@ const DashboardPage = () => {
 
                 <div className="stats-grid">
                     <div className="stat-card glass">
-                        <div className="icon" style={{ backgroundColor: '#e0f2fe', color: '#0ea5e9' }}>
+                        <div className="icon" style={{ backgroundColor: 'var(--info-bg)', color: 'var(--info-text)' }}>
                             <Home size={24} />
                         </div>
                         <div className="info">
@@ -86,7 +86,7 @@ const DashboardPage = () => {
                         </div>
                     </div>
                     <div className="stat-card glass" onClick={() => navigate('/dashboard/requests')} style={{ cursor: 'pointer' }}>
-                        <div className="icon" style={{ backgroundColor: '#fef3c7', color: '#d97706' }}>
+                        <div className="icon" style={{ backgroundColor: 'var(--warning-bg)', color: 'var(--warning-text)' }}>
                             <MessageSquare size={24} />
                         </div>
                         <div className="info">
@@ -95,7 +95,7 @@ const DashboardPage = () => {
                         </div>
                     </div>
                     <div className="stat-card glass">
-                        <div className="icon" style={{ backgroundColor: '#dcfce7', color: '#16a34a' }}>
+                        <div className="icon" style={{ backgroundColor: 'var(--success-bg)', color: 'var(--success-text)' }}>
                             <Eye size={24} />
                         </div>
                         <div className="info">
@@ -104,7 +104,7 @@ const DashboardPage = () => {
                         </div>
                     </div>
                     <div className="stat-card glass" onClick={() => navigate('/dashboard/history')} style={{ cursor: 'pointer' }}>
-                        <div className="icon" style={{ backgroundColor: '#e0e7ff', color: '#4338ca' }}>
+                        <div className="icon" style={{ backgroundColor: 'var(--border)', color: 'var(--primary)' }}>
                             <Send size={24} />
                         </div>
                         <div className="info">
@@ -113,7 +113,7 @@ const DashboardPage = () => {
                         </div>
                     </div>
                     <div className="stat-card glass" onClick={() => navigate('/messages')} style={{ cursor: 'pointer' }}>
-                        <div className="icon" style={{ backgroundColor: '#fee2e2', color: '#ef4444' }}>
+                        <div className="icon" style={{ backgroundColor: 'var(--danger-bg)', color: 'var(--danger-text)' }}>
                             <Mail size={24} />
                         </div>
                         <div className="info">
@@ -122,7 +122,7 @@ const DashboardPage = () => {
                         </div>
                     </div>
                     <div className="stat-card glass">
-                        <div className="icon" style={{ backgroundColor: '#fce7f3', color: '#db2777' }}>
+                        <div className="icon" style={{ backgroundColor: 'var(--secondary)', color: 'white' }}>
                             <TrendingUp size={24} />
                         </div>
                         <div className="info">
@@ -184,14 +184,14 @@ const DashboardPage = () => {
                     display: grid;
                     grid-template-columns: 280px 1fr;
                     min-height: calc(100vh - 80px);
-                    background: #f8fafc;
+                    background: var(--background);
                 }
                 .dashboard-sidebar {
                     padding: 2rem;
                     border-right: 1px solid var(--border);
                     display: flex;
                     flex-direction: column;
-                    background: rgba(255, 255, 255, 0.5);
+                    background: var(--glass);
                     backdrop-filter: blur(10px);
                 }
                 
@@ -241,13 +241,13 @@ const DashboardPage = () => {
                     border: 1px solid transparent;
                 }
                 .nav-link:hover {
-                    background: white;
+                    background: var(--surface);
                     color: var(--primary);
                     transform: translateX(5px);
                     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
                 }
                 .nav-link.active { 
-                    background: white;
+                    background: var(--surface);
                     color: var(--secondary);
                     font-weight: 700;
                     box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
@@ -319,21 +319,20 @@ const DashboardPage = () => {
                 .activity-card { padding: 2rem; border-radius: 24px; height: 100%; }
                 .activity-card h3 { font-size: 1.4rem; margin-bottom: 2rem; color: var(--primary); }
                 
-                .activity-stats { display: flex; flex-direction: column; gap: 1rem; }
                 .activity-item { 
                     display: flex; 
                     align-items: center; 
                     gap: 1.2rem; 
                     padding: 1.25rem;
-                    background: #f8fafc;
+                    background: var(--background);
                     border-radius: 16px;
-                    border: 1px solid transparent;
+                    border: 1px solid var(--border);
                     transition: all 0.2s;
                 }
-                .activity-item:hover { border-color: var(--border); background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+                .activity-item:hover { border-color: var(--secondary); background: var(--surface); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
                 .status-indicator { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-                .status-indicator.pending { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-                .status-indicator.accepted { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+                .status-indicator.pending { background: var(--warning-text); box-shadow: 0 0 10px var(--warning-bg); }
+                .status-indicator.accepted { background: var(--success-text); box-shadow: 0 0 10px var(--success-bg); }
                 .item-info { display: flex; justify-content: space-between; width: 100%; align-items: center; }
                 .item-label { font-weight: 600; color: var(--text-main); }
                 .item-count { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
@@ -346,7 +345,7 @@ const DashboardPage = () => {
                 }
                 .action-btn {
                     padding: 1.5rem;
-                    border: 1px solid transparent;
+                    border: 1px solid var(--border);
                     border-radius: 20px;
                     display: flex;
                     flex-direction: column;
@@ -356,7 +355,7 @@ const DashboardPage = () => {
                     cursor: pointer;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     color: var(--text-muted);
-                    background: white;
+                    background: var(--surface);
                     height: 100%;
                 }
                 .action-btn:hover {

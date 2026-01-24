@@ -277,7 +277,7 @@ const AddPropertyPage = () => {
                 .form-header h1 { font-size: 3rem; color: var(--primary); margin-bottom: 1rem; }
                 .form-header p { color: var(--text-muted); font-size: 1.1rem; }
 
-                .premium-form { padding: 4rem; border-radius: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.1); }
+                .premium-form { padding: 4rem; border-radius: 40px; box-shadow: var(--shadow); background: var(--surface); border: 1px solid var(--border); }
                 .form-section { margin-bottom: 4rem; }
                 .section-title { 
                     display: flex; 
@@ -305,7 +305,7 @@ const AddPropertyPage = () => {
                     padding: 2.5rem;
                     text-align: center;
                     transition: all 0.2s;
-                    background: #f8fafc;
+                    background: var(--background);
                 }
                 .upload-box label { 
                     display: flex; 
