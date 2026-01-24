@@ -43,12 +43,11 @@ const Navbar = () => {
             <div className="nav-container">
                 <Link to="/" className="logo" aria-label="Retour à l'accueil">
                     <img
-                        src="/logo.svg"
+                        src="/logo.png"
                         alt="Logo Tsamssira Pro"
                         className="logo-img"
-                        style={{ height: '50px', width: 'auto' }}
+                        style={{ height: '60px', width: 'auto' }}
                     />
-                    Tsamssira Pro
                 </Link>
 
                 {/* Mobile Menu Toggle */}
@@ -66,12 +65,11 @@ const Navbar = () => {
                     {/* Logo specifically for mobile menu top */}
                     <div className="mobile-menu-header">
                         <img
-                            src="/logo.svg"
+                            src="/logo.png"
                             alt="Logo"
                             className="logo-img-mobile"
-                            style={{ height: '90px', width: 'auto' }}
+                            style={{ height: '120px', width: 'auto' }}
                         />
-                        <span className="logo-text">Tsamssira Pro</span>
                     </div>
                     <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                         <Home size={18} /> Accueil
