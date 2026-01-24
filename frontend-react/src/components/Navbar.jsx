@@ -24,10 +24,18 @@ const Navbar = () => {
         return () => window.removeEventListener('storage', syncUser);
     }, [location]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('user');
-        setUser(null);
-        navigate('/');
+    const handleLogout = async () => {
+        try {
+            await api.post('/auth/logout');
+        } catch (err) {
+            console.error('Logout failed:', err);
+        } finally {
+            localStorage.removeItem('user');
+            setUser(null);
+            setIsMenuOpen(false);
+            navigate('/');
+            toast.success('Déconnexion réussie');
+        }
     };
 
     return (
@@ -78,6 +86,9 @@ const Navbar = () => {
                                 <Link to="/dashboard/history" className={`nav-item ${location.pathname === '/dashboard/history' ? 'active' : ''}`}>
                                     <Clock size={18} /> Historique
                                 </Link>
+                                <button onClick={handleLogout} className="nav-item btn-logout-mobile">
+                                    <LogOut size={18} /> Déconnexion
+                                </button>
                             </div>
                             <div className="user-menu">
                                 <NotificationBell />
@@ -251,6 +262,7 @@ const Navbar = () => {
                         padding: 1.5rem;
                         gap: 0.5rem;
                         border-left: 1px solid var(--border);
+                        overflow-y: auto;
                     }
                 .mobile-menu-header {
                     display: flex;
@@ -296,9 +308,22 @@ const Navbar = () => {
                         display: flex;
                         flex-direction: column;
                         width: 100%;
-                        gap: 1rem;
+                        gap: 0.5rem;
                         border-top: 1px solid var(--border);
                         padding-top: 1rem;
+                        margin-top: 1rem;
+                    }
+                    .btn-logout-mobile {
+                        background: rgba(239, 68, 68, 0.1) !important;
+                        color: #ef4444 !important;
+                        border: none;
+                        width: 100%;
+                        text-align: left;
+                        cursor: pointer;
+                        margin-top: 1rem;
+                    }
+                    .btn-logout-mobile:hover {
+                        background: rgba(239, 68, 68, 0.2) !important;
                     }
                     .nav-item:hover, .nav-item.active {
                         background: var(--background);
