@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- House Base (Dark Blue) -->
+  <path d="M256 504h-144a24 24 0 0 1-24-24v-200l168-152 168 152v200a24 24 0 0 1-24 24h-144z" fill="#0f172a"/>
+  
+  <!-- Roof/Arrow Accent (Gold) -->
+  <path d="M256 32l-192 176h48l144-132 144 132h48z" fill="#d4af37"/>
+  
+  <!-- "T" or "Key" negative space or overlay if needed, but keeping it simple based on description -->
+  <!-- Let's add the Chimney/Detail seen in previous generations if consistent, otherwise simple house + gold roof -->
+  <path d="M360 120h40v80l-40-36z" fill="#d4af37"/>
+</svg>

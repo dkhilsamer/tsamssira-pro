@@ -43,7 +43,7 @@ const Navbar = () => {
             <div className="nav-container">
                 <Link to="/" className="logo" aria-label="Retour à l'accueil">
                     <img
-                        src="/logo.png"
+                        src="/logo.svg"
                         alt="Logo Tsamssira Pro"
                         className="logo-img"
                         style={{ height: '50px', width: 'auto' }}
@@ -66,7 +66,7 @@ const Navbar = () => {
                     {/* Logo specifically for mobile menu top */}
                     <div className="mobile-menu-header">
                         <img
-                            src="/logo.png"
+                            src="/logo.svg"
                             alt="Logo"
                             className="logo-img-mobile"
                             style={{ height: '90px', width: 'auto' }}
