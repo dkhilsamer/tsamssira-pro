@@ -129,13 +129,30 @@ class Property {
     static async update(id, data) {
         const fields = [];
         const values = [];
-        for (const [key, value] of Object.entries(data)) {
+        // Extract images to handle separately if needed, though usually handled by addImages
+        const { images, ...otherData } = data;
+
+        for (const [key, value] of Object.entries(otherData)) {
             fields.push(`${key} = ?`);
             values.push(value);
         }
+
+        if (fields.length === 0) return;
+
         values.push(id);
         const sql = `UPDATE properties SET ${fields.join(', ')} WHERE id = ?`;
         return await db.query(sql, values);
+    }
+
+    static async addImages(id, imageUrls) {
+        if (!imageUrls || imageUrls.length === 0) return;
+        for (const url of imageUrls) {
+            await db.query('INSERT INTO property_images (property_id, image_url) VALUES (?, ?)', [id, url]);
+        }
+    }
+
+    static async removeImage(id, imageUrl) {
+        return await db.query('DELETE FROM property_images WHERE property_id = ? AND image_url = ?', [id, imageUrl]);
     }
 
     static async getByUserId(userId) {

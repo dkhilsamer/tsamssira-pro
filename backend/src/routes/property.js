@@ -138,18 +138,88 @@ router.post('/', upload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'im
 });
 
 // Update property (requires auth and ownership – simplified)
-router.put('/:id', async (req, res) => {
+// Update property (requires auth and ownership)
+router.put('/:id', upload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'images', maxCount: 10 }]), async (req, res) => {
     const { id } = req.params;
     const userId = req.session?.userId;
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
     try {
         const property = await Property.findById(id);
         if (!property) return res.status(404).json({ error: 'Property not found' });
         if (req.session.role !== 'admin' && property.user_id !== userId) return res.status(403).json({ error: 'Forbidden' });
-        await Property.update(id, req.body);
+
+        const data = { ...req.body };
+
+        // Handle Main Image Update
+        if (req.files && req.files['main_image'] && req.files['main_image'][0]) {
+            const file = req.files['main_image'][0];
+            if (file.path && file.path.startsWith('http')) {
+                data.main_image = file.path;
+            } else {
+                const absolutePath = path.join(__dirname, '../../uploads/', file.filename);
+                await addWatermark(absolutePath);
+                data.main_image = '/uploads/' + file.filename;
+            }
+
+            // Optionally delete old main image if different? (Not strictly required but good practice)
+        }
+
+        // Handle New Extra Images
+        const newImages = [];
+        if (req.files && req.files['images']) {
+            for (const file of req.files['images']) {
+                if (file.path && file.path.startsWith('http')) {
+                    newImages.push(file.path);
+                } else {
+                    const absolutePath = path.join(__dirname, '../../uploads/', file.filename);
+                    await addWatermark(absolutePath);
+                    newImages.push('/uploads/' + file.filename);
+                }
+            }
+        }
+
+        // Sanitize string fields
+        if (data.title) data.title = data.title.trim();
+        if (data.description) data.description = data.description.trim();
+        if (data.location) data.location = data.location.trim();
+        if (data.google_maps_link) data.google_maps_link = data.google_maps_link.trim();
+
+        await Property.update(id, data);
+
+        if (newImages.length > 0) {
+            await Property.addImages(id, newImages);
+        }
+
         res.json({ message: 'Property updated' });
     } catch (err) {
         console.error('Update property error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete a specific image from property gallery
+router.delete('/:id/images', async (req, res) => {
+    const { id } = req.params;
+    const { imageUrl } = req.body;
+    const userId = req.session?.userId;
+
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    if (!imageUrl) return res.status(400).json({ error: 'Image URL required' });
+
+    try {
+        const property = await Property.findById(id);
+        if (!property) return res.status(404).json({ error: 'Property not found' });
+        if (req.session.role !== 'admin' && property.user_id !== userId) return res.status(403).json({ error: 'Forbidden' });
+
+        await Property.removeImage(id, imageUrl);
+
+        // Optionally delete file from disk if local...
+        // For now, simple DB removal is enough.
+
+        res.json({ message: 'Image deleted' });
+    } catch (err) {
+        console.error('Delete image error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

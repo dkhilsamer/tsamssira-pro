@@ -26,6 +26,13 @@ const EditPropertyPage = () => {
         google_maps_link: ''
     });
 
+    const [mainImage, setMainImage] = useState(null);
+    const [mainImagePreview, setMainImagePreview] = useState('');
+    const [existingMainImage, setExistingMainImage] = useState('');
+
+    const [extraImages, setExtraImages] = useState([]);
+    const [existingExtraImages, setExistingExtraImages] = useState([]);
+
     useEffect(() => {
         fetchPropertyData();
     }, [id]);
@@ -33,7 +40,6 @@ const EditPropertyPage = () => {
     const fetchPropertyData = async () => {
         try {
             const data = await api.get(`/properties/${id}`);
-            // Clean up data for form
             setFormData({
                 title: data.title,
                 description: data.description,
@@ -47,8 +53,10 @@ const EditPropertyPage = () => {
                 is_student: data.is_student,
                 latitude: data.latitude,
                 longitude: data.longitude,
-                google_maps_link: data.google_maps_link
+                google_maps_link: data.google_maps_link || ''
             });
+            setExistingMainImage(data.main_image);
+            setExistingExtraImages(data.images || []);
         } catch (error) {
             toast.error('Erreur lors du chargement des données');
             navigate('/dashboard/my-properties');
@@ -57,11 +65,49 @@ const EditPropertyPage = () => {
         }
     };
 
+    const handleMainImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setMainImage(file);
+            setMainImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleExtraImagesChange = (e) => {
+        setExtraImages(Array.from(e.target.files));
+    };
+
+    const handleDeleteExistingImage = async (imageUrl) => {
+        if (!window.confirm('Voulez-vous vraiment supprimer cette image ?')) return;
+        try {
+            await api.delete(`/properties/${id}/images`, { data: { imageUrl } });
+            setExistingExtraImages(prev => prev.filter(img => img !== imageUrl));
+            toast.success('Image supprimée');
+        } catch (error) {
+            toast.error('Erreur suppression image: ' + error.message);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        const data = new FormData();
+        const trimmedData = { ...formData };
+        if (trimmedData.title) trimmedData.title = trimmedData.title.trim();
+        if (trimmedData.description) trimmedData.description = trimmedData.description.trim();
+        if (trimmedData.location) trimmedData.location = trimmedData.location.trim();
+        if (trimmedData.google_maps_link) trimmedData.google_maps_link = trimmedData.google_maps_link.trim();
+
+        Object.keys(trimmedData).forEach(key => data.append(key, trimmedData[key]));
+
+        if (mainImage) data.append('main_image', mainImage);
+        extraImages.forEach(img => data.append('images', img));
+
         try {
-            await api.put(`/properties/${id}`, formData);
+            await api.put(`/properties/${id}`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             toast.success('Mise à jour réussie !');
             navigate('/dashboard/my-properties');
         } catch (error) {
@@ -71,10 +117,16 @@ const EditPropertyPage = () => {
         }
     };
 
+    const getImageUrl = (path) => {
+        if (!path) return '';
+        return path.startsWith('http') ? path : `${api.defaults.baseURL.replace('/api', '')}${path}`;
+    };
+
     if (fetchLoading) return <div className="loading-state"><div className="spinner"></div></div>;
 
     return (
         <div className="add-property container py-12 animate-fade-in">
+            {/* ... Header ... */}
             <div className="form-header">
                 <button onClick={() => navigate(-1)} className="btn-back">
                     <ChevronLeft size={20} /> Retour
@@ -84,6 +136,7 @@ const EditPropertyPage = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="premium-form glass">
+                {/* ... General Info ... */}
                 <div className="form-section">
                     <div className="section-title">
                         <Info size={20} /> Informations Générales
@@ -123,10 +176,12 @@ const EditPropertyPage = () => {
                     </div>
                 </div>
 
+                {/* ... Location ... */}
                 <div className="form-section">
                     <div className="section-title">
                         <MapPin size={20} /> Localisation & Prix
                     </div>
+                    {/* ... (Keep existing inputs: location, price, area, google_maps, picker) ... */}
                     <div className="grid">
                         <div className="form-group">
                             <label>Ville / Emplacement</label>
@@ -180,10 +235,12 @@ const EditPropertyPage = () => {
                     </div>
                 </div>
 
+                {/* ... Details ... */}
                 <div className="form-section">
                     <div className="section-title">
                         <Home size={20} /> Détails du bien
                     </div>
+                    {/* ... (Keep existing inputs: bedrooms, bathrooms, description) ... */}
                     <div className="grid grid-4">
                         <div className="form-group">
                             <label>Chambres</label>
@@ -223,6 +280,59 @@ const EditPropertyPage = () => {
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         ></textarea>
+                    </div>
+                </div>
+
+                {/* ... NEW: Photos ... */}
+                <div className="form-section">
+                    <div className="section-title">
+                        <ImageIcon size={20} /> Photos du bien
+                    </div>
+
+                    <div className="edit-photos-grid">
+                        <div className="photo-column">
+                            <label className="field-label">Image Principale</label>
+                            <div className="current-image-preview">
+                                {(mainImagePreview || existingMainImage) ? (
+                                    <img
+                                        src={mainImagePreview || getImageUrl(existingMainImage)}
+                                        alt="Principal"
+                                        className="preview-img main"
+                                    />
+                                ) : (
+                                    <div className="no-image-placeholder">Pas d'image</div>
+                                )}
+                            </div>
+                            <input type="file" onChange={handleMainImageChange} className="file-input-mt" />
+                            <p className="hint">Télécharger une nouvelle image remplacera l'actuelle.</p>
+                        </div>
+
+                        <div className="photo-column">
+                            <label className="field-label">Galerie ({existingExtraImages.length} existantes)</label>
+
+                            {/* Existing Images List */}
+                            <div className="existing-gallery">
+                                {existingExtraImages.map((img, idx) => (
+                                    <div key={idx} className="gallery-thumb-wrapper">
+                                        <img src={getImageUrl(img)} alt={`Gallery ${idx}`} className="gallery-thumb" />
+                                        <button
+                                            type="button"
+                                            className="btn-delete-img"
+                                            onClick={() => handleDeleteExistingImage(img)}
+                                            title="Supprimer"
+                                        >
+                                            &times;
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <label className="field-label mt-4">Ajouter des photos</label>
+                            <input type="file" multiple onChange={handleExtraImagesChange} className="file-input-mt" />
+                            {extraImages.length > 0 && (
+                                <p className="file-status">{extraImages.length} nouvelles images sélectionnées</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
