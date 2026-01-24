@@ -34,12 +34,31 @@ const AddPropertyPage = () => {
         }
     };
 
+    const [urlError, setUrlError] = useState('');
+
+    const handleUrlBlur = (e) => {
+        const url = e.target.value;
+        if (url && !url.includes('google.com/maps') && !url.includes('goo.gl')) {
+            setUrlError('Lien non reconnu. Veuillez sélectionner votre adresse manuellement sur la carte ci-dessous.');
+            toast.error('Adresse non valide, sélectionnez votre adresse manuellement');
+        } else {
+            setUrlError('');
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         const data = new FormData();
-        Object.keys(formData).forEach(key => data.append(key, formData[key]));
+        // Trim strings explicitly
+        const trimmedData = { ...formData };
+        if (trimmedData.title) trimmedData.title = trimmedData.title.trim();
+        if (trimmedData.description) trimmedData.description = trimmedData.description.trim();
+        if (trimmedData.location) trimmedData.location = trimmedData.location.trim();
+        if (trimmedData.google_maps_link) trimmedData.google_maps_link = trimmedData.google_maps_link.trim();
+
+        Object.keys(trimmedData).forEach(key => data.append(key, trimmedData[key]));
         if (mainImage) data.append('main_image', mainImage);
         extraImages.forEach(img => data.append('images', img));
 
@@ -148,7 +167,9 @@ const AddPropertyPage = () => {
                                 placeholder="Collez le lien de partage Google Maps ici"
                                 value={formData.google_maps_link}
                                 onChange={(e) => setFormData({ ...formData, google_maps_link: e.target.value })}
+                                onBlur={handleUrlBlur}
                             />
+                            {urlError && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '0.5rem' }}>{urlError}</p>}
                         </div>
                         <div className="form-group span-2">
                             <label><MapIcon size={16} className="inline mr-1" /> Emplacement précis sur la carte</label>

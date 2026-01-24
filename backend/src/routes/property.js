@@ -92,6 +92,12 @@ router.post('/', upload.fields([{ name: 'main_image', maxCount: 1 }, { name: 'im
 
         const data = { ...req.body, user_id: ownerId };
 
+        // Sanitize string fields
+        if (data.title) data.title = data.title.trim();
+        if (data.description) data.description = data.description.trim();
+        if (data.address) data.address = data.address.trim();
+        if (data.city) data.city = data.city.trim();
+
         // Handle Main Image
         if (req.files && req.files['main_image'] && req.files['main_image'][0]) {
             const file = req.files['main_image'][0];

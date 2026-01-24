@@ -36,7 +36,13 @@ router.post('/login', async (req, res) => {
 
 // Register
 router.post('/register', async (req, res) => {
-    const { username, email, password, confirmPassword, phone, address, birth_date, gender } = req.body;
+    let { username, email, password, confirmPassword, phone, address, birth_date, gender } = req.body;
+
+    // Sanitize
+    username = username?.trim();
+    email = email?.trim();
+    phone = phone?.trim();
+    address = address?.trim();
 
     // Validation
     if (!username || !email || !password || !confirmPassword || !birth_date || !gender) {
