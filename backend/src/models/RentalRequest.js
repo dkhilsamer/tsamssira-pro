@@ -18,11 +18,15 @@ class RentalRequest {
 
     static async create(data) {
         const { property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message, user_id } = data;
-        // Auto-accept requests as per user requirement
+        // Safety defaults to prevent SQL errors if optional fields are missing
+        const visitors = parseInt(num_persons) || 1;
+        const msg = message || 'Interessé par le bien';
+        const uid = user_id || null;
+
         const result = await db.query(
             `INSERT INTO rental_requests (property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message, status, user_id) 
              VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
-            [property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message, user_id || null]
+            [property_id, visitor_name, visitor_email, visitor_phone, request_type, visitors, msg, uid]
         );
         return result.insertId;
     }

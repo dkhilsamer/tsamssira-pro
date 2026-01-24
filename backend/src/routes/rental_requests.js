@@ -42,6 +42,31 @@ router.get('/sent', async (req, res) => {
     }
 });
 
+// Get requests for a SPECIFIC property (Owner/Admin only)
+router.get('/property/:propertyId', async (req, res) => {
+    const userId = req.session.userId;
+    const role = req.session.role;
+    const { propertyId } = req.params;
+
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+        const property = await Property.findById(propertyId);
+        if (!property) return res.status(404).json({ error: 'Property not found' });
+
+        // Security: Only owner or admin
+        if (role !== 'admin' && property.user_id !== userId) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+
+        const requests = await RentalRequest.getByPropertyId(propertyId);
+        res.json(requests);
+    } catch (err) {
+        console.error('Get property requests error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 // Create a new request (Public)
 router.post('/', async (req, res) => {
     const { property_id, visitor_name, visitor_email, visitor_phone, request_type, num_persons, message } = req.body;

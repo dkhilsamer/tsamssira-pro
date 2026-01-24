@@ -3,7 +3,8 @@ import api from '../services/api';
 import { toast } from 'react-hot-toast';
 import {
     Home, Edit, Trash2, Eye, TrendingUp,
-    MoreVertical, CheckSquare, XSquare, Plus
+    MoreVertical, CheckSquare, XSquare, Plus,
+    List, Phone, Mail as MailIcon, User as UserIcon, MessageSquare
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -11,6 +12,8 @@ const MyPropertiesPage = () => {
     const navigate = useNavigate();
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedPropRequests, setSelectedPropRequests] = useState(null);
+    const [showRequestsModal, setShowRequestsModal] = useState(false);
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
     useEffect(() => {
@@ -44,6 +47,16 @@ const MyPropertiesPage = () => {
             await api.put(`/properties/${id}/visibility`, { is_visible: !currentStatus });
             toast.success('Visibilité mise à jour');
             fetchMyProperties();
+        } catch (error) {
+            toast.error(error.message);
+        }
+    };
+
+    const fetchPropertyRequests = async (propertyId) => {
+        try {
+            const data = await api.get(`/requests/property/${propertyId}`);
+            setSelectedPropRequests(data);
+            setShowRequestsModal(true);
         } catch (error) {
             toast.error(error.message);
         }
@@ -96,6 +109,9 @@ const MyPropertiesPage = () => {
                                         <Eye size={18} />
                                         <span>{prop.views || 0} vues</span>
                                     </div>
+                                    <button className="btn-view-requests" onClick={() => fetchPropertyRequests(prop.id)}>
+                                        <List size={14} /> Demandes
+                                    </button>
                                     {prop.is_boosted ? (
                                         <div className="badge-boost">
                                             <TrendingUp size={14} /> Vedette active
@@ -133,6 +149,42 @@ const MyPropertiesPage = () => {
                     </div>
                 )}
             </div>
+
+            {showRequestsModal && (
+                <div className="modal-overlay" onClick={() => setShowRequestsModal(false)}>
+                    <div className="modal-content glass animate-slide-up" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Demandes de renseignements</h2>
+                            <button className="close-btn" onClick={() => setShowRequestsModal(false)}>×</button>
+                        </div>
+                        <div className="requests-list-modal">
+                            {selectedPropRequests && selectedPropRequests.length > 0 ? (
+                                selectedPropRequests.map(req => (
+                                    <div key={req.id} className="request-card">
+                                        <div className="req-user">
+                                            <UserIcon size={20} />
+                                            <strong>{req.visitor_name}</strong>
+                                        </div>
+                                        <div className="req-details">
+                                            <a href={`mailto:${req.visitor_email}`} className="req-link"><MailIcon size={14} /> {req.visitor_email}</a>
+                                            <a href={`tel:${req.visitor_phone}`} className="req-link"><Phone size={14} /> {req.visitor_phone}</a>
+                                            <div className="req-type">Type: {req.request_type}</div>
+                                        </div>
+                                        <div className="req-message">
+                                            <MessageSquare size={14} /> {req.message}
+                                        </div>
+                                        <div className="req-date">
+                                            {new Date(req.created_at).toLocaleDateString()} à {new Date(req.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="no-requests">Aucune demande pour ce bien pour le moment.</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <style jsx>{`
                 .my-properties { max-width: 1200px; }
@@ -174,6 +226,13 @@ const MyPropertiesPage = () => {
                     padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
                     cursor: pointer; display: flex; align-items: center; gap: 4px;
                 }
+                .btn-view-requests {
+                    background: #f1f5f9; border: 1px solid var(--border); color: var(--primary);
+                    padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+                    cursor: pointer; display: flex; align-items: center; gap: 4px;
+                    transition: all 0.2s;
+                }
+                .btn-view-requests:hover { background: var(--border); }
 
                 .prop-actions { text-align: right; display: flex; flex-direction: column; gap: 1rem; align-items: flex-end; }
                 .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
@@ -194,6 +253,38 @@ const MyPropertiesPage = () => {
                     .prop-img { height: 200px; }
                     .prop-actions { flex-direction: row; justify-content: space-between; align-items: center; width: 100%; border-top: 1px solid var(--border); padding-top: 1rem; }
                 }
+
+                .modal-overlay {
+                    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+                    z-index: 2000; padding: 1rem; backdrop-filter: blur(4px);
+                }
+                .modal-content {
+                    background: white; width: 100%; max-width: 600px; max-height: 80vh;
+                    border-radius: 24px; padding: 2rem; overflow-y: auto; position: relative;
+                }
+                .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+                .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-muted); }
+                
+                .request-card {
+                    background: var(--background); padding: 1.5rem; border-radius: 16px; margin-bottom: 1rem;
+                    border: 1px solid var(--border);
+                }
+                .req-user { display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem; }
+                .req-details { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.9rem; margin-bottom: 1rem; }
+                .req-link { display: flex; align-items: center; gap: 0.3rem; color: var(--secondary); text-decoration: none; font-weight: 600; }
+                .req-link:hover { text-decoration: underline; }
+                .req-type { color: var(--text-muted); font-size: 0.8rem; }
+                .req-message { font-size: 0.95rem; color: var(--text-main); font-style: italic; background: white; padding: 1rem; border-radius: 12px; margin-bottom: 0.5rem; display: flex; gap: 0.5rem; }
+                .req-date { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
+                
+                .no-requests { text-align: center; color: var(--text-muted); padding: 2rem; }
+                
+                @keyframes slideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                .animate-slide-up { animation: slideUp 0.3s ease; }
             `}</style>
         </div>
     );
