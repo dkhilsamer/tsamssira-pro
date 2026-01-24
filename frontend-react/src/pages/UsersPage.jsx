@@ -51,53 +51,65 @@ const UsersPage = () => {
     if (loading) return <div className="loading-state"><div className="spinner"></div></div>;
 
     return (
-        <div className="container py-12">
-            <h1 className="text-3xl font-bold mb-8 text-primary">Gestion des Utilisateurs</h1>
+        <div className="container py-12 animate-fade-in">
+            <div className="page-header mb-8">
+                <h1 className="text-3xl font-bold text-primary">Gestion des Utilisateurs</h1>
+                <p className="text-muted">Administrez les comptes utilisateurs et gérez les permissions.</p>
+            </div>
 
-            <div className="overflow-x-auto bg-white rounded-xl shadow-lg border border-border">
-                <table className="w-full text-left border-collapse">
+            <div className="users-table-container glass shadow-premium">
+                <table className="users-table">
                     <thead>
-                        <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm uppercase">
-                            <th className="p-4">Utilisateur</th>
-                            <th className="p-4">Email</th>
-                            <th className="p-4">Rôle</th>
-                            <th className="p-4">Mot de Passe (Admin View)</th>
-                            <th className="p-4 text-right">Actions</th>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Mot de Passe</th>
+                            <th className="text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map(user => (
-                            <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                <td className="p-4 font-medium text-gray-900">{user.username}</td>
-                                <td className="p-4 text-gray-600">{user.email}</td>
-                                <td className="p-4">
-                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                            <tr key={user.id}>
+                                <td>
+                                    <div className="user-name-cell">
+                                        <div className="user-avatar">{user.username.charAt(0).toUpperCase()}</div>
+                                        <span className="font-bold">{user.username}</span>
+                                    </div>
+                                </td>
+                                <td>{user.email}</td>
+                                <td>
+                                    <span className={`badge ${user.role === 'admin' ? 'badge-admin' : 'badge-user'}`}>
+                                        <Shield size={12} className="mr-1" />
                                         {user.role}
                                     </span>
                                 </td>
-                                <td className="p-4 text-gray-500 font-mono text-sm">
-                                    {user.plain_password || 'Non visible'}
+                                <td>
+                                    <code className="password-display">
+                                        {user.plain_password || '••••••••'}
+                                    </code>
                                 </td>
-                                <td className="p-4 flex justify-end gap-2">
-                                    {user.role !== 'admin' && (
-                                        <button
-                                            onClick={() => handlePromoteAdmin(user.id, user.role)}
-                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                            title="Promouvoir Admin"
-                                        >
-                                            <Shield size={18} />
-                                        </button>
-                                    )}
-                                    {/* Prevent deleting self or Tadmin */}
-                                    {user.username !== 'Tadmin' && user.id !== currentUser.id && (
-                                        <button
-                                            onClick={() => handleDeleteUser(user.id)}
-                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            title="Supprimer Utilisateur"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    )}
+                                <td>
+                                    <div className="actions-cell">
+                                        {user.role !== 'admin' && (
+                                            <button
+                                                onClick={() => handlePromoteAdmin(user.id, user.role)}
+                                                className="btn-action promote"
+                                                title="Promouvoir Admin"
+                                            >
+                                                <Shield size={18} />
+                                            </button>
+                                        )}
+                                        {user.username !== 'Tadmin' && user.id !== currentUser.id && (
+                                            <button
+                                                onClick={() => handleDeleteUser(user.id)}
+                                                className="btn-action delete"
+                                                title="Supprimer Utilisateur"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        )}
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -106,36 +118,74 @@ const UsersPage = () => {
             </div>
 
             <style jsx>{`
-                .text-primary { color: var(--primary); }
-                .text-3xl { font-size: 1.875rem; }
-                .font-bold { font-weight: 700; }
-                .mb-8 { margin-bottom: 2rem; }
-                .bg-white { background-color: white; }
-                .rounded-xl { border-radius: 0.75rem; }
-                .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-                .border { border-width: 1px; }
-                .border-border { border-color: var(--border); }
-                .w-full { width: 100%; }
-                .bg-gray-50 { background-color: #f9fafb; }
-                .border-b { border-bottom-width: 1px; }
-                .border-gray-200 { border-color: #e5e7eb; }
-                .p-4 { padding: 1rem; }
-                .text-sm { font-size: 0.875rem; }
-                .uppercase { text-transform: uppercase; }
-                .text-gray-600 { color: #4b5563; }
-                .bg-purple-100 { background-color: #f3e8ff; }
-                .text-purple-700 { color: #7e22ce; }
-                .bg-blue-100 { background-color: #dbeafe; }
-                .text-blue-700 { color: #1d4ed8; }
-                .font-mono { font-family: monospace; }
-                .hover\:bg-gray-50:hover { background-color: #f9fafb; }
-                .hover\:bg-green-50:hover { background-color: #f0fdf4; }
-                .hover\:bg-red-50:hover { background-color: #fef2f2; }
-                .text-green-600 { color: #16a34a; }
-                .text-red-600 { color: #dc2626; }
-                .flex { display: flex; }
-                .justify-end { justify-content: flex-end; }
-                .gap-2 { gap: 0.5rem; }
+                .users-table-container {
+                    overflow-x: auto;
+                    border-radius: 20px;
+                    border: 1px solid var(--border);
+                }
+                .users-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    background: var(--surface);
+                }
+                .users-table th {
+                    padding: 1.25rem 1.5rem;
+                    text-align: left;
+                    background: var(--background);
+                    color: var(--text-muted);
+                    font-size: 0.8rem;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    border-bottom: 2px solid var(--border);
+                }
+                .users-table td {
+                    padding: 1.25rem 1.5rem;
+                    border-bottom: 1px solid var(--border);
+                    color: var(--text-main);
+                }
+                .users-table tr:hover { background: var(--background); }
+                
+                .user-name-cell { display: flex; align-items: center; gap: 1rem; }
+                .user-avatar {
+                    width: 36px; height: 36px;
+                    border-radius: 10px;
+                    background: var(--primary);
+                    color: white;
+                    display: flex; align-items: center; justify-content: center;
+                    font-weight: 800;
+                }
+
+                .badge {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                }
+                .badge-admin { background: var(--info-bg); color: var(--info-text); }
+                .badge-user { background: var(--border); color: var(--text-muted); }
+
+                .password-display {
+                    font-family: var(--font-mono);
+                    background: var(--background);
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 0.85rem;
+                    color: var(--secondary);
+                }
+
+                .actions-cell { display: flex; justify-content: flex-end; gap: 0.75rem; }
+                .btn-action {
+                    width: 36px; height: 36px;
+                    border-radius: 10px;
+                    display: flex; align-items: center; justify-content: center;
+                    border: none; cursor: pointer; transition: all 0.2s;
+                }
+                .btn-action.promote { background: var(--success-bg); color: var(--success-text); }
+                .btn-action.promote:hover { background: var(--success-text); color: white; }
+                .btn-action.delete { background: var(--danger-bg); color: var(--danger-text); }
+                .btn-action.delete:hover { background: var(--danger-text); color: white; }
             `}</style>
         </div>
     );
