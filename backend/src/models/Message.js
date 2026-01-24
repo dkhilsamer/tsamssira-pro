@@ -77,6 +77,16 @@ class Message {
         const rows = await db.query(sql, [userId]);
         return rows[0].count;
     }
+
+    static async cleanupOldMessages() {
+        const sql = `
+            DELETE FROM messages 
+            WHERE created_at < NOW() - INTERVAL 2 DAY
+        `;
+        const result = await db.query(sql);
+        console.log(`🧹 Cleanup: Deleted ${result.affectedRows || 0} messages older than 48 hours.`);
+        return result;
+    }
 }
 
 module.exports = Message;

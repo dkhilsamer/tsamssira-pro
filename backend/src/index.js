@@ -20,7 +20,14 @@ console.log('Using SMTP Pass:', process.env.EMAIL_PASSWORD ? 'Loaded' : 'MISSING
 const db = require('./db'); // ensure db connection works
 
 const authRoutes = require('./routes/auth');
-// Additional route imports can be added here (e.g., property, rental_requests)
+const Message = require('./models/Message');
+
+// Cleanup old messages (Startup + Every 12h)
+const runCleanup = () => {
+    Message.cleanupOldMessages().catch(err => console.error('Cleanup failed:', err));
+};
+runCleanup();
+setInterval(runCleanup, 12 * 60 * 60 * 1000); // 12 hours
 
 const app = express();
 app.set('trust proxy', 1); // Required for Render/Heroku to handle secure cookies
