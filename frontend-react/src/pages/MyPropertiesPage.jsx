@@ -22,10 +22,22 @@ const MyPropertiesPage = () => {
 
     const fetchMyProperties = async () => {
         try {
-            const data = await api.get('/properties/my-properties');
+            const response = await api.get('/properties/my-properties');
+
+            // Safety check for response format
+            let data = [];
+            if (Array.isArray(response)) {
+                data = response;
+            } else if (response && Array.isArray(response.data)) {
+                data = response.data;
+            } else {
+                console.warn('Unexpected API response format:', response);
+            }
+
             setProperties(data);
         } catch (error) {
             toast.error(error.message);
+            setProperties([]);
         } finally {
             setLoading(false);
         }

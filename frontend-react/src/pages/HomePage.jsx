@@ -26,10 +26,24 @@ const HomePage = () => {
     const fetchProperties = async (currentFilters = filters) => {
         try {
             setLoading(true);
-            const data = await api.get('/properties', { params: currentFilters });
+            const response = await api.get('/properties', { params: currentFilters });
+
+            // Safety check for response format
+            let data = [];
+            if (Array.isArray(response)) {
+                data = response;
+            } else if (response && Array.isArray(response.data)) {
+                data = response.data;
+            } else if (response && Array.isArray(response.properties)) {
+                data = response.properties;
+            } else {
+                console.warn('Unexpected API response format:', response);
+            }
+
             setProperties(data);
         } catch (error) {
             console.error('Fetch error:', error);
+            setProperties([]); // Safe fallback
         } finally {
             setLoading(false);
         }

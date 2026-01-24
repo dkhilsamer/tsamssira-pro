@@ -49,6 +49,15 @@
   /* Amélioration mobile */
 }
 
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--background);
