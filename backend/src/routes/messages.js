@@ -58,33 +58,37 @@ router.post('/', async (req, res) => {
 
         // Send notification email to the receiver
 
-        try {
-            const [sender, receiver, property] = await Promise.all([
-                User.findById(req.session.userId),
-                User.findById(receiver_id),
-                property_id ? Property.findById(property_id) : Promise.resolve(null)
-            ]);
+        // Send notification email to the receiver (Async / Fire-and-forget)
+        (async () => {
+            try {
+                const [sender, receiver, property] = await Promise.all([
+                    User.findById(req.session.userId),
+                    User.findById(receiver_id),
+                    property_id ? Property.findById(property_id) : Promise.resolve(null)
+                ]);
 
-            if (receiver && receiver.email) {
-                const senderName = sender ? sender.username : 'Un utilisateur';
-                const propertyTitle = property ? property.title : 'un bien immobilier';
+                if (receiver) {
+                    const senderName = sender ? sender.username : 'Un utilisateur';
+                    const propertyTitle = property ? property.title : 'un bien immobilier';
 
-                // Email
-                await sendNewMessageNotification(receiver.email, senderName, propertyTitle);
+                    if (receiver.email) {
+                        // Email (don't await this in main thread if standard node environment)
+                        await sendNewMessageNotification(receiver.email, senderName, propertyTitle).catch(e => console.error('Email failed:', e.message));
+                    }
 
-                // Internal Notification
-                await Notification.create({
-                    user_id: receiver_id,
-                    type: 'message',
-                    title: 'Nouveau message',
-                    message: `${senderName} vous a envoyé un message : "${content.substring(0, 30)}${content.length > 30 ? '...' : ''}"`,
-                    link: `/messages`
-                });
+                    // Internal Notification
+                    await Notification.create({
+                        user_id: receiver_id,
+                        type: 'message',
+                        title: 'Nouveau message',
+                        message: `${senderName} vous a envoyé un message : "${content.substring(0, 30)}${content.length > 30 ? '...' : ''}"`,
+                        link: `/messages`
+                    });
+                }
+            } catch (emailError) {
+                console.error('Notification error:', emailError);
             }
-        } catch (emailError) {
-            console.error('Email notification error:', emailError);
-            // Don't fail the message sending if email fails
-        }
+        })();
 
         res.status(201).json({ message: 'Message sent', id: messageId });
     } catch (err) {

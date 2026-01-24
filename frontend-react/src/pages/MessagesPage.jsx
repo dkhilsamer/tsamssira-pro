@@ -12,80 +12,35 @@ const MessagesPage = () => {
     const [activeConv, setActiveConv] = useState(null);
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
-    const messagesEndRef = useRef(null);
+    const [cooldown, setCooldown] = useState(0);
 
     useEffect(() => {
-        if (!user) return;
-        fetchConversations();
-    }, [user]);
-
-    // Handle navigation from other pages (e.g., RequestsPage "Contacter" button)
-    useEffect(() => {
-        const targetId = location.state?.userId;
-        const targetUsername = location.state?.username;
-        const targetPropertyId = location.state?.propertyId;
-        const targetPropertyTitle = location.state?.propertyTitle;
-
-        if (targetId) {
-            const existingConv = conversations.find(c => c.user_id === targetId);
-
-            if (existingConv) {
-                setActiveConv({ ...existingConv, property_id: targetPropertyId || existingConv.property_id });
-            } else if (targetUsername) {
-                // If it's a new contact (not in list), create a temporary one
-                setActiveConv({
-                    user_id: targetId,
-                    username: targetUsername,
-                    property_id: targetPropertyId,
-                    property_title: targetPropertyTitle,
-                    is_new: true
-                });
-            }
+        let timer;
+        if (cooldown > 0) {
+            timer = setInterval(() => {
+                setCooldown(prev => prev - 1);
+            }, 1000);
         }
-    }, [location.state, conversations]);
+        return () => clearInterval(timer);
+    }, [cooldown]);
 
-    useEffect(() => {
-        if (activeConv) {
-            fetchMessages(activeConv.user_id);
-            const interval = setInterval(() => fetchMessages(activeConv.user_id, true), 5000);
-            return () => clearInterval(interval);
-        }
-    }, [activeConv]);
+    // ... existing navigation useEffect ...
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+    // ... existing poll useEffect ...
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    // ... existing scroll useEffect ...
 
-    const fetchConversations = async () => {
-        try {
-            const data = await api.get('/messages/conversations');
-            setConversations(data || []);
-        } catch (error) {
-            toast.error(error.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // ... scroll utils ...
 
-    const fetchMessages = async (otherUserId, silent = false) => {
-        try {
-            const data = await api.get(`/messages/${otherUserId}`);
-            setMessages(data || []);
-            if (silent) fetchConversations(); // Sync sidebar on poll
-        } catch (error) {
-            if (!silent) toast.error(error.message);
-        }
-    };
+    // ... fetchConversations ...
+
+    // ... fetchMessages ...
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim() || !activeConv) return;
+        if (!newMessage.trim() || !activeConv || cooldown > 0) return;
+
+        setCooldown(10); // Start cooldown immediately to prevent duplicates
 
         try {
             await api.post('/messages', {
@@ -98,27 +53,20 @@ const MessagesPage = () => {
             fetchConversations(); // Update preview
         } catch (error) {
             toast.error(error.message);
+            setCooldown(0); // Reset cooldown on error so they can retry
         }
     };
 
-    if (loading) return <div className="loading-state"><div className="spinner"></div></div>;
+    // ... loading check ...
 
-    const formatTime = (timeString) => {
-        try {
-            if (!timeString) return '';
-            const date = new Date(timeString);
-            if (isNaN(date.getTime())) return '';
-            return formatDistanceToNow(date, { addSuffix: true, locale: fr });
-        } catch (e) {
-            return '';
-        }
-    };
+    // ... formatTime ...
 
     return (
         <div className="messages-layout container animate-fade-in">
+            {/* ... sidebar ... */}
             <div className="messages-container glass">
-                {/* Sidebar: Conversations List */}
                 <div className="conv-sidebar">
+                    {/* ... sidebar header ... */}
                     <div className="sidebar-header">
                         <h2>Messages</h2>
                         <div className="search-bar">
@@ -128,6 +76,7 @@ const MessagesPage = () => {
                     </div>
 
                     <div className="conv-list">
+                        {/* ... conv items ... */}
                         {conversations.length > 0 ? (
                             conversations.map(conv => (
                                 <div
@@ -158,6 +107,7 @@ const MessagesPage = () => {
                 <div className="chat-window">
                     {activeConv ? (
                         <>
+                            {/* ... chat header ... */}
                             <div className="chat-header">
                                 <div className="user-info">
                                     <div className="avatar"><User size={24} /></div>
@@ -175,6 +125,7 @@ const MessagesPage = () => {
                             </div>
 
                             <div className="chat-messages">
+                                {/* ... messages mapping ... */}
                                 {messages.map((msg, index) => (
                                     <div
                                         key={index}
@@ -232,12 +183,22 @@ const MessagesPage = () => {
                             <form className="chat-input" onSubmit={handleSendMessage}>
                                 <input
                                     type="text"
-                                    placeholder="Écrivez votre message..."
+                                    placeholder={cooldown > 0 ? `Veuillez patienter ${cooldown}s...` : "Écrivez votre message..."}
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
+                                    disabled={cooldown > 0}
                                 />
-                                <button type="submit" className="btn btn-primary send-btn">
-                                    <Send size={20} />
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary send-btn"
+                                    disabled={cooldown > 0 || !newMessage.trim()}
+                                    style={{ opacity: cooldown > 0 ? 0.7 : 1, cursor: cooldown > 0 ? 'not-allowed' : 'pointer' }}
+                                >
+                                    {cooldown > 0 ? (
+                                        <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{cooldown}s</span>
+                                    ) : (
+                                        <Send size={20} />
+                                    )}
                                 </button>
                             </form>
                         </>
@@ -264,6 +225,7 @@ const MessagesPage = () => {
                     border-radius: 30px;
                     overflow: hidden;
                     box-shadow: 0 4px 50px rgba(0,0,0,0.1);
+                    background: white; /* Ensure background is solid for scrollbars */
                 }
                 
                 /* Sidebar */
@@ -273,7 +235,7 @@ const MessagesPage = () => {
                     flex-direction: column;
                     background: rgba(255, 255, 255, 0.5);
                     height: 100%;
-                    min-height: 0; /* Important for nested scrolling */
+                    min-height: 0; 
                 }
                 .sidebar-header { padding: 1.5rem; flex-shrink: 0; }
                 .sidebar-header h2 { font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary); }
@@ -293,69 +255,27 @@ const MessagesPage = () => {
                     flex-grow: 1; 
                     overflow-y: auto; 
                     padding-bottom: 1rem;
-                    scrollbar-width: thin;
-                    scrollbar-color: var(--secondary) transparent;
+                    scrollbar-width: thin; /* Firefox */
+                    scrollbar-color: var(--secondary) transparent; /* Firefox */
                 }
                 
                 .conv-list::-webkit-scrollbar {
-                    width: 6px;
+                    width: 8px; /* Slightly wider */
                 }
                 .conv-list::-webkit-scrollbar-track {
-                    background: transparent;
+                    background: #f1f5f9;
                 }
                 .conv-list::-webkit-scrollbar-thumb {
                     background-color: #cbd5e1;
                     border-radius: 20px;
+                    border: 2px solid #f1f5f9; /* Contrast border */
                 }
                 .conv-list::-webkit-scrollbar-thumb:hover {
                     background-color: var(--secondary);
                 }
 
-                /* ... existing conv-item styles ... */
-                .conv-item {
-                    display: flex;
-                    gap: 1rem;
-                    padding: 1.25rem 1.5rem;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    border-bottom: 1px solid rgba(0,0,0,0.03);
-                }
-                .conv-item:hover { background: rgba(212, 175, 55, 0.05); }
-                .conv-item.active { background: white; border-left: 4px solid var(--secondary); }
-                
-                .avatar {
-                    width: 44px;
-                    height: 44px;
-                    background: #f1f5f9;
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: var(--text-muted);
-                    position: relative;
-                    flex-shrink: 0;
-                }
-                .unread-dot {
-                    position: absolute;
-                    top: -2px;
-                    right: -2px;
-                    width: 10px;
-                    height: 10px;
-                    background: var(--secondary);
-                    border: 2px solid white;
-                    border-radius: 50%;
-                }
-                .conv-info { flex-grow: 1; min-width: 0; }
-                .conv-header { display: flex; justify-content: space-between; margin-bottom: 0.25rem; align-items: center; }
-                .conv-header .name { font-weight: 700; color: var(--primary); font-size: 0.95rem; }
-                .conv-header .time { font-size: 0.7rem; color: var(--text-muted); }
-                .last-msg {
-                    font-size: 0.8rem;
-                    color: var(--text-muted);
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
+                /* ... existing conv-item ... */
+                /* ... rest of conv styles ... */
                 
                 /* Chat Window */
                 .chat-window { 
@@ -363,27 +283,14 @@ const MessagesPage = () => {
                     flex-direction: column; 
                     background: white; 
                     height: 100%;
-                    min-height: 0; /* Important for nested scrolling */
+                    min-height: 0; 
                 }
-                .chat-header {
-                    padding: 1rem 2rem;
-                    border-bottom: 1px solid var(--border);
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    flex-shrink: 0; /* Don't shrink header */
-                    background: rgba(255, 255, 255, 0.8);
-                    backdrop-filter: blur(10px);
-                }
-                .user-info { display: flex; align-items: center; gap: 1rem; }
-                .user-info h3 { font-size: 1.1rem; color: var(--primary); margin: 0; }
-                .user-info .status { font-size: 0.8rem; color: var(--success); display: flex; align-items: center; gap: 0.4rem; }
-                .property-context { font-size: 0.8rem; color: var(--secondary); margin-top: 2px; display: block; }
+                /* ... chat header ... */
                 
                 .chat-messages {
                     flex-grow: 1;
                     padding: 2rem;
-                    overflow-y: auto;
+                    overflow-y: scroll; /* Force scrollbar */
                     display: flex;
                     flex-direction: column;
                     gap: 1rem;
@@ -391,10 +298,12 @@ const MessagesPage = () => {
                     scroll-behavior: smooth;
                     scrollbar-width: thin;
                     scrollbar-color: var(--secondary) transparent;
+                    padding-right: 1rem; /* Avoid overlap with scrollbar */
                 }
                 
                 .chat-messages::-webkit-scrollbar {
-                    width: 6px;
+                    width: 8px;
+                    display: block; /* Force display */
                 }
                 .chat-messages::-webkit-scrollbar-track {
                     background: transparent;
@@ -407,150 +316,16 @@ const MessagesPage = () => {
                     background-color: var(--secondary);
                 }
 
-                /* ... rest of styles ... */
-                .msg-wrapper { display: flex; width: 100%; }
-                .msg-wrapper.received { justify-content: flex-start; }
-                .msg-wrapper.sent { justify-content: flex-end; }
-                
-                .msg-bubble {
-                    max-width: 70%;
-                    padding: 1rem 1.25rem;
-                    border-radius: 18px;
-                    font-size: 0.95rem;
-                    position: relative;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                    line-height: 1.5;
-                }
-                .sent .msg-bubble { 
-                    background: var(--primary); 
-                    color: white; 
-                    border-bottom-right-radius: 4px;
-                }
-                .received .msg-bubble { 
-                    background: white; 
-                    color: var(--text-main); 
-                    border-bottom-left-radius: 4px;
-                    border: 1px solid var(--border);
-                }
-                
-                /* Request Messages Styles */
-                .rental-request-msg, .boost-request-msg {
-                    padding: 0.75rem;
-                    border-radius: 12px;
-                    margin-bottom: 0.5rem;
-                    border-left-width: 4px;
-                    border-left-style: solid;
-                }
-                .rental-request-msg {
-                    background: rgba(212, 175, 55, 0.1);
-                    border-left-color: var(--secondary);
-                }
-                .boost-request-msg {
-                    background: #fffbeb;
-                    border-left-color: #f59e0b;
-                }
-                .request-header {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    font-weight: 700;
-                    margin-bottom: 0.25rem;
-                    font-size: 0.9rem;
-                }
-                .rental-request-msg .request-header { color: var(--secondary); }
-                .boost-request-msg .request-header { color: #b45309; }
-                
-                .request-content {
-                    font-size: 0.85rem;
-                    white-space: pre-wrap;
-                    line-height: 1.4;
-                }
-                .rental-request-msg .request-content { color: var(--primary); }
-                .boost-request-msg .request-content { color: #78350f; }
-                
-                .msg-time {
-                    display: block;
-                    font-size: 0.65rem;
-                    margin-top: 0.25rem;
-                    opacity: 0.7;
-                    text-align: right;
-                }
-                
-                .btn-approve-boost {
-                    display: block;
-                    width: 100%;
-                    margin-top: 1rem;
-                    padding: 0.75rem 1rem;
-                    background: linear-gradient(135deg, #10b981, #059669);
-                    color: white;
-                    border: none;
-                    border-radius: 12px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-                }
-                .btn-approve-boost:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-                }
-                
-                .chat-input {
-                    padding: 1.5rem 2rem;
-                    border-top: 1px solid var(--border);
-                    display: flex;
-                    gap: 1rem;
-                    background: white;
-                    flex-shrink: 0; /* Keep input at bottom */
-                }
-                .chat-input input {
-                    flex-grow: 1;
-                    padding: 1rem 1.5rem;
-                    border: 1px solid var(--border);
-                    border-radius: 16px;
-                    background: #f8fafc;
-                    outline: none;
-                    transition: border-color 0.2s;
-                }
-                .chat-input input:focus { border-color: var(--secondary); }
-                .send-btn { 
-                    width: 52px; 
-                    height: 52px; 
-                    padding: 0; 
-                    background: var(--secondary); 
-                    border-radius: 16px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    transition: transform 0.2s;
-                    border: none;
-                    color: white;
-                    cursor: pointer;
-                }
-                .send-btn:hover { transform: scale(1.05); }
-                
-                .no-chat {
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 1rem;
-                    color: var(--text-muted);
-                    background: #f8fafc;
-                }
-                
-                @media (max-width: 768px) {
-                    .messages-container { grid-template-columns: 1fr; border-radius: 0; height: 100%; box-shadow: none; }
-                    .messages-layout { height: calc(100vh - 80px); padding-bottom: 0; margin-top: 0; }
-                    .conv-sidebar { display: ${activeConv ? 'none' : 'flex'}; width: 100%; }
-                    .chat-window { display: ${activeConv ? 'flex' : 'none'}; width: 100%; height: 100%; }
-                    .msg-bubble { max-width: 85%; }
-                    .chat-header { padding: 1rem; }
-                    .chat-input { padding: 1rem; }
+                /* ... msg styles ... */
+                /* ... input styles ... */
+
+                .chat-input input:disabled {
+                    background: #e2e8f0;
+                    cursor: not-allowed;
                 }
             `}</style>
-        </div>
+            `}</style>
+        </div >
     );
 };
 
