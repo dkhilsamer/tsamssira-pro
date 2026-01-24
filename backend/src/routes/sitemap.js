@@ -5,8 +5,8 @@ const Property = require('../models/Property');
 // Dynamic Sitemap Generation
 router.get('/sitemap.xml', async (req, res) => {
   try {
-    // Use SITE_URL (if provided) or FRONTEND_URL, fallback to localhost
-    const baseUrl = (process.env.SITE_URL || process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+    // Use SITE_URL (if provided) or FRONTEND_URL, fallback to the main custom domain
+    const baseUrl = (process.env.SITE_URL || 'https://www.tsamssirapro.online').replace(/\/$/, '');
 
     // Fetch all public properties
     const properties = await Property.getAll({ publicOnly: true });
