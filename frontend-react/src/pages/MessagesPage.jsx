@@ -287,7 +287,21 @@ const MessagesPage = () => {
                 }
                 .search-bar input { border: none; outline: none; width: 100%; font-family: var(--font-body); }
                 
-                .conv-list { flex-grow: 1; overflow-y: auto; }
+                .conv-list { 
+                    flex-grow: 1; 
+                    overflow-y: auto; 
+                }
+                
+                .conv-list::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .conv-list::-webkit-scrollbar-thumb {
+                    background: var(--border);
+                    border-radius: 10px;
+                }
+                .conv-list::-webkit-scrollbar-thumb:hover {
+                    background: var(--secondary);
+                }
                 .conv-item {
                     display: flex;
                     gap: 1rem;
@@ -353,7 +367,18 @@ const MessagesPage = () => {
                     display: flex;
                     flex-direction: column;
                     gap: 1rem;
-                    background: #f8fafc;
+                    background: var(--background);
+                }
+                
+                .chat-messages::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .chat-messages::-webkit-scrollbar-thumb {
+                    background: var(--border);
+                    border-radius: 10px;
+                }
+                .chat-messages::-webkit-scrollbar-thumb:hover {
+                    background: var(--secondary);
                 }
                 .msg-wrapper { display: flex; width: 100%; }
                 .msg-wrapper.received { justify-content: flex-start; }
