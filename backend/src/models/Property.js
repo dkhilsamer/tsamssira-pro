@@ -77,7 +77,7 @@ class Property {
 
     static async findById(id) {
         const rows = await db.query(`
-            SELECT p.*, u.username as owner_username 
+            SELECT p.*, u.username as owner_username, u.email as owner_email, u.phone as owner_phone
             FROM properties p 
             JOIN users u ON p.user_id = u.id 
             WHERE p.id = ?

@@ -158,8 +158,6 @@ const Navbar = () => {
                     height: 50px;
                     width: auto;
                     object-fit: contain;
-                    mix-blend-mode: ${theme === 'light' ? 'multiply' : 'normal'};
-                    filter: ${theme === 'dark' ? 'brightness(0) invert(1)' : 'none'};
                 }
                 .mobile-toggle {
                     display: none;
@@ -279,7 +277,6 @@ const Navbar = () => {
                     height: 90px;
                     width: auto;
                     object-fit: contain;
-                    filter: ${theme === 'dark' ? 'brightness(0) invert(1)' : 'none'};
                 }
                 .logo-text {
                     font-family: var(--font-heading);

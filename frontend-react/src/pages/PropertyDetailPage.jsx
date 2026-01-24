@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Bed, Bath, Maximize, MapPin, Send, MessageCircle, ExternalLink, Map as MapIcon } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Send, MessageCircle, ExternalLink, Map as MapIcon, User, Phone, Mail as MailIcon } from 'lucide-react';
 import PropertyMap from '../components/PropertyMap';
 
 const PropertyDetailPage = () => {
@@ -194,6 +194,21 @@ const PropertyDetailPage = () => {
                     <div className="contact-card glass">
                         <h3>Contacter le propriétaire</h3>
 
+                        <div className="owner-contact-info mb-6">
+                            <div className="owner-detail">
+                                <User size={18} />
+                                <span>{property.owner_username}</span>
+                            </div>
+                            <a href={`tel:${property.owner_phone}`} className="owner-link">
+                                <Phone size={18} />
+                                <span>{property.owner_phone}</span>
+                            </a>
+                            <a href={`mailto:${property.owner_email}`} className="owner-link">
+                                <MailIcon size={18} />
+                                <span>{property.owner_email}</span>
+                            </a>
+                        </div>
+
                         <button onClick={startChat} className="btn btn-secondary w-full mb-6">
                             <MessageCircle size={20} /> Discuter en direct
                         </button>
@@ -364,6 +379,27 @@ const PropertyDetailPage = () => {
                 .contact-form { display: flex; flex-direction: column; gap: 1rem; }
                 .w-full { width: 100%; }
                 .mb-6 { margin-bottom: 1.5rem; }
+
+                .owner-contact-info {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.8rem;
+                    background: var(--background);
+                    padding: 1.2rem;
+                    border-radius: 16px;
+                }
+                .owner-detail, .owner-link {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    color: var(--text-main);
+                    font-size: 0.95rem;
+                    font-weight: 500;
+                    text-decoration: none;
+                    transition: color 0.2s;
+                }
+                .owner-link:hover { color: var(--secondary); }
+                .owner-detail { color: var(--primary); font-weight: 700; }
                 
                 @media (max-width: 1024px) {
                     .content-grid { grid-template-columns: 1fr; }
