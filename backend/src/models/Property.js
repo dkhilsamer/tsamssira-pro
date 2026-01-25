@@ -37,6 +37,14 @@ class Property {
         if (filters.is_student) {
             conditions.push('is_student = 1');
         }
+        if (filters.minArea) {
+            conditions.push('area >= ?');
+            params.push(filters.minArea);
+        }
+        if (filters.maxArea) {
+            conditions.push('area <= ?');
+            params.push(filters.maxArea);
+        }
 
         // Always show only visible properties publicly if not admin (handled in controller or generic filter)
         // For now, let's assume 'getAll' is mostly for public listing, so respect is_visible=1

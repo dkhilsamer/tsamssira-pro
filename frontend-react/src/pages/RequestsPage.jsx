@@ -53,7 +53,7 @@ const RequestsPage = () => {
     if (loading) return <div className="loading-state"><div className="spinner"></div></div>;
 
     // Admin-only check for UI (Optional, backend enforces too)
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.role === 'admin' || user?.username?.toLowerCase() === 'tadmin';
 
     return (
         <div className="container py-12 animate-fade-in">

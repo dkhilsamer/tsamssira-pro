@@ -29,6 +29,9 @@ const PropertyDetailPage = () => {
         try {
             const data = await api.get(`/properties/${id}`);
             setProperty(data);
+            if (data && data.title) {
+                document.title = `${data.title} | Tsamssira Pro`;
+            }
         } catch (error) {
             toast.error(error.message);
             navigate('/');
@@ -53,6 +56,8 @@ const PropertyDetailPage = () => {
                 num_persons: 1,
                 message: 'Je suis intéressé par cette propriété.'
             });
+            // Redirect to the contact info page
+            navigate(`/property/${id}/contact`, { state: { property } });
         } catch (error) {
             toast.error(error.message);
         }
@@ -177,27 +182,7 @@ const PropertyDetailPage = () => {
                 <div className="sidebar">
                     <div className="contact-card glass">
                         <h3>Contacter le propriétaire</h3>
-
-                        <div className="owner-contact-info mb-6">
-                            <div className="owner-detail">
-                                <User size={18} />
-                                <span>{property.owner_username}</span>
-                            </div>
-                            <a href={`tel:${property.owner_phone}`} className="owner-link">
-                                <Phone size={18} />
-                                <span>{property.owner_phone}</span>
-                            </a>
-                            <a href={`mailto:${property.owner_email}`} className="owner-link">
-                                <MailIcon size={18} />
-                                <span>{property.owner_email}</span>
-                            </a>
-                        </div>
-
-                        <button onClick={startChat} className="btn btn-secondary w-full mb-6">
-                            <MessageCircle size={20} /> Discuter en direct
-                        </button>
-
-                        <div className="divider">OU</div>
+                        <p className="mb-6 text-sm text-gray-500">Envoyez une demande pour voir les coordonnées directes du propriétaire.</p>
 
                         <form onSubmit={handleContact} className="contact-form">
                             <input

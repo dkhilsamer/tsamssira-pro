@@ -24,6 +24,9 @@ class Message {
                 m.type,
                 m.property_id,
                 p.title as property_title,
+                p.main_image as property_image,
+                p.price as property_price,
+                p.location as property_location,
                 (SELECT COUNT(*) FROM messages m2 WHERE m2.sender_id = u.id AND m2.receiver_id = ? AND m2.is_read = 0) as unread_count
             FROM users u
             JOIN (

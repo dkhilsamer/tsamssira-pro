@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { User, LogOut, MessageSquare, LayoutDashboard, Home, Menu, X, Sun, Moon, Clock, List } from 'lucide-react';
+import { User, LogOut, MessageSquare, LayoutDashboard, Home, Menu, X, Sun, Moon, Clock, List, Sparkles } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import NotificationBell from './NotificationBell';
 import './Navbar.css';
@@ -73,6 +73,9 @@ const Navbar = () => {
                     </div>
                     <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
                         <Home size={18} /> Accueil
+                    </Link>
+                    <Link to="/ai-pricing" className={`nav-item ${location.pathname === '/ai-pricing' ? 'active' : ''}`}>
+                        <Sparkles size={18} /> Estimation IA
                     </Link>
 
                     {user ? (

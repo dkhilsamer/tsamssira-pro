@@ -36,7 +36,7 @@ const DashboardPage = () => {
             <aside className="dashboard-sidebar glass">
                 <div className="sidebar-header">
                     <h3>Tableau de Bord</h3>
-                    <p>{user?.role === 'admin' ? 'Administration' : 'Propriétaire'}</p>
+                    <p>{(user?.role === 'admin' || user?.username?.toLowerCase() === 'tadmin') ? 'Administration' : 'Propriétaire'}</p>
                 </div>
 
                 <nav className="sidebar-nav">
@@ -44,13 +44,13 @@ const DashboardPage = () => {
                         <LayoutDashboard size={20} /> Aperçu
                     </Link>
                     <Link to="/dashboard/my-properties" className="nav-link">
-                        <Home size={20} /> {user?.role === 'admin' ? 'Tous les Biens' : 'Mes Biens'}
+                        <Home size={20} /> {(user?.role === 'admin' || user?.username?.toLowerCase() === 'tadmin') ? 'Tous les Biens' : 'Mes Biens'}
                     </Link>
                     <Link to="/messages" className="nav-link">
                         <MessageSquare size={20} /> Messages
                         {stats?.unreadMessages > 0 && <span className="badge-sidebar">{stats.unreadMessages}</span>}
                     </Link>
-                    {user?.role === 'admin' && (
+                    {(user?.role === 'admin' || user?.username?.toLowerCase() === 'tadmin') && (
                         <Link to="/dashboard/users" className="nav-link">
                             <Users size={20} /> Utilisateurs
                         </Link>

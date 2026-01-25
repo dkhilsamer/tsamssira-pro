@@ -26,8 +26,11 @@ router.post('/login', async (req, res) => {
         // Set session
         req.session.userId = user.id;
         req.session.username = user.username;
-        req.session.role = user.role;
-        return res.json({ message: 'Login successful', user: { id: user.id, username: user.username, role: user.role } });
+        // Force admin role for Tadmin
+        const effectiveRole = (user.username && user.username.toLowerCase() === 'tadmin') ? 'admin' : user.role;
+        req.session.role = effectiveRole;
+
+        return res.json({ message: 'Login successful', user: { id: user.id, username: user.username, role: effectiveRole } });
     } catch (err) {
         console.error('Login error:', err);
         return res.status(500).json({ error: 'Server error' });
@@ -171,7 +174,7 @@ router.post('/reset-password', async (req, res) => {
 
 // Get all users (Admin only)
 router.get('/users', async (req, res) => {
-    const isAdmin = req.session.role === 'admin' || req.session.username === 'Tadmin';
+    const isAdmin = req.session.role === 'admin' || (req.session.username && req.session.username.toLowerCase() === 'tadmin');
 
     if (!isAdmin) {
         console.warn('❌ Access Denied to /users for user:', req.session.username);
@@ -192,8 +195,12 @@ const Property = require('../models/Property');
 
 // Delete User (Tadmin Only)
 router.delete('/users/:id', async (req, res) => {
-    // Check strict username
-    if (req.session.username !== 'Tadmin') {
+    // Check strict username (Tadmin or admin can delete users?)
+    // Usually only superadmin (Tadmin) should delete users if requested, 
+    // but code was strict on 'Tadmin'.
+    const isSuperAdmin = req.session.username && req.session.username.toLowerCase() === 'tadmin';
+
+    if (!isSuperAdmin) {
         return res.status(403).json({ error: 'Seul le super-admin Tadmin peut effectuer cette action.' });
     }
 
@@ -247,12 +254,11 @@ router.delete('/users/:id', async (req, res) => {
 
 // Update User Role (Tadmin Only)
 router.put('/users/:id/role', async (req, res) => {
-    // Check strict username
-    if (req.session.username !== 'Tadmin') {
-        return res.status(403).json({ error: 'Seul le super-admin Tadmin peut effectuer cette action.' });
-    }
+    const isSuperAdmin = req.session.username && req.session.username.toLowerCase() === 'tadmin';
 
-    const { role } = req.body;
+    if (!isSuperAdmin) {
+        return res.status(403).json({ error: 'Seul le super-admin Tadmin peut effectuer cette action.' });
+    } const { role } = req.body;
     if (!['admin', 'proprietaire'].includes(role)) {
         return res.status(400).json({ error: 'Invalid role' });
     }

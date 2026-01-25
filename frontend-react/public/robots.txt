@@ -1,3 +1,10 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /messages
+Disallow: /payment
+Disallow: /edit-property/
+Disallow: /add-property
+
 Sitemap: https://www.tsamssirapro.online/sitemap.xml

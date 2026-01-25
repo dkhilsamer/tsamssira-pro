@@ -10,12 +10,14 @@ router.get('/stats', async (req, res) => {
     if (!req.session.userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const userId = req.session.userId;
+    const username = req.session.username;
     const role = req.session.role;
+    const isAdmin = role === 'admin' || (username && username.toLowerCase() === 'tadmin');
 
     try {
         let properties, requests;
 
-        if (role === 'admin') {
+        if (isAdmin) {
             properties = await Property.getAll();
             requests = await RentalRequest.getAll();
         } else {
@@ -62,13 +64,15 @@ router.get('/analytics', async (req, res) => {
     if (!req.session.userId) return res.status(401).json({ error: 'Unauthorized' });
 
     const userId = req.session.userId;
+    const username = req.session.username;
     const role = req.session.role;
+    const isAdmin = role === 'admin' || (username && username.toLowerCase() === 'tadmin');
 
     try {
         let whereClause = '';
         let params = [];
 
-        if (role !== 'admin') {
+        if (!isAdmin) {
             whereClause = 'WHERE p.user_id = ?';
             params = [userId];
         }
@@ -88,7 +92,7 @@ router.get('/analytics', async (req, res) => {
         `, params);
 
         // Requests by month (last 6 months)
-        const requestsWhereClause = role === 'admin' ? '' : 'WHERE p.user_id = ?';
+        const requestsWhereClause = isAdmin ? '' : 'WHERE p.user_id = ?';
         const requestsMonthly = await db.query(`
             SELECT 
                 DATE_FORMAT(r.created_at, '%Y-%m') as month,
@@ -99,7 +103,7 @@ router.get('/analytics', async (req, res) => {
             GROUP BY DATE_FORMAT(r.created_at, '%Y-%m')
             ORDER BY month DESC
             LIMIT 6
-        `, role === 'admin' ? [] : [userId]);
+        `, isAdmin ? [] : [userId]);
 
         // Top viewed properties
         const topProperties = await db.query(`

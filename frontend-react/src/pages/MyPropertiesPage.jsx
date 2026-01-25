@@ -13,7 +13,7 @@ const MyPropertiesPage = () => {
     const [properties, setProperties] = useState([]);
     const [loading, setLoading] = useState(true);
     const user = JSON.parse(localStorage.getItem('user'));
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.role === 'admin' || user?.username?.toLowerCase() === 'tadmin';
     const [selectedPropRequests, setSelectedPropRequests] = useState(null);
     const [showRequestsModal, setShowRequestsModal] = useState(false);
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';

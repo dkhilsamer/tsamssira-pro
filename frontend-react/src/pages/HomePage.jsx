@@ -15,12 +15,15 @@ const HomePage = () => {
         property_category: '',
         minPrice: '',
         maxPrice: '',
+        minArea: '',
+        maxArea: '',
         bedrooms: '',
         sortBy: 'newest'
     });
 
     useEffect(() => {
         fetchProperties();
+        document.title = "Tsamssira Pro | Immobilier de Luxe en Tunisie - Vente & Location";
     }, []);
 
     const fetchProperties = async (currentFilters = filters) => {
@@ -54,49 +57,80 @@ const HomePage = () => {
         fetchProperties();
     };
 
+    const handleReset = () => {
+        const defaultFilters = {
+            city: '',
+            type: '',
+            property_category: '',
+            minPrice: '',
+            maxPrice: '',
+            minArea: '',
+            maxArea: '',
+            bedrooms: '',
+            sortBy: 'newest'
+        };
+        setFilters(defaultFilters);
+        fetchProperties(defaultFilters);
+    };
+
     return (
         <div className="home-page">
             <section className="hero-section">
                 <div className="container hero-content">
-                    <h1 className="animate-fade-in">Trouvez votre futur chez-vous</h1>
-                    <p className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                        Découvrez les meilleures propriétés en Tunisie, sélectionnées pour vous.
+                    <div className="hero-badge animate-fade-in">
+                        <span className="premium-tag">EXCELLENCE & PRESTIGE</span>
+                    </div>
+                    <h1 className="animate-fade-in">Tsamssira Pro</h1>
+                    <h2 className="hero-subtitle animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                        L'Immobilier de Luxe en Tunisie
+                    </h2>
+                    <p className="hero-description animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                        Découvrez une sélection exclusive de propriétés d'exception.
+                        Vente et location d'appartements de haut standing, villas de prestige et résidences uniques.
                     </p>
 
-                    <form className="search-box glass animate-fade-in" style={{ animationDelay: '0.2s' }} onSubmit={handleSearch}>
+                    <form className="search-box glass animate-fade-in" style={{ animationDelay: '0.3s' }} onSubmit={handleSearch}>
                         <div className="search-grid">
                             <div className="search-field">
-                                <label>Ville</label>
-                                <input
-                                    type="text"
-                                    placeholder="Ex: Tunis, Sousse..."
-                                    value={filters.city}
-                                    onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-                                />
+                                <label>Destinations</label>
+                                <div className="input-with-icon">
+                                    <MapPin size={18} className="input-icon" />
+                                    <input
+                                        type="text"
+                                        placeholder="Tunis, Sousse, Hammamet..."
+                                        value={filters.city}
+                                        onChange={(e) => setFilters({ ...filters, city: e.target.value })}
+                                    />
+                                </div>
                             </div>
                             <div className="search-field">
-                                <label>Type d'offre</label>
+                                <label>Services</label>
                                 <select
                                     value={filters.type}
                                     onChange={(e) => setFilters({ ...filters, type: e.target.value })}
                                 >
-                                    <option value="">Tous les types</option>
-                                    <option value="Vente">Vente</option>
-                                    <option value="Location">Location</option>
+                                    <option value="">Tous types</option>
+                                    <option value="Vente">Acquisition</option>
+                                    <option value="Location">Location Prestige</option>
                                 </select>
                             </div>
                             <div className="search-field">
-                                <label>Prix Max</label>
+                                <label>Budget Maximum</label>
                                 <input
                                     type="number"
-                                    placeholder="Budget DT"
+                                    placeholder="Budget en DT"
                                     value={filters.maxPrice}
                                     onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
                                 />
                             </div>
-                            <button type="submit" className="btn btn-secondary search-btn">
-                                <Search size={20} /> Rechercher
-                            </button>
+                            <div className="search-btn-group flex gap-2">
+                                <button type="submit" className="btn btn-secondary search-btn flex-1">
+                                    <Search size={20} /> <span className="btn-text">Découvrir</span>
+                                </button>
+                                <button type="button" onClick={handleReset} className="btn btn-primary-outline search-btn px-4" title="Réinitialiser">
+                                    <SlidersHorizontal size={20} />
+                                </button>
+                            </div>
                         </div>
 
                         <div className="search-actions">
@@ -106,12 +140,13 @@ const HomePage = () => {
                                 onClick={() => setShowAdvanced(!showAdvanced)}
                             >
                                 <SlidersHorizontal size={16} />
-                                {showAdvanced ? "Moins de filtres" : "Plus de filtres"}
+                                {showAdvanced ? "Filtres simplifiés" : "Recherche personnalisée"}
                             </button>
 
                             <div className="sort-box">
-                                <label>Trier par :</label>
+                                <span className="sort-label">Ordonner par</span>
                                 <select
+                                    className="sort-select"
                                     value={filters.sortBy}
                                     onChange={(e) => {
                                         const newFilters = { ...filters, sortBy: e.target.value };
@@ -119,7 +154,7 @@ const HomePage = () => {
                                         fetchProperties(newFilters);
                                     }}
                                 >
-                                    <option value="newest">Plus récent</option>
+                                    <option value="newest">Plus récents</option>
                                     <option value="price_asc">Prix croissant</option>
                                     <option value="price_desc">Prix décroissant</option>
                                     <option value="area">Surface (max)</option>
@@ -142,16 +177,35 @@ const HomePage = () => {
                                         </select>
                                     </div>
                                     <div className="search-field">
-                                        <label>Chambres min.</label>
+                                        <label>Chambres</label>
                                         <input
                                             type="number"
-                                            placeholder="Ex: 2"
+                                            placeholder="Nombre min."
                                             value={filters.bedrooms}
                                             onChange={(e) => setFilters({ ...filters, bedrooms: e.target.value })}
                                         />
                                     </div>
                                     <div className="search-field">
-                                        <label>Prix Min</label>
+                                        <label>Surface (min - max)</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="number"
+                                                placeholder="Min m²"
+                                                className="w-1/2"
+                                                value={filters.minArea}
+                                                onChange={(e) => setFilters({ ...filters, minArea: e.target.value })}
+                                            />
+                                            <input
+                                                type="number"
+                                                placeholder="Max m²"
+                                                className="w-1/2"
+                                                value={filters.maxArea}
+                                                onChange={(e) => setFilters({ ...filters, maxArea: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="search-field">
+                                        <label>Prix Minimum</label>
                                         <input
                                             type="number"
                                             placeholder="DT"
@@ -213,129 +267,220 @@ const HomePage = () => {
             <style jsx>{`
                 .home-page { min-height: 100vh; }
                 .hero-section {
-                    height: 85vh;
-                    background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), 
-                                url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+                    height: 90vh;
+                    background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), 
+                                 url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
                     background-size: cover;
                     background-position: center;
                     display: flex;
                     align-items: center;
                     color: white;
-                    border-bottom-left-radius: 60px;
-                    border-bottom-right-radius: 60px;
+                    border-bottom-left-radius: 80px;
+                    border-bottom-right-radius: 80px;
+                    position: relative;
                 }
-                .hero-content { text-align: center; }
-                .hero-content h1 { font-size: 4.5rem; margin-bottom: 1rem; color: var(--secondary); }
-                .hero-content p { font-size: 1.4rem; margin-bottom: 3rem; color: rgba(255, 255, 255, 0.9); }
+                .hero-content { text-align: center; max-width: 1200px; margin: 0 auto; padding-top: 4rem; }
                 
-                .search-box { max-width: 1100px; margin: 0 auto; padding: 1.5rem; border-radius: 24px; }
-                .search-grid { display: grid; grid-template-columns: repeat(3, 1fr) auto; gap: 1.5rem; align-items: flex-end; }
+                .hero-badge { margin-bottom: 2rem; }
+                .premium-tag {
+                    background: rgba(212, 175, 55, 0.2);
+                    border: 1px solid var(--secondary);
+                    color: var(--secondary);
+                    padding: 0.5rem 1.5rem;
+                    border-radius: 30px;
+                    font-size: 0.8rem;
+                    font-weight: 800;
+                    letter-spacing: 3px;
+                    backdrop-filter: blur(10px);
+                }
+
+                .hero-content h1 { 
+                    font-size: 6rem; 
+                    margin-bottom: 0.5rem; 
+                    color: white; 
+                    font-family: var(--font-heading);
+                    font-weight: 700;
+                    letter-spacing: -2px;
+                }
+                .hero-subtitle {
+                    font-size: 2.2rem;
+                    color: var(--secondary);
+                    font-family: var(--font-heading);
+                    margin-bottom: 1.5rem;
+                    font-weight: 600;
+                    font-style: italic;
+                }
+                .hero-description { 
+                    font-size: 1.2rem; 
+                    margin: 0 auto 4rem; 
+                    color: rgba(255, 255, 255, 0.8); 
+                    max-width: 800px;
+                    line-height: 1.8;
+                }
+                
+                .search-box { 
+                    max-width: 1100px; 
+                    margin: 0 auto; 
+                    padding: 2.5rem; 
+                    border-radius: 30px;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                }
+                .search-grid { 
+                    display: grid; 
+                    grid-template-columns: 1.5fr 1fr 1fr auto; 
+                    gap: 1.5rem; 
+                    align-items: flex-end; 
+                }
                 .search-field { text-align: left; }
-                .search-field label { display: block; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 700; color: #ffffff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+                .search-field label { 
+                    display: block; 
+                    font-size: 0.75rem; 
+                    margin-bottom: 0.75rem; 
+                    font-weight: 800; 
+                    color: var(--secondary); 
+                    text-transform: uppercase;
+                    letter-spacing: 1.5px;
+                }
+                
+                .input-with-icon { position: relative; }
+                .input-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--secondary); opacity: 0.7; }
+
                 .search-field input, .search-field select {
                     width: 100%;
-                    padding: 0.8rem 1rem;
-                    background: rgba(255, 255, 255, 0.1);
+                    padding: 1rem 1.2rem;
+                    background: rgba(255, 255, 255, 0.05);
                     border: 1px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 12px;
+                    border-radius: 16px;
                     color: white;
                     outline: none;
+                    font-size: 1rem;
+                    transition: all 0.3s;
                 }
-                .search-field option { color: black; }
-                .search-btn { padding: 0.8rem 2rem; height: 48px; }
+                .search-field input:focus, .search-field select:focus {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-color: var(--secondary);
+                }
+                .search-field.with-icon input { padding-left: 3rem; }
+                
+                .search-field option { color: #0f172a; }
+                .search-btn { 
+                    padding: 0 2.5rem; 
+                    height: 58px; 
+                    font-size: 1.1rem;
+                    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+                }
 
                 .search-actions {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    margin-top: 1.5rem;
-                    padding-top: 1.5rem;
+                    margin-top: 2rem;
+                    padding-top: 2rem;
                     border-top: 1px solid rgba(255, 255, 255, 0.1);
                 }
                 .toggle-advanced {
-                    background: rgba(255, 255, 255, 0.1);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    background: transparent;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
                     color: white;
-                    padding: 0.6rem 1.2rem;
-                    border-radius: 10px;
+                    padding: 0.7rem 1.5rem;
+                    border-radius: 12px;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
-                    gap: 0.5rem;
+                    gap: 0.7rem;
                     font-weight: 600;
-                    transition: all 0.2s;
+                    transition: all 0.3s;
                 }
-                .toggle-advanced:hover { background: rgba(255, 255, 255, 0.15); }
+                .toggle-advanced:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--secondary); }
 
-                .sort-box {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                }
-                .sort-box label { color: #ffffff; font-size: 0.9rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-                .sort-box select {
-                    background: rgba(255, 255, 255, 0.1);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    border-radius: 10px;
-                    color: white;
-                    padding: 0.6rem 1rem;
-                    outline: none;
+                .sort-box { display: flex; align-items: center; gap: 1rem; }
+                .sort-label { color: rgba(255,255,255,0.6); font-size: 0.9rem; font-weight: 600; }
+                .sort-select {
+                    background: transparent;
+                    border: none;
+                    color: var(--secondary);
+                    font-weight: 700;
                     cursor: pointer;
+                    outline: none;
+                    font-size: 0.9rem;
                 }
 
-                .advanced-filters {
-                    margin-top: 1.5rem;
-                    padding-top: 1.5rem;
-                    border-top: 1px solid rgba(255, 255, 255, 0.1);
-                }
+                .advanced-filters { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
 
-                @keyframes slideDown {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
+                .py-12 { padding-top: 8rem; padding-bottom: 8rem; }
+                .section-header { margin-bottom: 5rem; text-align: center; }
+                .section-header h2 { 
+                    font-size: 3.5rem; 
+                    color: var(--primary); 
+                    margin-bottom: 1rem; 
+                    font-family: var(--font-heading);
+                    font-weight: 700;
                 }
-                .animate-slide-down { animation: slideDown 0.3s ease; }
-
-                .py-12 { padding-top: 5rem; padding-bottom: 5rem; }
-                .section-header { margin-bottom: 4rem; text-align: center; }
-                .section-header h2 { font-size: 2.8rem; color: var(--primary); margin-bottom: 0.5rem; }
-                .section-header p { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 1.5rem; }
+                .section-header p { 
+                    color: var(--text-muted); 
+                    font-size: 1.2rem; 
+                    margin-bottom: 2.5rem; 
+                    max-width: 600px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
                 
                 .view-toggle {
                     display: inline-flex;
-                    background: var(--surface);
-                    padding: 0.25rem;
-                    border-radius: 12px;
-                    border: 1px solid var(--border);
-                    margin-top: 1rem;
+                    background: #f1f5f9;
+                    padding: 0.4rem;
+                    border-radius: 16px;
                 }
                 .toggle-btn {
-                    padding: 0.5rem 1.25rem;
-                    border-radius: 10px;
+                    padding: 0.7rem 1.5rem;
+                    border-radius: 12px;
                     border: none;
                     background: transparent;
                     cursor: pointer;
                     display: flex;
                     align-items: center;
-                    gap: 0.5rem;
-                    font-weight: 600;
+                    gap: 0.6rem;
+                    font-weight: 700;
                     color: var(--text-muted);
-                    transition: all 0.2s;
+                    transition: all 0.3s;
                 }
                 .toggle-btn.active {
                     background: var(--primary);
                     color: white;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
                 }
-                .property-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; }
-                .loading-state { text-align: center; padding: 10rem 0; }
-                .no-results { grid-column: 1 / -1; text-align: center; padding: 5rem; background: #f1f5f9; border-radius: 20px; }
+                .property-grid { 
+                    display: grid; 
+                    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); 
+                    gap: 3rem; 
+                }
+                .loading-state { text-align: center; padding: 10rem 0; color: var(--text-muted); font-weight: 600; }
+                .spinner {
+                    width: 50px; height: 50px;
+                    border: 4px solid rgba(15, 23, 42, 0.1);
+                    border-top-color: var(--secondary);
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 1.5rem;
+                }
+                @keyframes spin { to { transform: rotate(360deg); } }
+
+                .no-results { grid-column: 1 / -1; text-align: center; padding: 6rem; background: #fafaf9; border-radius: 30px; border: 1px solid #f1f5f9; }
+
+                @media (max-width: 1024px) {
+                    .hero-content h1 { font-size: 4.5rem; }
+                    .search-grid { grid-template-columns: 1fr 1fr; }
+                    .search-btn { grid-column: span 2; }
+                }
 
                 @media (max-width: 768px) {
-                    .hero-content h1 { font-size: 2.5rem; }
+                    .hero-content h1 { font-size: 3.5rem; }
+                    .hero-subtitle { font-size: 1.5rem; }
                     .search-grid { grid-template-columns: 1fr; }
-                    .hero-section { height: auto; padding: 8rem 0; border-radius: 0; }
-                    .search-actions { flex-direction: column; gap: 1rem; align-items: stretch; }
-                    .sort-box { justify-content: space-between; }
+                    .search-btn { grid-column: auto; }
+                    .hero-section { height: auto; padding: 10rem 0 6rem; border-radius: 0; }
+                    .search-actions { flex-direction: column; gap: 1.5rem; align-items: stretch; text-align: center; }
+                    .sort-box { justify-content: center; }
                 }
             `}</style>
         </div>

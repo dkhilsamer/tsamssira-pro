@@ -22,6 +22,8 @@ import PaymentPage from './pages/PaymentPage';
 import UsersPage from './pages/UsersPage';
 import HistoryPage from './pages/HistoryPage';
 import RequestsPage from './pages/RequestsPage';
+import ContactOwnerPage from './pages/ContactOwnerPage';
+import AIPricingPage from './pages/AIPricingPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -42,6 +44,8 @@ const App = () => {
                         <Routes>
                             <Route path="/" element={<HomePage />} />
                             <Route path="/property/:id" element={<PropertyDetailPage />} />
+                            <Route path="/property/:id/contact" element={<ContactOwnerPage />} />
+                            <Route path="/ai-pricing" element={<AIPricingPage />} />
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/register" element={<RegisterPage />} />
                             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
