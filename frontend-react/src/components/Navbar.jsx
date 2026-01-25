@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User, LogOut, MessageSquare, LayoutDashboard, Home, Menu, X, Sun, Moon, Clock, List, Sparkles } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import api from '../services/api';
+import toast from 'react-hot-toast';
 import NotificationBell from './NotificationBell';
 import './Navbar.css';
 

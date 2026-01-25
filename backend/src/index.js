@@ -39,17 +39,20 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://tsamssirapro.onrender.com',
-    'https://tsamssira-pro.vercel.app',
-    'https://tsamssirapro.vercel.app',
     'https://tsamssirapro.online',
-    'https://www.tsamssirapro.online',
-    'https://tsamssirapro.online/',
-    'https://www.tsamssirapro.online/'
+    'https://www.tsamssirapro.online'
 ];
 
 const corsOptions = {
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes(origin + '/')) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+
+        const isAllowed = allowedOrigins.includes(origin) ||
+            allowedOrigins.includes(origin + '/') ||
+            origin.endsWith('.vercel.app');
+
+        if (isAllowed) {
             callback(null, true);
         } else {
             console.error('❌ CORS Reject Origin:', origin);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import PropertyCard from '../components/PropertyCard';
 import PropertyMap from '../components/PropertyMap';
-import { Search, SlidersHorizontal, Map as MapIcon, Grid } from 'lucide-react';
+import { Search, SlidersHorizontal, Map as MapIcon, Grid, MapPin } from 'lucide-react';
 
 const HomePage = () => {
     const [properties, setProperties] = useState([]);
