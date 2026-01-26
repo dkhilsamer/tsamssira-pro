@@ -23,6 +23,7 @@ router.get('/', async (req, res) => {
             minArea: req.query.minArea,
             maxArea: req.query.maxArea,
             is_student: req.query.is_student === 'true' || req.query.is_student === '1',
+            sortBy: req.query.sortBy,
             publicOnly: true // Default for public route
         };
 
