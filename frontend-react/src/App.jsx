@@ -10,7 +10,6 @@ import PropertyDetailPage from './pages/PropertyDetailPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
-import MessagesPage from './pages/MessagesPage';
 import AddPropertyPage from './pages/AddPropertyPage';
 import EditPropertyPage from './pages/EditPropertyPage';
 import MyPropertiesPage from './pages/MyPropertiesPage';
@@ -72,11 +71,7 @@ const App = () => {
                                     <EditPropertyPage />
                                 </ProtectedRoute>
                             } />
-                            <Route path="/messages" element={
-                                <ProtectedRoute>
-                                    <MessagesPage />
-                                </ProtectedRoute>
-                            } />
+
                             <Route path="/dashboard/users" element={
                                 <ProtectedRoute>
                                     <UsersPage />

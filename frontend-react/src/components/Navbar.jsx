@@ -85,9 +85,7 @@ const Navbar = () => {
                             <Link to="/dashboard" className={`nav-item ${location.pathname.startsWith('/dashboard') ? 'active' : ''}`}>
                                 <LayoutDashboard size={18} /> Dashboard
                             </Link>
-                            <Link to="/messages" className={`nav-item ${location.pathname === '/messages' ? 'active' : ''}`}>
-                                <MessageSquare size={18} /> Messages
-                            </Link>
+
 
                             {/* Mobile only shortcuts */}
                             <div className="mobile-only">

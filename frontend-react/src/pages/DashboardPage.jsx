@@ -46,10 +46,7 @@ const DashboardPage = () => {
                     <Link to="/dashboard/my-properties" className="nav-link">
                         <Home size={20} /> {(user?.role === 'admin' || user?.username?.toLowerCase() === 'tadmin') ? 'Tous les Biens' : 'Mes Biens'}
                     </Link>
-                    <Link to="/messages" className="nav-link">
-                        <MessageSquare size={20} /> Messages
-                        {stats?.unreadMessages > 0 && <span className="badge-sidebar">{stats.unreadMessages}</span>}
-                    </Link>
+
                     {(user?.role === 'admin' || user?.username?.toLowerCase() === 'tadmin') && (
                         <Link to="/dashboard/users" className="nav-link">
                             <Users size={20} /> Utilisateurs
@@ -85,15 +82,7 @@ const DashboardPage = () => {
                             <span className="value">{stats?.properties || 0}</span>
                         </div>
                     </div>
-                    <div className="stat-card glass" onClick={() => navigate('/dashboard/requests')} style={{ cursor: 'pointer' }}>
-                        <div className="icon" style={{ backgroundColor: 'var(--warning-bg)', color: 'var(--warning-text)' }}>
-                            <MessageSquare size={24} />
-                        </div>
-                        <div className="info">
-                            <span className="label">Demandes Reçues</span>
-                            <span className="value">{stats?.requests || 0}</span>
-                        </div>
-                    </div>
+
                     <div className="stat-card glass">
                         <div className="icon" style={{ backgroundColor: 'var(--success-bg)', color: 'var(--success-text)' }}>
                             <Eye size={24} />
@@ -112,15 +101,7 @@ const DashboardPage = () => {
                             <span className="value">{stats?.sentRequests || 0}</span>
                         </div>
                     </div>
-                    <div className="stat-card glass" onClick={() => navigate('/messages')} style={{ cursor: 'pointer' }}>
-                        <div className="icon" style={{ backgroundColor: 'var(--danger-bg)', color: 'var(--danger-text)' }}>
-                            <Mail size={24} />
-                        </div>
-                        <div className="info">
-                            <span className="label">Messages non-lus</span>
-                            <span className="value">{stats?.unreadMessages || 0}</span>
-                        </div>
-                    </div>
+
                     <div className="stat-card glass">
                         <div className="icon" style={{ backgroundColor: 'var(--secondary)', color: 'white' }}>
                             <TrendingUp size={24} />
@@ -162,10 +143,7 @@ const DashboardPage = () => {
                                 <Plus size={24} />
                                 <span>Publier une annonce</span>
                             </button>
-                            <button className="action-btn glass" onClick={() => navigate('/dashboard/requests')}>
-                                <MessageSquare size={24} />
-                                <span>Voir les demandes</span>
-                            </button>
+
                             <button className="action-btn glass" onClick={() => navigate('/dashboard/my-properties')}>
                                 <TrendingUp size={24} />
                                 <span>Booster un bien</span>
