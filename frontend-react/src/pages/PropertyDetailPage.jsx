@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Bed, Bath, Maximize, MapPin, Send, MessageCircle, ExternalLink, Map as MapIcon, User, Phone, Mail as MailIcon } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, ExternalLink } from 'lucide-react';
 import PropertyMap from '../components/PropertyMap';
 import './PropertyDetailPage.css';
 
@@ -11,13 +11,7 @@ const PropertyDetailPage = () => {
     const navigate = useNavigate();
     const [property, setProperty] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [contactData, setContactData] = useState({
-        visitor_name: '',
-        visitor_email: '',
-        visitor_phone: '',
-        num_persons: 1,
-        message: 'Je suis intéressé par cette propriété.'
-    });
+    const [loading, setLoading] = useState(true);
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
@@ -40,51 +34,7 @@ const PropertyDetailPage = () => {
         }
     };
 
-    const handleContact = async (e) => {
-        e.preventDefault();
-        try {
-            await api.post('/requests', {
-                ...contactData,
-                property_id: id,
-                request_type: 'Renseignements'
-            });
-            toast.success('Demande envoyée avec succès !');
-            setContactData({
-                visitor_name: '',
-                visitor_email: '',
-                visitor_phone: '',
-                num_persons: 1,
-                message: 'Je suis intéressé par cette propriété.'
-            });
-            // Redirect to the contact info page
-            navigate(`/property/${id}/contact`, { state: { property } });
-        } catch (error) {
-            toast.error(error.message);
-        }
-    };
 
-    const startChat = async () => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user) {
-            toast.error('Veuillez vous connecter pour discuter.');
-            navigate('/login');
-            return;
-        }
-
-        if (user.id === property.user_id) {
-            toast.error("Vous ne pouvez pas discuter avec vous-même !");
-            return;
-        }
-
-        navigate('/messages', {
-            state: {
-                userId: property.user_id,
-                username: property.owner_username,
-                propertyId: property.id,
-                propertyTitle: property.title
-            }
-        });
-    };
 
     const [activeImage, setActiveImage] = useState('');
 
@@ -179,48 +129,7 @@ const PropertyDetailPage = () => {
                     )}
                 </div>
 
-                <div className="sidebar">
-                    <div className="contact-card glass">
-                        <h3>Contacter le propriétaire</h3>
-                        <p className="mb-6 text-sm text-gray-500">Envoyez une demande pour voir les coordonnées directes du propriétaire.</p>
 
-                        <form onSubmit={handleContact} className="contact-form">
-                            <input
-                                className="form-input"
-                                placeholder="Votre Nom"
-                                required
-                                value={contactData.visitor_name}
-                                onChange={(e) => setContactData({ ...contactData, visitor_name: e.target.value })}
-                            />
-                            <input
-                                className="form-input"
-                                type="email"
-                                placeholder="Email"
-                                required
-                                value={contactData.visitor_email}
-                                onChange={(e) => setContactData({ ...contactData, visitor_email: e.target.value })}
-                            />
-                            <input
-                                className="form-input"
-                                type="tel"
-                                placeholder="Téléphone"
-                                required
-                                value={contactData.visitor_phone}
-                                onChange={(e) => setContactData({ ...contactData, visitor_phone: e.target.value })}
-                            />
-                            <textarea
-                                className="form-input"
-                                rows="4"
-                                placeholder="Message"
-                                value={contactData.message}
-                                onChange={(e) => setContactData({ ...contactData, message: e.target.value })}
-                            ></textarea>
-                            <button type="submit" className="btn btn-primary w-full">
-                                <Send size={18} /> Envoyer la demande
-                            </button>
-                        </form>
-                    </div>
-                </div>
             </div>
         </div>
     );
