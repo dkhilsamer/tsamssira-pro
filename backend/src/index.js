@@ -133,6 +133,7 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/payment', require('./routes/payment'));
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/ai', require('./routes/ai'));
 
 app.use('/', require('./routes/sitemap'));
 
