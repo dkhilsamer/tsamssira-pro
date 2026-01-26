@@ -12,14 +12,17 @@ const estimatePrice = async (propertyData) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const { city, surface, rooms, type, category, transaction } = propertyData;
+    const { city, governorate, surface, rooms, type, category, transaction, is_furnished, source } = propertyData;
 
     const prompt = `En tant qu'expert immobilier tunisien, estime le prix d'un bien avec les caractéristiques suivantes :
+    - Gouvernorat : ${governorate || 'Non précisé'}
     - Ville : ${city}
     - Type : ${type} (${rooms})
+    - État : ${is_furnished ? 'Meublé' : 'Non meublé'}
     - Surface : ${surface} m²
     - Transaction : ${transaction}
-    - Catégorie : ${category}
+    - Public cible : ${category} (Étudiant/Famille/etc.)
+    - Source de calcul souhaitée : ${source || 'Toutes ressources'} (Analyses basées sur ${source === 'local' ? 'notre plateforme' : source === 'external' ? 'web/données externes' : 'les deux'})
 
     Donne-moi une réponse au format JSON uniquement, sans texte autour, avec la structure suivante :
     {
@@ -27,9 +30,9 @@ const estimatePrice = async (propertyData) => {
       "min": nombre,
       "max": nombre,
       "currency": "TND",
-      "analysis": "une phrase d'explication courte"
+      "analysis": "analyse courte (20 mots max) expliquant le prix selon l'emplacement et l'état"
     }
-    Assure-toi que les prix sont réalistes par rapport au marché tunisien actuel de 2024-2025.`;
+    Assure-toi que les prix sont réalistes par rapport au marché tunisien actuel de 2024-2025. Prends bien en compte l'impact du mobilier sur le prix de location.`;
 
     try {
         const result = await model.generateContent(prompt);
