@@ -4,6 +4,7 @@ import api from '../services/api';
 import { toast } from 'react-hot-toast';
 import { Bed, Bath, Maximize, MapPin, ExternalLink, Send } from 'lucide-react';
 import PropertyMap from '../components/PropertyMap';
+import SEO from '../components/SEO';
 import './PropertyDetailPage.css';
 
 const PropertyDetailPage = () => {
@@ -106,6 +107,11 @@ const PropertyDetailPage = () => {
     const allImages = property ? [property.main_image, ...(property.images || [])].filter(Boolean) : [];
     return (
         <div className="property-detail container py-12 animate-fade-in">
+            <SEO
+                title={property.title}
+                description={`${property.title} à ${property.location}. ${property.bedrooms} chambres, ${property.area}m². ${property.description.substring(0, 100)}... عقار في ${property.location}: ${property.title}.`}
+                keywords={`${property.type}, ${property.location}, immobilier tunis, ${property.property_type || ''}, haut standing, عقارات ${property.location}, بيع عقارات`}
+            />
             <div className="gallery-section">
                 <div className="main-image">
                     <img src={getImageUrl(activeImage)} alt={property.title} />

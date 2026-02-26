@@ -3,6 +3,7 @@ import api from '../services/api';
 import PropertyCard from '../components/PropertyCard';
 import PropertyMap from '../components/PropertyMap';
 import { Search, SlidersHorizontal, Map as MapIcon, Grid, MapPin } from 'lucide-react';
+import SEO from '../components/SEO';
 
 const HomePage = () => {
     const [properties, setProperties] = useState([]);
@@ -23,7 +24,6 @@ const HomePage = () => {
 
     useEffect(() => {
         fetchProperties();
-        document.title = "Tsamssira Pro | Immobilier de Luxe en Tunisie - Vente & Location";
     }, []);
 
     const fetchProperties = async (currentFilters = filters) => {
@@ -75,6 +75,11 @@ const HomePage = () => {
 
     return (
         <div className="home-page">
+            <SEO
+                title="Accueil"
+                description="Tsamssira Pro: L'immobilier de luxe en Tunisie. Vente et location d'appartements de haut standing, villas avec piscine et maisons de prestige à Tunis, Hammamet et Sousse. عقارات تونس: بيع و كراء شقق و فيلات فاخرة بتونس، الحمامات و سوسة."
+                keywords="immobilier tunisie, luxe, haut standing, appartement tunis, villa hammamet, vente immobilier tunisie, location vacances tunisie, عقارات تونس, بيع عقارات, شراء منزل, كراء شقق"
+            />
             <section className="hero-section">
                 <div className="container hero-content">
                     <div className="hero-badge animate-fade-in">
