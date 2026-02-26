@@ -13,7 +13,7 @@ const AdBanner = ({ slot, format = 'auto', responsive = 'true' }) => {
         <div className="ad-container my-8 text-center" style={{ minHeight: '100px', overflow: 'hidden' }}>
             <ins className="adsbygoogle"
                 style={{ display: 'block' }}
-                data-ad-client="ca-pub-0000000000000000"
+                data-ad-client="ca-pub-5736875872236634"
                 data-ad-slot={slot}
                 data-ad-format={format}
                 data-full-width-responsive={responsive}></ins>
