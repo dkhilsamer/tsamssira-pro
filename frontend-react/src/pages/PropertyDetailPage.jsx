@@ -110,7 +110,7 @@ const PropertyDetailPage = () => {
             <SEO
                 title={property.title}
                 description={`${property.title} à ${property.location}. ${property.bedrooms} chambres, ${property.area}m². ${property.description.substring(0, 100)}... عقار في ${property.location}: ${property.title}.`}
-                keywords={`${property.type}, ${property.location}, immobilier tunis, ${property.property_type || ''}, haut standing, عقارات ${property.location}, بيع عقارات`}
+                keywords={`${property.type}, ${property.location}, immobilier ${property.location}, ${property.bedrooms > 0 ? `S+${property.bedrooms}` : ''}, ${property.property_type || ''}, haut standing, luxe tunisie, villa avec piscine, appartement à vendre ${property.location}, عقارات ${property.location}, بيع عقارات في ${property.location}, شراء منزل ${property.location}, كراء في ${property.location}`}
             />
             <div className="gallery-section">
                 <div className="main-image">

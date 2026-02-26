@@ -4,7 +4,7 @@ const SEO = ({ title, description, keywords, image, url }) => {
     const siteName = "Tsamssira Pro";
     const defaultTitle = "Tsamssira Pro | Immobilier de Luxe en Tunisie - Vente & Location";
     const defaultDesc = "Découvrez l'immobilier de luxe en Tunisie : Villas, Appartements haut standing à Tunis, Hammamet, Sousse. عقارات تونس: بيع و كراء شقق و فيلات فاخرة.";
-    const defaultKeywords = "immobilier tunisie, luxe, vente, location, appartement tunis, villa hammamet, maison prestige, عقارات تونس, بيع عقارات,راء منازل";
+    const defaultKeywords = "immobilier tunisie, agence immobilière, luxe, vente, location, appartement tunis, villa hammamet, S+1, S+2, S+3, haut standing, Gammarth, La Marsa, Lac, Ennasr, Sousse, Djerba, villa avec piscine, عقارات تونس, بيع عقارات, شراء منزل, كراء شقق, فيلا للبيع, وكالة عقارية, تسامسيرة برو";
     const defaultImage = "https://www.tsamssirapro.online/og-image.jpg";
     const defaultUrl = "https://www.tsamssirapro.online/";
 
