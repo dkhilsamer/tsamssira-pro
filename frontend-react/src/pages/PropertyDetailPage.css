@@ -95,8 +95,22 @@
 }
 
 .content-grid {
-    display: block;
-    max-width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+@media (min-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr 380px;
+        gap: 3rem;
+    }
+
+    .sidebar {
+        position: sticky;
+        top: 100px;
+    }
 }
 
 .details-card {
@@ -313,14 +327,4 @@
 .owner-detail {
     color: var(--primary);
     font-weight: 700;
-}
-
-@media (max-width: 1024px) {
-    .content-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .sidebar {
-        position: static;
-    }
 }

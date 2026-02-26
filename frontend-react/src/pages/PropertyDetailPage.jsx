@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Bed, Bath, Maximize, MapPin, ExternalLink } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, ExternalLink, Send } from 'lucide-react';
 import PropertyMap from '../components/PropertyMap';
 import './PropertyDetailPage.css';
 
@@ -11,7 +11,13 @@ const PropertyDetailPage = () => {
     const navigate = useNavigate();
     const [property, setProperty] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        request_type: 'visite'
+    });
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
@@ -26,11 +32,55 @@ const PropertyDetailPage = () => {
             if (data && data.title) {
                 document.title = `${data.title} | Tsamssira Pro`;
             }
+
+            // Prefill user data if logged in
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                setFormData(prev => ({
+                    ...prev,
+                    name: user.username || '',
+                    email: user.email || '',
+                    phone: user.phone || ''
+                }));
+            }
         } catch (error) {
             toast.error(error.message);
             navigate('/');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSending(true);
+
+        try {
+            const payload = {
+                property_id: id,
+                visitor_name: formData.name,
+                visitor_email: formData.email,
+                visitor_phone: formData.phone,
+                request_type: formData.request_type,
+                message: "Demande de contact direct" // Default message since box is removed
+            };
+
+            const response = await api.post('/requests', payload);
+            toast.success('Demande envoyée ! Redirection...');
+
+            // Redirect to contact details page
+            setTimeout(() => {
+                navigate(`/property/${id}/contact`, { state: { property } });
+            }, 1500);
+        } catch (error) {
+            toast.error(error.message || 'Erreur lors de l\'envoi');
+        } finally {
+            setSending(false);
         }
     };
 
@@ -129,7 +179,59 @@ const PropertyDetailPage = () => {
                     )}
                 </div>
 
+                <div className="sidebar">
+                    <div className="contact-card glass">
+                        <h3>Contacter le propriétaire</h3>
+                        <p className="mb-6 text-sm text-slate-600">
+                            Envoyez une demande pour voir les coordonnées directes du propriétaire.
+                        </p>
 
+                        <form onSubmit={handleSubmit} className="contact-form">
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    name="name"
+                                    placeholder="Votre nom"
+                                    className="w-full"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Votre email"
+                                    className="w-full"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    placeholder="Votre téléphone"
+                                    className="w-full"
+                                    value={formData.phone}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary w-full flex items-center justify-center gap-2"
+                                disabled={sending}
+                            >
+                                <Send size={18} />
+                                {sending ? 'Envoi...' : 'Envoyer la demande'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     );
