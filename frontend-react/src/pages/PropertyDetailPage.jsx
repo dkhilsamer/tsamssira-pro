@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { Bed, Bath, Maximize, MapPin, ExternalLink, Send } from 'lucide-react';
 import PropertyMap from '../components/PropertyMap';
 import SEO from '../components/SEO';
+import AdBanner from '../components/AdBanner';
 import './PropertyDetailPage.css';
 
 const PropertyDetailPage = () => {
@@ -237,6 +238,8 @@ const PropertyDetailPage = () => {
                             </button>
                         </form>
                     </div>
+
+                    <AdBanner slot="1111111111" format="rectangle" />
                 </div>
             </div>
         </div>

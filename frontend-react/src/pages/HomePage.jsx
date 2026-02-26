@@ -4,6 +4,7 @@ import PropertyCard from '../components/PropertyCard';
 import PropertyMap from '../components/PropertyMap';
 import { Search, SlidersHorizontal, Map as MapIcon, Grid, MapPin } from 'lucide-react';
 import SEO from '../components/SEO';
+import AdBanner from '../components/AdBanner';
 
 const HomePage = () => {
     const [properties, setProperties] = useState([]);
@@ -224,6 +225,10 @@ const HomePage = () => {
                     </form>
                 </div>
             </section>
+
+            <div className="container">
+                <AdBanner slot="0000000000" />
+            </div>
 
             <section className="container py-12">
                 <div className="section-header">
