@@ -138,6 +138,10 @@
     display: none;
 }
 
+.mobile-menu-header {
+    display: none;
+}
+
 @media (max-width: 992px) {
     .mobile-toggle {
         display: block;
@@ -161,7 +165,7 @@
     }
 
     .mobile-menu-header {
-        display: flex;
+        display: flex !important;
         flex-direction: column;
         align-items: center;
         gap: 1.25rem;

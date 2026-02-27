@@ -21,10 +21,19 @@ api.interceptors.response.use(
     (response) => response.data,
     (error) => {
         if (error.response && error.response.status === 401) {
-            // Unauthorized, maybe clear local storage and redirect to login
+            // Unauthorized: Session expired or invalid
+            const wasLoggedIn = localStorage.getItem('user') !== null;
             localStorage.removeItem('user');
-            if (!window.location.pathname.includes('/login')) {
-                window.location.href = '/login';
+
+            // Trigger Navbar update gracefully (simulate cross-tab storage event)
+            window.dispatchEvent(new Event('storage'));
+
+            // Only force redirect if the user is in a protected area (dashboard, edit, payment)
+            const path = window.location.pathname;
+            const isProtected = path.startsWith('/dashboard') || path.startsWith('/edit') || path.startsWith('/payment');
+
+            if (wasLoggedIn && isProtected && !path.includes('/login')) {
+                window.location.href = '/login?expired=true';
             }
         }
         const message = error.response?.data?.error || 'Une erreur est survenue';
