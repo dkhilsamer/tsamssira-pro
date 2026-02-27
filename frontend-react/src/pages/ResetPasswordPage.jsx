@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { toast } from 'react-hot-toast';
-import { Lock, ArrowRight } from 'lucide-react';
+import { Lock, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const ResetPasswordPage = () => {
     const [searchParams] = useSearchParams();
@@ -24,7 +24,7 @@ const ResetPasswordPage = () => {
             toast.success('Mot de passe mis à jour avec succès !');
             navigate('/login');
         } catch (error) {
-            toast.error(error.message);
+            toast.error(error.message || 'Une erreur est survenue.');
         } finally {
             setLoading(false);
         }
@@ -32,83 +32,358 @@ const ResetPasswordPage = () => {
 
     if (!token) {
         return (
-            <div className="auth-page">
-                <div className="auth-container glass text-center">
-                    <h3>Lien invalide</h3>
-                    <p>Le jeton de réinitialisation est manquant ou a expiré.</p>
-                    <button onClick={() => navigate('/login')} className="btn btn-primary mt-4">Retour</button>
+            <div className="auth-wrapper">
+                <div className="auth-form-container" style={{ width: '100%', padding: '2rem' }}>
+                    <div className="auth-card glass-premium text-center">
+                        <div className="icon-wrapper" style={{ background: '#fee2e2' }}>
+                            <Lock size={32} style={{ color: '#ef4444' }} />
+                        </div>
+                        <h2 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0f172a', marginBottom: '1rem' }}>Lien invalide</h2>
+                        <p style={{ color: '#64748b', marginBottom: '2rem' }}>Le jeton de réinitialisation est manquant ou a expiré. Veuillez refaire une demande.</p>
+                        <button onClick={() => navigate('/login')} className="btn-secondary-premium w-full">
+                            <ArrowLeft size={18} style={{ marginRight: '8px' }} /> Retour à la connexion
+                        </button>
+                    </div>
                 </div>
+                {/* Embedded styles for the error state */}
+                <style jsx>{`
+                    .auth-wrapper {
+                        min-height: 100vh;
+                        background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-family: 'Outfit', 'Inter', sans-serif;
+                    }
+                    .auth-form-container {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .auth-card {
+                        width: 100%;
+                        max-width: 440px;
+                        padding: 3rem 2.5rem;
+                        border-radius: 24px;
+                        background: rgba(255, 255, 255, 0.95);
+                        backdrop-filter: blur(20px);
+                        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+                        border: 1px solid rgba(226, 232, 240, 0.8);
+                    }
+                    .icon-wrapper {
+                        width: 64px;
+                        height: 64px;
+                        border-radius: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 1.5rem;
+                    }
+                    .btn-secondary-premium {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 100%;
+                        padding: 1rem;
+                        border-radius: 12px;
+                        background: #f1f5f9;
+                        color: #475569;
+                        font-weight: 600;
+                        font-size: 1rem;
+                        border: none;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+                    .btn-secondary-premium:hover {
+                        background: #e2e8f0;
+                        color: #0f172a;
+                    }
+                `}</style>
             </div>
         );
     }
 
     return (
-        <div className="auth-page">
-            <div className="auth-container glass animate-fade-in">
-                <div className="auth-header">
-                    <h2>Réinitialisation</h2>
-                    <p>Choisissez votre nouveau mot de passe sécurisé.</p>
+        <div className="auth-wrapper">
+            <div className="auth-split">
+                {/* Left Side - Visual */}
+                <div className="auth-visual">
+                    <div className="visual-overlay"></div>
+                    <div className="visual-content">
+                        <h2>Sécurisez Votre Compte</h2>
+                        <p>Choisissez un mot de passe fort et unique pour protéger vos informations personnelles et retrouver l'accès à vos propriétés de prestige.</p>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="auth-form">
-                    <div className="form-group">
-                        <label><Lock size={16} /> Nouveau mot de passe</label>
-                        <input
-                            type="password"
-                            className="form-input"
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label><Lock size={16} /> Confirmer le mot de passe</label>
-                        <input
-                            type="password"
-                            className="form-input"
-                            required
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                    </div>
+                {/* Right Side - Form */}
+                <div className="auth-form-container">
+                    <div className="auth-card glass-premium animate-fade-in-up">
+                        <div className="auth-header">
+                            <div className="icon-wrapper">
+                                <Lock size={32} className="auth-icon" />
+                            </div>
+                            <h2>Nouveau mot de passe</h2>
+                            <p>Veuillez entrer votre nouveau mot de passe ci-dessous.</p>
+                        </div>
 
-                    <button type="submit" className="btn btn-secondary w-full" disabled={loading}>
-                        {loading ? 'Mise à jour...' : 'Réinitialiser'} <ArrowRight size={18} />
-                    </button>
-                </form>
+                        <form onSubmit={handleSubmit} className="auth-form">
+                            <div className="input-group">
+                                <label><Lock size={16} /> Nouveau mot de passe</label>
+                                <div className="input-wrapper">
+                                    <input
+                                        type="password"
+                                        className="premium-input"
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label><Lock size={16} /> Confirmer le mot de passe</label>
+                                <div className="input-wrapper">
+                                    <input
+                                        type="password"
+                                        className="premium-input"
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                            </div>
+
+                            <button type="submit" className="btn-premium w-full mt-6" disabled={loading}>
+                                <span>{loading ? 'Mise à jour...' : 'Réinitialiser le mot de passe'}</span>
+                                <ArrowRight size={18} className={loading ? 'animate-pulse' : ''} />
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <style jsx>{`
-                .auth-page {
-                    min-height: calc(100vh - 80px);
+                /* Global Auth Wrapper */
+                .auth-wrapper {
+                    min-height: 100vh;
+                    background-color: #0f172a;
                     display: flex;
-                    flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                    background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
-                    padding: 2rem;
+                    font-family: 'Outfit', 'Inter', sans-serif;
                 }
-                .auth-container {
+
+                /* Split Layout */
+                .auth-split {
+                    display: flex;
                     width: 100%;
-                    max-width: 450px;
-                    padding: 3rem;
-                    border-radius: 30px;
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-                    background: rgba(255, 255, 255, 0.9);
-                    backdrop-filter: blur(10px);
+                    min-height: 100vh;
                 }
+
+                /* Left Visual Side (Hidden on Mobile) */
+                .auth-visual {
+                    flex: 1;
+                    position: relative;
+                    background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+                    background-size: cover;
+                    background-position: center;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 4rem;
+                    overflow: hidden;
+                }
+
+                .visual-overlay {
+                    position: absolute;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(16,185,129,0.7) 100%);
+                    z-index: 1;
+                }
+
+                .visual-content {
+                    position: relative;
+                    z-index: 2;
+                    color: white;
+                    max-width: 500px;
+                    text-align: left;
+                }
+
+                .visual-content h2 {
+                    font-size: 3rem;
+                    font-weight: 700;
+                    margin-bottom: 1.5rem;
+                    line-height: 1.2;
+                    letter-spacing: -1px;
+                }
+
+                .visual-content p {
+                    font-size: 1.15rem;
+                    line-height: 1.6;
+                    opacity: 0.9;
+                    font-weight: 300;
+                }
+
+                /* Right Form Side */
+                .auth-form-container {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 2rem;
+                    background: #f8fafc;
+                    position: relative;
+                }
+
+                .auth-card {
+                    width: 100%;
+                    max-width: 440px;
+                    padding: 3rem 2.5rem;
+                    border-radius: 24px;
+                    background: white;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+                    border: 1px solid rgba(226, 232, 240, 0.8);
+                }
+
+                .glass-premium {
+                    background: rgba(255, 255, 255, 0.95);
+                    backdrop-filter: blur(20px);
+                    -webkit-backdrop-filter: blur(20px);
+                }
+
                 .auth-header {
                     text-align: center;
                     margin-bottom: 2.5rem;
                 }
-                .auth-header h2 { font-size: 1.8rem; color: var(--primary); margin-bottom: 0.5rem; }
-                .auth-header p { color: var(--text-muted); }
-                
-                .form-group { margin-bottom: 1.5rem; }
-                .form-group label { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; }
-                
-                .w-full { width: 100%; justify-content: space-between; padding: 1rem 1.5rem; }
-                .mt-4 { margin-top: 1rem; }
+
+                .icon-wrapper {
+                    width: 64px;
+                    height: 64px;
+                    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+                    border-radius: 20px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin: 0 auto 1.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+                    transform: rotate(-5deg);
+                }
+
+                .auth-icon {
+                    color: #10b981;
+                    transform: rotate(5deg);
+                }
+
+                .auth-header h2 {
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    color: #0f172a;
+                    margin-bottom: 0.5rem;
+                }
+
+                .auth-header p {
+                    color: #64748b;
+                    font-size: 0.95rem;
+                    line-height: 1.5;
+                }
+
+                /* Forms */
+                .auth-form {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                }
+
+                .input-group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .input-group label {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    color: #334155;
+                }
+
+                .premium-input {
+                    width: 100%;
+                    padding: 0.875rem 1.25rem;
+                    border-radius: 12px;
+                    border: 2px solid #e2e8f0;
+                    background: #f8fafc;
+                    font-size: 1rem;
+                    color: #0f172a;
+                    transition: all 0.3s ease;
+                    outline: none;
+                }
+
+                .premium-input:focus {
+                    border-color: #10b981;
+                    background: white;
+                    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+                }
+
+                /* Buttons */
+                .btn-premium {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 0.75rem;
+                    width: 100%;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+                    color: white;
+                    font-weight: 600;
+                    font-size: 1rem;
+                    border: none;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.2);
+                }
+
+                .btn-premium:hover:not(:disabled) {
+                    transform: translateY(-2px);
+                    box-shadow: 0 15px 20px -3px rgba(5, 150, 105, 0.3);
+                }
+
+                .btn-premium:disabled {
+                    opacity: 0.7;
+                    cursor: not-allowed;
+                }
+
+                .mt-6 { margin-top: 1.5rem; }
+
+                /* Animations */
+                @keyframes fadeInUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .animate-fade-in-up {
+                    animation: fadeInUp 0.5s ease-out forwards;
+                }
+
+                /* Media Queries */
+                @media (max-width: 992px) {
+                    .auth-visual { display: none; }
+                    .auth-form-container { 
+                        background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+                        padding: 1.5rem;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .auth-card { padding: 2rem 1.5rem; }
+                    .visual-content h2 { font-size: 2rem; }
+                    .auth-header h2 { font-size: 1.5rem; }
+                }
             `}</style>
         </div>
     );
